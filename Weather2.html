@@ -1,0 +1,168 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel del Tiempo</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0a0e1a;
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    #ciudad {
+      font-size: 1.8em;
+      opacity: 0.7;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    #hora {
+      font-size: 5em;
+      font-weight: bold;
+      letter-spacing: 2px;
+    }
+
+    #fecha {
+      font-size: 1.2em;
+      opacity: 0.6;
+      margin-bottom: 30px;
+    }
+
+    #icono {
+      width: 120px;
+      height: 120px;
+    }
+
+    #temperatura {
+      font-size: 6em;
+      font-weight: 300;
+      line-height: 1;
+    }
+
+    #descripcion {
+      font-size: 1.5em;
+      opacity: 0.8;
+      margin: 10px 0 30px;
+      text-transform: capitalize;
+    }
+
+    .detalles {
+      display: flex;
+      gap: 40px;
+      font-size: 1.1em;
+      opacity: 0.7;
+    }
+
+    .detalle {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .detalle span:first-child {
+      font-size: 0.85em;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .detalle span:last-child {
+      font-size: 1.4em;
+      font-weight: bold;
+      opacity: 1;
+    }
+
+    #ultima-actualizacion {
+      position: absolute;
+      bottom: 15px;
+      right: 20px;
+      font-size: 0.7em;
+      opacity: 0.3;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="ciudad">Mérida</div>
+  <div id="hora">--:--</div>
+  <div id="fecha">--</div>
+  <img id="icono" src="" alt="icono">
+  <div id="temperatura">--°</div>
+  <div id="descripcion">Cargando...</div>
+
+  <div class="detalles">
+    <div class="detalle"><span>Humedad</span><span id="humedad">--%</span></div>
+    <div class="detalle"><span>Viento</span><span id="viento">-- km/h</span></div>
+    <div class="detalle"><span>Sensación</span><span id="sensacion">--°</span></div>
+    <div class="detalle"><span>Presión</span><span id="presion">-- hPa</span></div>
+  </div>
+
+  <div id="ultima-actualizacion">Actualizando...</div>
+
+  <script>
+    const API_KEY = '200d7683a1565e363b0b2e6ca5496e01
+';  // 👈 Pon tu clave aquí
+    const LAT = 38.9166;  // Latitud de Mérida, Extremadura
+    const LON = -6.3441;  // Longitud de Mérida, Extremadura
+    const URL = `https://api.openweathermap.org/data/2.5/weather?lat=${LAT}&lon=${LON}&units=metric&lang=es&appid=${API_KEY}`;
+
+    // Actualiza el reloj cada segundo
+    function actualizarReloj() {
+      const ahora = new Date();
+      document.getElementById('hora').textContent =
+        ahora.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+      document.getElementById('fecha').textContent =
+        ahora.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+    }
+    setInterval(actualizarReloj, 1000);
+    actualizarReloj();
+
+    // Obtiene datos del tiempo
+    async function obtenerTiempo() {
+      try {
+        const respuesta = await fetch(URL);
+        const datos = await respuesta.json();
+
+        document.getElementById('temperatura').textContent =
+          Math.round(datos.main.temp) + '°';
+        document.getElementById('descripcion').textContent =
+          datos.weather[0].description;
+        document.getElementById('humedad').textContent =
+          datos.main.humidity + '%';
+        document.getElementById('viento').textContent =
+          Math.round(datos.wind.speed * 3.6) + ' km/h';
+        document.getElementById('sensacion').textContent =
+          Math.round(datos.main.feels_like) + '°';
+        document.getElementById('presion').textContent =
+          datos.main.pressure + ' hPa';
+        document.getElementById('icono').src =
+          `https://openweathermap.org/img/wn/${datos.weather[0].icon}@2x.png`;
+
+        const ahora = new Date();
+        document.getElementById('ultima-actualizacion').textContent =
+          'Actualizado: ' + ahora.toLocaleTimeString('es-ES');
+
+      } catch (error) {
+        document.getElementById('descripcion').textContent = 'Error de conexión';
+      }
+    }
+
+    // Llama al tiempo ahora y luego cada 10 minutos
+    obtenerTiempo();
+    setInterval(obtenerTiempo, 10 * 60 * 1000);
+  </script>
+
+</body>
+</html>
