@@ -11,8 +11,11 @@
     body {
       background: #0a0e1a;
       color: white;
-      font-family: 'Segoe UI', sans-serif;
-      height: 100vh;
+      font-family: 'Segoe UI', sans-serif;    
+  height: 100dvh;   /* Dynamic viewport height - descuenta las barras */
+  padding-bottom: env(safe-area-inset-bottom);  /* margen zona segura iOS */
+
+
       display: flex;
       flex-direction: column;
       justify-content: center;
