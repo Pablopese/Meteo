@@ -10,15 +10,16 @@
     html {
   width: 100%;
   height: 100%;
-  background: #0a0e1a;  /* ← mismo color que el body para que coincida */
+  background: linear-gradient(135deg, #0a0e1a 0%, #1a1a2e 50%, #16213e 100%);
+  background-attachment: fixed;  /* ← clave: fija el gradiente a la pantalla */
 }
 
 body {
-  background: linear-gradient(135deg, #0a0e1a 0%, #1a1a2e 50%, #16213e 100%);
+  background: transparent;       /* ← el body es transparente, usa el del html */
   color: white;
   font-family: 'Segoe UI', sans-serif;
   width: 100%;
-  height: 100%;          /* ← cambia 100vh por 100% */
+  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -261,8 +262,10 @@ setInterval(obtenerPolen, 60 * 60 * 1000); // cada hora
       } catch (error) {
         document.getElementById('descripcion').textContent = 'Error de conexión';
       }
-      // Al final del bloque de actualización de datos, antes del catch
-actualizarFondo(datos.weather[0].id, datos.weather[0].icon);
+     // Cambia document.body por document.documentElement
+document.documentElement.style.background = gradiente;
+document.documentElement.style.backgroundAttachment = 'fixed';
+
     }
 
     // Llama al tiempo ahora y luego cada 10 minutos
