@@ -114,21 +114,28 @@
     text-align: center;
   }
 
-  /* Bloque izquierdo */
+  @media (orientation: landscape) {
+
   .bloque-izquierda {
-    display: flex;
-    flex-direction: column;
+    flex: 0.6;          /* antes 1 — ocupa menos */
     align-items: center;
-    flex: 1;
   }
 
-  /* Bloque derecho */
   .bloque-derecha {
-    display: flex;
-    flex-direction: column;
+    flex: 1.4;          /* antes 1 — ocupa más */
     align-items: center;
-    flex: 1;
   }
+
+  /* Reduce un poco la hora para que no domine */
+  #hora { font-size: 3em; }
+  #ciudad { font-size: 1.4em; }
+  #fecha { font-size: 1em; }
+
+  /* Agranda la temperatura */
+  #temperatura { font-size: 5em; }
+  #icono { width: 100px; height: 100px; }
+}
+
 
   /* Reduce tamaños para que quepa todo */
   #hora { font-size: 3.5em; }
