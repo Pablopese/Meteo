@@ -122,6 +122,30 @@
 
   <script>
     const API_KEY ='200d7683a1565e363b0b2e6ca5496e01';  // 👈 Pon tu clave aquí
+    const GOOGLE_KEY = 'AIzaSyAubTqmFTe-pZiyJ61ddvvm8BQGRe0mknY';
+
+async function obtenerPolen() {
+  try {
+    const url = `https://pollen.googleapis.com/v1/forecast:lookup?key=${GOOGLE_KEY}&location.longitude=${LON}&location.latitude=${LAT}&plantsDescription=false&days=1`;
+    const resp = await fetch(url);
+    const datos = await resp.json();
+
+    // Coge el índice más alto entre árbol, gramíneas y malezas
+    const tipos = datos.dailyInfo[0].pollenTypeInfo;
+    const niveles = tipos
+      .filter(t => t.indexInfo)
+      .map(t => t.indexInfo.value);
+    const maxNivel = Math.max(...niveles);
+    const categorias = ['', 'Muy bajo', 'Bajo', 'Moderado', 'Alto', 'Muy alto'];
+    document.getElementById('polen').textContent = categorias[maxNivel] || '--';
+  } catch {
+    document.getElementById('polen').textContent = 'N/D';
+  }
+}
+
+obtenerPolen();
+setInterval(obtenerPolen, 60 * 60 * 1000); // cada hora
+
     const LAT = 38.9166;  // Latitud de Mérida, Extremadura
     const LON = -6.3441;  // Longitud de Mérida, Extremadura
     const URL = `https://api.openweathermap.org/data/2.5/weather?lat=${LAT}&lon=${LON}&units=metric&lang=es&appid=${API_KEY}`;
