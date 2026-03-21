@@ -144,7 +144,7 @@ async function obtenerPolen() {
     document.getElementById('polen').textContent = categorias[maxValor] || '--';
 
   } catch(e) {
-    document.getElementById('polen').textContent = 'N/D';
+    document.getElementById('polen').textContent = 'e.message';
   }
 }
 
