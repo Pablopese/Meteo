@@ -10,12 +10,14 @@
     html {
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #0a0e1a 0%, #1a1a2e 50%, #16213e 100%);
-  background-attachment: fixed;  /* ← clave: fija el gradiente a la pantalla */
+  background-color: #0a0e1a;        /* ← color sólido para el área de rebote */
+  background-image: linear-gradient(135deg, #0a0e1a 0%, #1a1a2e 50%, #16213e 100%);
+  background-attachment: fixed;
+  overflow: hidden;                  /* ← evita el rebote */
 }
 
 body {
-  background: transparent;       /* ← el body es transparente, usa el del html */
+  background: transparent;
   color: white;
   font-family: 'Segoe UI', sans-serif;
   width: 100%;
@@ -24,8 +26,9 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
+  overflow: hidden;                  /* ← también en body */
 }
+
 
 
 
