@@ -265,9 +265,7 @@ setInterval(obtenerPolen, 60 * 60 * 1000); // cada hora
       } catch (error) {
         document.getElementById('descripcion').textContent = 'Error de conexión';
       }
-     // Cambia document.body por document.documentElement
-document.documentElement.style.background = gradiente;
-document.documentElement.style.backgroundAttachment = 'fixed';
+     document.documentElement.style.setProperty('--bg-gradient', gradiente);
 
     }
 
