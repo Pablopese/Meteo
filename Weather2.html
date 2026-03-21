@@ -124,22 +124,30 @@
 
 async function obtenerPolen() {
   try {
-    const url = `https://pollen.googleapis.com/v1/forecast:lookup?key=${GOOGLE_KEY}&location.longitude=${LON}&location.latitude=${LAT}&plantsDescription=false&days=1`;
+    const url = `https://pollen.googleapis.com/v1/forecast:lookup?key=${GOOGLE_KEY}&location.longitude=${LON}&location.latitude=${LAT}&days=1`;
     const resp = await fetch(url);
     const datos = await resp.json();
 
-    // Coge el índice más alto entre árbol, gramíneas y malezas
     const tipos = datos.dailyInfo[0].pollenTypeInfo;
-    const niveles = tipos
-      .filter(t => t.indexInfo)
-      .map(t => t.indexInfo.value);
-    const maxNivel = Math.max(...niveles);
-    const categorias = ['', 'Muy bajo', 'Bajo', 'Moderado', 'Alto', 'Muy alto'];
-    document.getElementById('polen').textContent = categorias[maxNivel] || '--';
-  } catch {
+
+    // Solo los que tienen indexInfo con valor
+    const conDatos = tipos.filter(t => t.indexInfo && t.indexInfo.value > 0);
+
+    if (conDatos.length === 0) {
+      document.getElementById('polen').textContent = 'Muy bajo';
+      return;
+    }
+
+    // Coge el valor máximo
+    const maxValor = Math.max(...conDatos.map(t => t.indexInfo.value));
+    const categorias = {1: 'Muy bajo', 2: 'Bajo', 3: 'Moderado', 4: 'Alto', 5: 'Muy alto'};
+    document.getElementById('polen').textContent = categorias[maxValor] || '--';
+
+  } catch(e) {
     document.getElementById('polen').textContent = 'N/D';
   }
 }
+
 
 obtenerPolen();
 setInterval(obtenerPolen, 60 * 60 * 1000); // cada hora
