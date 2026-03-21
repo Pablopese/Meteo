@@ -97,26 +97,72 @@
       font-size: 0.7em;
       opacity: 0.3;
     }
+    @media (orientation: landscape) {
+  body {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-around;
+    padding: 10px 40px;
+  }
+
+  /* Columna izquierda: ciudad, hora, fecha */
+  #ciudad, #hora, #fecha {
+    width: 100%;
+    text-align: center;
+  }
+
+  /* Bloque izquierdo */
+  .bloque-izquierda {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+  }
+
+  /* Bloque derecho */
+  .bloque-derecha {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+  }
+
+  /* Reduce tamaños para que quepa todo */
+  #hora { font-size: 3.5em; }
+  #temperatura { font-size: 4em; }
+  #icono { width: 80px; height: 80px; }
+  #descripcion { margin: 5px 0 10px; }
+  .detalles { gap: 20px; flex-wrap: wrap; justify-content: center; }
+}
+
   </style>
 </head>
 <body>
+  <!-- Bloque izquierda: hora y ciudad -->
+  <div class="bloque-izquierda">
+    <div id="ciudad">Mérida</div>
+    <div id="hora">--:--</div>
+    <div id="fecha">--</div>
+  </div>
 
-  <div id="ciudad">Mérida</div>
-  <div id="hora">--:--</div>
-  <div id="fecha">--</div>
-  <img id="icono" src="" alt="icono">
-  <div id="temperatura">--°</div>
-  <div id="descripcion">Cargando...</div>
-
-  <div class="detalles">
-    <div class="detalle"><span>Humedad</span><span id="humedad">--%</span></div>
-    <div class="detalle"><span>Viento</span><span id="viento">-- km/h</span></div>
-    <div class="detalle"><span>Sensación</span><span id="sensacion">--°</span></div>
-    <div class="detalle"><span>Presión</span><span id="presion">-- hPa</span></div>
-    <div class="detalle"><span>Polen</span><span id="polen">--</span></div>
+  <!-- Bloque derecha: tiempo -->
+  <div class="bloque-derecha">
+    <img id="icono" src="" alt="icono">
+    <div id="temperatura">--°</div>
+    <div id="descripcion">Cargando...</div>
+    <div class="detalles">
+      <div class="detalle"><span>Humedad</span><span id="humedad">--%</span></div>
+      <div class="detalle"><span>Viento</span><span id="viento">-- km/h</span></div>
+      <div class="detalle"><span>Sensación</span><span id="sensacion">--°</span></div>
+      <div class="detalle"><span>Presión</span><span id="presion">-- hPa</span></div>
+      <div class="detalle"><span>Polen</span><span id="polen">--</span></div>
+    </div>
   </div>
 
   <div id="ultima-actualizacion">Actualizando...</div>
+</body>
+
 
   <script>
     const API_KEY ='200d7683a1565e363b0b2e6ca5496e01';  // 👈 Pon tu clave aquí
