@@ -121,6 +121,9 @@
   <script>
     const API_KEY ='200d7683a1565e363b0b2e6ca5496e01';  // 👈 Pon tu clave aquí
     const GOOGLE_KEY = 'AIzaSyAubTqmFTe-pZiyJ61ddvvm8BQGRe0mknY';
+    const LAT = 38.9166;  // Latitud de Mérida, Extremadura
+    const LON = -6.3441;  // Longitud de Mérida, Extremadura
+    const URL = `https://api.openweathermap.org/data/2.5/weather?lat=${LAT}&lon=${LON}&units=metric&lang=es&appid=${API_KEY}`;
 
 async function obtenerPolen() {
   try {
@@ -152,10 +155,7 @@ async function obtenerPolen() {
 obtenerPolen();
 setInterval(obtenerPolen, 60 * 60 * 1000); // cada hora
 
-    const LAT = 38.9166;  // Latitud de Mérida, Extremadura
-    const LON = -6.3441;  // Longitud de Mérida, Extremadura
-    const URL = `https://api.openweathermap.org/data/2.5/weather?lat=${LAT}&lon=${LON}&units=metric&lang=es&appid=${API_KEY}`;
-
+    
     // Actualiza el reloj cada segundo
     function actualizarReloj() {
       const ahora = new Date();
