@@ -120,11 +120,15 @@
     flex: 0.8;          /* antes 1 — ocupa menos */
     align-items: center;
   }
+.bloque-derecha {
+  flex: 1.2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;    /* ← centra todo horizontalmente */
+  justify-content: center; /* ← centra verticalmente */
+  text-align: center;     /* ← centra el texto */
+}
 
-  .bloque-derecha {
-    flex: 1.2;          /* antes 1 — ocupa más */
-    align-items: center;
-  }
 
   /* Reduce un poco la hora para que no domine */
   #hora { font-size: 3em; }
