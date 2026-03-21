@@ -12,10 +12,8 @@
       background: #0a0e1a;
       color: white;
       font-family: 'Segoe UI', sans-serif;    
-  height: 100dvh;   /* Dynamic viewport height - descuenta las barras */
-  padding-bottom: env(safe-area-inset-bottom);  /* margen zona segura iOS */
-
-
+      height: 100dvh;   /* Dynamic viewport height - descuenta las barras */
+      padding-bottom: env(safe-area-inset-bottom);  /* margen zona segura iOS */
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -61,34 +59,38 @@
       text-transform: capitalize;
     }
 
-    .detalles {
-      display: flex;
-      gap: 5px;
-      font-size: 0.7em;
-      opacity: 0.7;
+  .detalles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);  /* 3 columnas iguales */
+  gap: 12px 20px;
+  width: 100%;
+  max-width: 400px;
+  margin-top: 15px;
+}
 
-      
-    }
+.detalle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255,255,255,0.05);  /* fondo sutil */
+  border-radius: 10px;
+  padding: 8px 5px;
+  gap: 4px;
+}
 
-    .detalle {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
+.detalle span:first-child {
+  font-size: 0.7em;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  opacity: 0.5;
+}
 
-    }
+.detalle span:last-child {
+  font-size: 1.2em;
+  font-weight: bold;
+  opacity: 1;
+}
 
-    .detalle span:first-child {
-      font-size: 0.85em;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-    }
-
-    .detalle span:last-child {
-      font-size: 1.4em;
-      font-weight: bold;
-      opacity: 1;
-    }
 
     #ultima-actualizacion {
       position: absolute;
