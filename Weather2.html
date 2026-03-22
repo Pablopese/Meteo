@@ -27,6 +27,24 @@
       position: relative;
     }
 
+    #btn-ciudad {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: white;
+      border-radius: 20px;
+      padding: 6px 18px;
+      font-size: 0.85em;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      margin-bottom: 15px;
+      transition: background 0.3s;
+    }
+
+    #btn-ciudad:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
     #ciudad {
       font-size: 1.8em;
       opacity: 0.7;
@@ -55,7 +73,6 @@
       gap: 12px;
     }
 
-    /* Tarjeta principal: temp + icono + previsión */
     .tarjeta-tiempo {
       width: 100%;
       display: flex;
@@ -95,14 +112,12 @@
       line-height: 1;
     }
 
-    /* Separador interno */
     .separador {
       width: 100%;
       height: 1px;
       background: rgba(255,255,255,0.1);
     }
 
-    /* Previsión dentro de la tarjeta */
     .prevision {
       width: 100%;
       display: flex;
@@ -132,7 +147,6 @@
       font-weight: bold;
     }
 
-    /* Grid de detalles */
     .detalles {
       width: 100%;
       display: grid;
@@ -209,6 +223,7 @@
 <body>
 
   <div class="bloque-izquierda">
+    <button id="btn-ciudad" onclick="cambiarCiudad()">Cáceres</button>
     <div id="ciudad">Mérida</div>
     <div id="hora">--:--</div>
     <div id="fecha">--</div>
@@ -218,7 +233,6 @@
     <div class="contenedor-tiempo">
 
       <div class="tarjeta-tiempo">
-        <!-- Tiempo actual -->
         <div class="tiempo-actual">
           <div class="tarjeta-izquierda">
             <img id="icono" src="" alt="icono">
@@ -226,14 +240,8 @@
           </div>
           <div id="temperatura">--°</div>
         </div>
-
-        <!-- Separador -->
         <div class="separador"></div>
-
-        <!-- Previsión próximas horas -->
-        <div class="prevision">
-          <!-- Se rellena con JS -->
-        </div>
+        <div class="prevision"></div>
       </div>
 
       <div class="detalles">
@@ -253,8 +261,23 @@
   <script>
     const API_KEY = '200d7683a1565e363b0b2e6ca5496e01';
     const GOOGLE_KEY = 'AIzaSyAubTqmFTe-pZiyJ61ddvvm8BQGRe0mknY';
-    const LAT = 38.9166;
-    const LON = -6.3441;
+
+    const CIUDADES = {
+      merida:  { nombre: 'Mérida',  lat: 38.9166, lon: -6.3441 },
+      caceres: { nombre: 'Cáceres', lat: 39.4753, lon: -6.3724 }
+    };
+    let ciudadActual = 'merida';
+
+    function cambiarCiudad() {
+      ciudadActual = ciudadActual === 'merida' ? 'caceres' : 'merida';
+      const ciudad = CIUDADES[ciudadActual];
+      document.getElementById('ciudad').textContent = ciudad.nombre;
+      document.getElementById('btn-ciudad').textContent =
+        ciudadActual === 'merida' ? 'Cáceres' : 'Mérida';
+      obtenerTiempoYPrevision();
+      obtenerUV();
+      obtenerPolen();
+    }
 
     function actualizarFondo(condicion, icono) {
       const esNoche = icono.includes('n');
@@ -291,8 +314,9 @@
     actualizarReloj();
 
     async function obtenerPolen() {
+      const { lat, lon } = CIUDADES[ciudadActual];
       try {
-        const url = `https://pollen.googleapis.com/v1/forecast:lookup?key=${GOOGLE_KEY}&location.longitude=${LON}&location.latitude=${LAT}&days=1`;
+        const url = `https://pollen.googleapis.com/v1/forecast:lookup?key=${GOOGLE_KEY}&location.longitude=${lon}&location.latitude=${lat}&days=1`;
         const resp = await fetch(url);
         const datos = await resp.json();
         const tipos = datos.dailyInfo[0].pollenTypeInfo;
@@ -310,8 +334,9 @@
     }
 
     async function obtenerUV() {
+      const { lat, lon } = CIUDADES[ciudadActual];
       try {
-        const url = `https://api.openweathermap.org/data/2.5/uvi?lat=${LAT}&lon=${LON}&appid=${API_KEY}`;
+        const url = `https://api.openweathermap.org/data/2.5/uvi?lat=${lat}&lon=${lon}&appid=${API_KEY}`;
         const resp = await fetch(url);
         const datos = await resp.json();
         const valor = datos.value;
@@ -330,13 +355,12 @@
     }
 
     async function obtenerTiempoYPrevision() {
+      const { lat, lon } = CIUDADES[ciudadActual];
       try {
-        // Un solo fetch para tiempo actual y previsión
-        const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&units=metric&lang=es&appid=${API_KEY}`;
+        const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&lang=es&appid=${API_KEY}`;
         const resp = await fetch(url);
         const datos = await resp.json();
 
-        // Tiempo actual = primera entrada
         const actual = datos.list[0];
         document.getElementById('temperatura').textContent = Math.round(actual.main.temp) + '°';
         document.getElementById('descripcion').textContent = actual.weather[0].description;
@@ -347,7 +371,6 @@
         document.getElementById('icono').src = `https://openweathermap.org/img/wn/${actual.weather[0].icon}@2x.png`;
         actualizarFondo(actual.weather[0].id, actual.weather[0].icon);
 
-        // Previsión: siguientes 3 entradas (+3h, +6h, +9h)
         const franjas = datos.list.slice(1, 4);
         const contenedor = document.querySelector('.prevision');
         contenedor.innerHTML = '';
