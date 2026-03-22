@@ -6,25 +6,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Panel del Tiempo</title>
   <style>
- 
-html {
-  background: #16213e;  /* ← mismo color que el FINAL del gradiente */
-  overflow: hidden;
-}
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-body {
-  background: linear-gradient(135deg, #0a0e1a 0%, #1a1a2e 50%, #16213e 100%);
-  min-height: 100svh;   /* ← "svh" excluye la barra del navegador en iOS */
-  color: white;
-  font-family: 'Segoe UI', sans-serif;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-}
+    html {
+      background: #16213e;
+      overflow: hidden;
+    }
 
-
+    body {
+      background: linear-gradient(135deg, #0a0e1a 0%, #1a1a2e 50%, #16213e 100%);
+      min-height: 100svh;
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      position: relative;
+    }
 
     #ciudad {
       font-size: 1.8em;
@@ -64,38 +64,36 @@ body {
       text-transform: capitalize;
     }
 
-  .detalles {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);  /* 3 columnas iguales */
-  gap: 12px 20px;
-  width: 100%;
-  max-width: 400px;
-  margin-top: 15px;
-}
+    .detalles {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px 20px;
+      width: 100%;
+      max-width: 400px;
+      margin-top: 15px;
+    }
 
-.detalle {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: rgba(255,255,255,0.05);  /* fondo sutil */
-  border-radius: 10px;
-  padding: 8px 5px;
-  gap: 4px;
-}
+    .detalle {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: rgba(255,255,255,0.05);
+      border-radius: 10px;
+      padding: 8px 5px;
+      gap: 4px;
+    }
 
-.detalle span:first-child {
-  font-size: 0.7em;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  opacity: 0.5;
-}
+    .detalle span:first-child {
+      font-size: 0.7em;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      opacity: 0.5;
+    }
 
-.detalle span:last-child {
-  font-size: 1.2em;
-  font-weight: bold;
-  opacity: 1;
-}
-
+    .detalle span:last-child {
+      font-size: 1.2em;
+      font-weight: bold;
+    }
 
     #ultima-actualizacion {
       position: absolute;
@@ -104,67 +102,48 @@ body {
       font-size: 0.7em;
       opacity: 0.3;
     }
+
     @media (orientation: landscape) {
-  body {
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-around;
-    padding: 10px 40px;
-  }
+      body {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-around;
+        padding: 10px 40px;
+      }
 
-  /* Columna izquierda: ciudad, hora, fecha */
-  #ciudad, #hora, #fecha {
-    width: 100%;
-    text-align: center;
-  }
+      .bloque-izquierda {
+        flex: 0.8;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
 
-  @media (orientation: landscape) {
+      .bloque-derecha {
+        flex: 1.2;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+      }
 
-  .bloque-izquierda {
-    flex: 0.8;          /* antes 1 — ocupa menos */
-    align-items: center;
-  }
-.bloque-derecha {
-  flex: 1.2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;    /* ← centra todo horizontalmente */
-  justify-content: center; /* ← centra verticalmente */
-  text-align: center;     /* ← centra el texto */
-}
-
-
-  /* Reduce un poco la hora para que no domine */
-  #hora { font-size: 3em; }
-  #ciudad { font-size: 1.4em; }
-  #fecha { font-size: 1em; }
-
-  /* Agranda la temperatura */
-  #temperatura { font-size: 5em; }
-  #icono { width: 100px; height: 100px; }
-}
-
-
-  /* Reduce tamaños para que quepa todo */
-  #hora { font-size: 3.5em; }
-  #temperatura { font-size: 4em; }
-  #icono { width: 80px; height: 80px; }
-  #descripcion { margin: 5px 0 10px; }
-  .detalles { gap: 20px; flex-wrap: wrap; justify-content: center; }
-}
-
+      #hora { font-size: 3em; }
+      #ciudad { font-size: 1.4em; }
+      #fecha { font-size: 1em; }
+      #temperatura { font-size: 5em; }
+      #icono { width: 100px; height: 100px; }
+    }
   </style>
 </head>
 <body>
-  <!-- Bloque izquierda: hora y ciudad -->
+
   <div class="bloque-izquierda">
     <div id="ciudad">Mérida</div>
     <div id="hora">--:--</div>
     <div id="fecha">--</div>
   </div>
 
-  <!-- Bloque derecha: tiempo -->
   <div class="bloque-derecha">
     <img id="icono" src="" alt="icono">
     <div id="temperatura">--°</div>
@@ -179,52 +158,41 @@ body {
   </div>
 
   <div id="ultima-actualizacion">Actualizando...</div>
-</body>
-
 
   <script>
-  // Primera línea del <script>:
-document.getElementById('fondo').style.background = 
-  'linear-gradient(135deg, #0a0e1a 0%, #1a1a2e 50%, #16213e 100%)';
-
-    const API_KEY ='200d7683a1565e363b0b2e6ca5496e01';  // 👈 Pon tu clave aquí
+    const API_KEY = '200d7683a1565e363b0b2e6ca5496e01';
     const GOOGLE_KEY = 'AIzaSyAubTqmFTe-pZiyJ61ddvvm8BQGRe0mknY';
-    const LAT = 38.9166;  // Latitud de Mérida, Extremadura
-    const LON = -6.3441;  // Longitud de Mérida, Extremadura
+    const LAT = 38.9166;
+    const LON = -6.3441;
     const URL = `https://api.openweathermap.org/data/2.5/weather?lat=${LAT}&lon=${LON}&units=metric&lang=es&appid=${API_KEY}`;
 
-async function obtenerPolen() {
-  try {
-    const url = `https://pollen.googleapis.com/v1/forecast:lookup?key=${GOOGLE_KEY}&location.longitude=${LON}&location.latitude=${LAT}&days=1`;
-    const resp = await fetch(url);
-    const datos = await resp.json();
+    function actualizarFondo(condicion, icono) {
+      const esNoche = icono.includes('n');
+      const id = condicion;
+      let gradiente;
 
-    const tipos = datos.dailyInfo[0].pollenTypeInfo;
+      if (esNoche) {
+        gradiente = 'linear-gradient(135deg, #0a0e1a 0%, #1a1a2e 50%, #16213e 100%)';
+      } else if (id >= 200 && id < 300) {
+        gradiente = 'linear-gradient(135deg, #1a1a2e 0%, #2d3561 50%, #1a1a2e 100%)';
+      } else if (id >= 300 && id < 600) {
+        gradiente = 'linear-gradient(135deg, #2c3e50 0%, #3498db 100%)';
+      } else if (id >= 600 && id < 700) {
+        gradiente = 'linear-gradient(135deg, #e0e0e0 0%, #b0c4de 50%, #a8c0d6 100%)';
+      } else if (id >= 700 && id < 800) {
+        gradiente = 'linear-gradient(135deg, #606c88 0%, #3f4c6b 100%)';
+      } else if (id === 800) {
+        gradiente = 'linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%)';
+      } else if (id === 801 || id === 802) {
+        gradiente = 'linear-gradient(135deg, #1c3a5e 0%, #4a7fa5 100%)';
+      } else {
+        gradiente = 'linear-gradient(135deg, #2c3e50 0%, #4a5568 100%)';
+      }
 
-    // Solo los que tienen indexInfo con valor
-    const conDatos = tipos.filter(t => t.indexInfo && t.indexInfo.value > 0);
-
-    if (conDatos.length === 0) {
-      document.getElementById('polen').textContent = 'Muy bajo';
-      return;
+      document.body.style.backgroundImage = gradiente;
+      document.body.style.transition = 'background-image 2s ease';
     }
 
-    // Coge el valor máximo
-    const maxValor = Math.max(...conDatos.map(t => t.indexInfo.value));
-    const categorias = {1: 'Muy bajo', 2: 'Bajo', 3: 'Moderado', 4: 'Alto', 5: 'Muy alto'};
-    document.getElementById('polen').textContent = categorias[maxValor] || '--';
-
-  } catch(e) {
-    document.getElementById('polen').textContent = 'N/D';
-  }
-}
-
-
-obtenerPolen();
-setInterval(obtenerPolen, 60 * 60 * 1000); // cada hora
-
-    
-    // Actualiza el reloj cada segundo
     function actualizarReloj() {
       const ahora = new Date();
       document.getElementById('hora').textContent =
@@ -235,65 +203,52 @@ setInterval(obtenerPolen, 60 * 60 * 1000); // cada hora
     setInterval(actualizarReloj, 1000);
     actualizarReloj();
 
-    // Obtiene datos del tiempo
-   async function obtenerTiempo() {
-  try {
-    const respuesta = await fetch(URL);
-    const datos = await respuesta.json();
+    async function obtenerPolen() {
+      try {
+        const url = `https://pollen.googleapis.com/v1/forecast:lookup?key=${GOOGLE_KEY}&location.longitude=${LON}&location.latitude=${LAT}&days=1`;
+        const resp = await fetch(url);
+        const datos = await resp.json();
+        const tipos = datos.dailyInfo[0].pollenTypeInfo;
+        const conDatos = tipos.filter(t => t.indexInfo && t.indexInfo.value > 0);
+        if (conDatos.length === 0) {
+          document.getElementById('polen').textContent = 'Muy bajo';
+          return;
+        }
+        const maxValor = Math.max(...conDatos.map(t => t.indexInfo.value));
+        const categorias = {1: 'Muy bajo', 2: 'Bajo', 3: 'Moderado', 4: 'Alto', 5: 'Muy alto'};
+        document.getElementById('polen').textContent = categorias[maxValor] || '--';
+      } catch(e) {
+        document.getElementById('polen').textContent = 'N/D';
+      }
+    }
 
-    document.getElementById('temperatura').textContent = Math.round(datos.main.temp) + '°';
-    document.getElementById('descripcion').textContent = datos.weather[0].description;
-    document.getElementById('humedad').textContent = datos.main.humidity + '%';
-    document.getElementById('viento').textContent = Math.round(datos.wind.speed * 3.6) + ' km/h';
-    document.getElementById('sensacion').textContent = Math.round(datos.main.feels_like) + '°';
-    document.getElementById('presion').textContent = datos.main.pressure + ' hPa';
-    document.getElementById('icono').src = `https://openweathermap.org/img/wn/${datos.weather[0].icon}@2x.png`;
+    async function obtenerTiempo() {
+      try {
+        const respuesta = await fetch(URL);
+        const datos = await respuesta.json();
 
-    // ✅ Llama actualizarFondo con los datos correctos
-    actualizarFondo(datos.weather[0].id, datos.weather[0].icon);
+        document.getElementById('temperatura').textContent = Math.round(datos.main.temp) + '°';
+        document.getElementById('descripcion').textContent = datos.weather[0].description;
+        document.getElementById('humedad').textContent = datos.main.humidity + '%';
+        document.getElementById('viento').textContent = Math.round(datos.wind.speed * 3.6) + ' km/h';
+        document.getElementById('sensacion').textContent = Math.round(datos.main.feels_like) + '°';
+        document.getElementById('presion').textContent = datos.main.pressure + ' hPa';
+        document.getElementById('icono').src = `https://openweathermap.org/img/wn/${datos.weather[0].icon}@2x.png`;
 
-    const ahora = new Date();
-    document.getElementById('ultima-actualizacion').textContent =
-      'Actualizado: ' + ahora.toLocaleTimeString('es-ES');
+        actualizarFondo(datos.weather[0].id, datos.weather[0].icon);
 
-  } catch (error) {
-    document.getElementById('descripcion').textContent = 'Error de conexión';
-  }
-}
+        const ahora = new Date();
+        document.getElementById('ultima-actualizacion').textContent =
+          'Actualizado: ' + ahora.toLocaleTimeString('es-ES');
+      } catch (error) {
+        document.getElementById('descripcion').textContent = 'Error de conexión';
+      }
+    }
 
-    // Llama al tiempo ahora y luego cada 10 minutos
     obtenerTiempo();
+    obtenerPolen();
     setInterval(obtenerTiempo, 10 * 60 * 1000);
- 
-function actualizarFondo(condicion, icono) {
-  const esNoche = icono.includes('n');
-  const id = condicion;
-  let gradiente;
-
-  if (esNoche) {
-    gradiente = 'linear-gradient(135deg, #0a0e1a 0%, #1a1a2e 50%, #16213e 100%)';
-  } else if (id >= 200 && id < 300) {
-    gradiente = 'linear-gradient(135deg, #1a1a2e 0%, #2d3561 50%, #1a1a2e 100%)';
-  } else if (id >= 300 && id < 600) {
-    gradiente = 'linear-gradient(135deg, #2c3e50 0%, #3498db 100%)';
-  } else if (id >= 600 && id < 700) {
-    gradiente = 'linear-gradient(135deg, #e0e0e0 0%, #b0c4de 50%, #a8c0d6 100%)';
-  } else if (id >= 700 && id < 800) {
-    gradiente = 'linear-gradient(135deg, #606c88 0%, #3f4c6b 100%)';
-  } else if (id === 800) {
-    gradiente = 'linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%)';
-  } else if (id === 801 || id === 802) {
-    gradiente = 'linear-gradient(135deg, #1c3a5e 0%, #4a7fa5 100%)';
-  } else {
-    gradiente = 'linear-gradient(135deg, #2c3e50 0%, #4a5568 100%)';
-  }
-
-
-document.body.style.backgroundImage = gradiente;
-document.body.style.transition = 'background-image 2s ease';
-}
-
-
+    setInterval(obtenerPolen, 60 * 60 * 1000);
   </script>
 
 </body>
