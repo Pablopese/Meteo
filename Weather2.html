@@ -6,18 +6,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Panel del Tiempo</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html {
+ html {
   width: 100%;
   height: 100%;
-  background-color: #0a0e1a;        /* ← color sólido para el área de rebote */
-  background-image: linear-gradient(135deg, #0a0e1a 0%, #1a1a2e 50%, #16213e 100%);
-  background-attachment: fixed;
-  overflow: hidden;                  /* ← evita el rebote */
+  background: #0a0e1a;
+  overflow: hidden;
 }
 
 body {
   background: transparent;
+  position: relative;
   color: white;
   font-family: 'Segoe UI', sans-serif;
   width: 100%;
@@ -26,7 +24,16 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  overflow: hidden;                  /* ← también en body */
+  overflow: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; right: 0; bottom: 0; left: 0;
+  z-index: -1;
+  background: var(--bg-gradient, linear-gradient(135deg, #0a0e1a 0%, #1a1a2e 50%, #16213e 100%));
+  transition: background 2s ease;
 }
 
 
@@ -238,73 +245,60 @@ setInterval(obtenerPolen, 60 * 60 * 1000); // cada hora
     actualizarReloj();
 
     // Obtiene datos del tiempo
-    async function obtenerTiempo() {
-      try {
-        const respuesta = await fetch(URL);
-        const datos = await respuesta.json();
+   async function obtenerTiempo() {
+  try {
+    const respuesta = await fetch(URL);
+    const datos = await respuesta.json();
 
-        document.getElementById('temperatura').textContent =
-          Math.round(datos.main.temp) + '°';
-        document.getElementById('descripcion').textContent =
-          datos.weather[0].description;
-        document.getElementById('humedad').textContent =
-          datos.main.humidity + '%';
-        document.getElementById('viento').textContent =
-          Math.round(datos.wind.speed * 3.6) + ' km/h';
-        document.getElementById('sensacion').textContent =
-          Math.round(datos.main.feels_like) + '°';
-        document.getElementById('presion').textContent =
-          datos.main.pressure + ' hPa';
-        document.getElementById('icono').src =
-          `https://openweathermap.org/img/wn/${datos.weather[0].icon}@2x.png`;
+    document.getElementById('temperatura').textContent = Math.round(datos.main.temp) + '°';
+    document.getElementById('descripcion').textContent = datos.weather[0].description;
+    document.getElementById('humedad').textContent = datos.main.humidity + '%';
+    document.getElementById('viento').textContent = Math.round(datos.wind.speed * 3.6) + ' km/h';
+    document.getElementById('sensacion').textContent = Math.round(datos.main.feels_like) + '°';
+    document.getElementById('presion').textContent = datos.main.pressure + ' hPa';
+    document.getElementById('icono').src = `https://openweathermap.org/img/wn/${datos.weather[0].icon}@2x.png`;
 
-        const ahora = new Date();
-        document.getElementById('ultima-actualizacion').textContent =
-          'Actualizado: ' + ahora.toLocaleTimeString('es-ES');
+    // ✅ Llama actualizarFondo con los datos correctos
+    actualizarFondo(datos.weather[0].id, datos.weather[0].icon);
 
-      } catch (error) {
-        document.getElementById('descripcion').textContent = 'Error de conexión';
-      }
-     document.documentElement.style.setProperty('--bg-gradient', gradiente);
+    const ahora = new Date();
+    document.getElementById('ultima-actualizacion').textContent =
+      'Actualizado: ' + ahora.toLocaleTimeString('es-ES');
 
-    }
+  } catch (error) {
+    document.getElementById('descripcion').textContent = 'Error de conexión';
+  }
+}
 
     // Llama al tiempo ahora y luego cada 10 minutos
     obtenerTiempo();
     setInterval(obtenerTiempo, 10 * 60 * 1000);
-    function actualizarFondo(condicion, icono) {
-  const esNoche = icono.includes('n');  // los iconos nocturnos terminan en 'n'
+ 
+function actualizarFondo(condicion, icono) {
+  const esNoche = icono.includes('n');
   const id = condicion;
-
   let gradiente;
 
   if (esNoche) {
     gradiente = 'linear-gradient(135deg, #0a0e1a 0%, #1a1a2e 50%, #16213e 100%)';
   } else if (id >= 200 && id < 300) {
-    // Tormenta 0a0e1a
     gradiente = 'linear-gradient(135deg, #1a1a2e 0%, #2d3561 50%, #1a1a2e 100%)';
   } else if (id >= 300 && id < 600) {
-    // Lluvia / llovizna
     gradiente = 'linear-gradient(135deg, #2c3e50 0%, #3498db 100%)';
   } else if (id >= 600 && id < 700) {
-    // Nieve
     gradiente = 'linear-gradient(135deg, #e0e0e0 0%, #b0c4de 50%, #a8c0d6 100%)';
   } else if (id >= 700 && id < 800) {
-    // Niebla / bruma
     gradiente = 'linear-gradient(135deg, #606c88 0%, #3f4c6b 100%)';
   } else if (id === 800) {
-    // Cielo despejado
     gradiente = 'linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%)';
   } else if (id === 801 || id === 802) {
-    // Pocas nubes
     gradiente = 'linear-gradient(135deg, #1c3a5e 0%, #4a7fa5 100%)';
   } else {
-    // Muy nublado
     gradiente = 'linear-gradient(135deg, #2c3e50 0%, #4a5568 100%)';
   }
 
-  document.body.style.background = gradiente;
-  document.body.style.transition = 'background 2s ease';  // transición suave
+  // ✅ Cambia la variable CSS, no el body directamente
+  document.documentElement.style.setProperty('--bg-gradient', gradiente);
 }
 
 
