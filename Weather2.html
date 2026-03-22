@@ -4,14 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Panel del Tiempo</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.12/css/weather-icons.min.css">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    html {
-      background: #16213e;
-      overflow: hidden;
-      width: 100vw;
-    }
+    html { background: #16213e; overflow: hidden; width: 100vw; }
 
     body {
       background: linear-gradient(135deg, #0a0e1a 0%, #1a1a2e 50%, #16213e 100%);
@@ -70,6 +67,7 @@
       94% { opacity: 0; }
     }
 
+    /* Transición del layout */
     .layout {
       position: relative;
       z-index: 2;
@@ -79,48 +77,35 @@
       padding: 20px;
       gap: 15px;
       align-items: center;
+      transition: opacity 0.4s ease;
     }
 
-    .col-izquierda {
+    .layout.fade-out { opacity: 0; }
+
+    /* Selector de ciudades */
+    .ciudades-selector {
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 15px;
-      width: 100%;
-      max-width: 400px;
-    }
-
-    .cuadrante-superior {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: 100%;
-    }
-
-    .cuadrante-inferior {
-      width: 100%;
-    }
-
-    .col-derecha {
-      width: 100%;
-      max-width: 400px;
-    }
-
-    #btn-ciudad {
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.2);
-      color: white;
-      border-radius: 20px;
-      padding: 6px 18px;
-      font-size: 0.85em;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      cursor: pointer;
+      gap: 8px;
       margin-bottom: 12px;
-      transition: background 0.3s;
     }
 
-    #btn-ciudad:hover { background: rgba(255,255,255,0.2); }
+    .ciudad-pill {
+      padding: 4px 14px;
+      border-radius: 15px;
+      font-size: 0.8em;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      opacity: 0.35;
+      cursor: pointer;
+      transition: all 0.3s;
+      border: 1px solid transparent;
+    }
+
+    .ciudad-pill.activa {
+      opacity: 1;
+      border-color: rgba(255,255,255,0.3);
+      background: rgba(255,255,255,0.1);
+    }
 
     #ciudad {
       font-size: 1.8em;
@@ -171,7 +156,31 @@
       font-weight: bold;
     }
 
-    /* Previsión diaria — una tarjeta horizontal */
+    /* Columnas */
+    .col-izquierda {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .cuadrante-superior {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    .cuadrante-inferior { width: 100%; }
+
+    .col-derecha {
+      width: 100%;
+      max-width: 400px;
+    }
+
+    /* Previsión diaria */
     .prevision-diaria {
       width: 100%;
       background: rgba(255,255,255,0.05);
@@ -198,7 +207,10 @@
       text-align: center;
     }
 
-    .dia-icono { width: 32px; height: 32px; }
+    .dia-icono {
+      font-size: 1.6em;
+      line-height: 1.2;
+    }
 
     .dia-temps {
       font-size: 0.9em;
@@ -213,7 +225,7 @@
       font-size: 0.85em;
     }
 
-    /* Contenedor derecha */
+    /* Tarjeta tiempo */
     .contenedor-tiempo {
       display: flex;
       flex-direction: column;
@@ -242,10 +254,13 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 5px;
+      gap: 8px;
     }
 
-    #icono { width: 70px; height: 70px; }
+    #icono {
+      font-size: 4.5em;
+      line-height: 1;
+    }
 
     #descripcion {
       font-size: 0.95em;
@@ -288,13 +303,17 @@
       letter-spacing: 1px;
     }
 
-    .franja-icono { width: 34px; height: 34px; }
+    .franja-icono {
+      font-size: 1.6em;
+      line-height: 1.2;
+    }
 
     .franja-temp {
       font-size: 1em;
       font-weight: bold;
     }
 
+    /* Grid detalles */
     .detalles {
       width: 100%;
       display: grid;
@@ -355,9 +374,7 @@
         justify-content: space-between;
       }
 
-      .cuadrante-superior {
-        align-items: center;
-      }
+      .cuadrante-superior { align-items: center; }
 
       .col-derecha {
         flex: 1;
@@ -371,7 +388,7 @@
       #ciudad { font-size: 1.3em; }
       #fecha { font-size: 0.95em; margin-bottom: 10px; }
       #temperatura { font-size: 4em; }
-      #icono { width: 58px; height: 58px; }
+      #icono { font-size: 3.5em; }
     }
   </style>
 </head>
@@ -383,7 +400,10 @@
 
     <div class="col-izquierda">
       <div class="cuadrante-superior">
-        <button id="btn-ciudad" onclick="cambiarCiudad()">Cáceres</button>
+        <div class="ciudades-selector">
+          <span class="ciudad-pill activa" id="pill-merida" onclick="cambiarCiudad('merida')">Mérida</span>
+          <span class="ciudad-pill" id="pill-caceres" onclick="cambiarCiudad('caceres')">Cáceres</span>
+        </div>
         <div id="ciudad">Mérida</div>
         <div id="hora">--:--</div>
         <div id="fecha">--</div>
@@ -404,7 +424,7 @@
         <div class="tarjeta-tiempo">
           <div class="tiempo-actual">
             <div class="tarjeta-izquierda">
-              <img id="icono" src="" alt="icono">
+              <i id="icono" class="wi wi-na"></i>
               <div id="descripcion">Cargando...</div>
             </div>
             <div id="temperatura">--°</div>
@@ -438,19 +458,68 @@
       caceres: { nombre: 'Cáceres', lat: 39.4753, lon: -6.3724 }
     };
     let ciudadActual = 'merida';
+    let cambiando = false;
 
-    function cambiarCiudad() {
-      ciudadActual = ciudadActual === 'merida' ? 'caceres' : 'merida';
-      document.getElementById('ciudad').textContent = CIUDADES[ciudadActual].nombre;
-      document.getElementById('btn-ciudad').textContent =
-        ciudadActual === 'merida' ? 'Cáceres' : 'Mérida';
-      obtenerTiempoYPrevision();
-      obtenerUV();
-      obtenerPolen();
+    const mapaIconos = {
+      '01d': 'wi-day-sunny',
+      '01n': 'wi-night-clear',
+      '02d': 'wi-day-cloudy',
+      '02n': 'wi-night-alt-cloudy',
+      '03d': 'wi-cloud',
+      '03n': 'wi-cloud',
+      '04d': 'wi-cloudy',
+      '04n': 'wi-cloudy',
+      '09d': 'wi-showers',
+      '09n': 'wi-showers',
+      '10d': 'wi-day-rain',
+      '10n': 'wi-night-alt-rain',
+      '11d': 'wi-thunderstorm',
+      '11n': 'wi-thunderstorm',
+      '13d': 'wi-snow',
+      '13n': 'wi-snow',
+      '50d': 'wi-fog',
+      '50n': 'wi-fog'
+    };
+
+    function icono(codigo) {
+      return mapaIconos[codigo] || 'wi-na';
     }
 
-    function actualizarFondo(condicion, icono) {
-      const esNoche = icono.includes('n');
+    // Swipe
+    let touchStartX = 0;
+    document.addEventListener('touchstart', e => {
+      touchStartX = e.touches[0].clientX;
+    }, { passive: true });
+
+    document.addEventListener('touchend', e => {
+      const delta = e.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(delta) > 60) {
+        const nueva = ciudadActual === 'merida' ? 'caceres' : 'merida';
+        cambiarCiudad(nueva);
+      }
+    }, { passive: true });
+
+    async function cambiarCiudad(nueva) {
+      if (nueva === ciudadActual || cambiando) return;
+      cambiando = true;
+
+      const layout = document.querySelector('.layout');
+      layout.classList.add('fade-out');
+      await new Promise(r => setTimeout(r, 380));
+
+      ciudadActual = nueva;
+      document.getElementById('ciudad').textContent = CIUDADES[ciudadActual].nombre;
+      document.querySelectorAll('.ciudad-pill').forEach(p => p.classList.remove('activa'));
+      document.getElementById('pill-' + ciudadActual).classList.add('activa');
+
+      await Promise.all([obtenerTiempoYPrevision(), obtenerUV(), obtenerPolen()]);
+
+      layout.classList.remove('fade-out');
+      cambiando = false;
+    }
+
+    function actualizarFondo(condicion, cod) {
+      const esNoche = cod.includes('n');
       const id = condicion;
       let gradiente;
       if (esNoche) {
@@ -579,7 +648,10 @@
         document.getElementById('viento').textContent = Math.round(actual.wind.speed * 3.6) + ' km/h';
         document.getElementById('sensacion').textContent = Math.round(actual.main.feels_like) + '°';
         document.getElementById('presion').textContent = actual.main.pressure + ' hPa';
-        document.getElementById('icono').src = `https://openweathermap.org/img/wn/${actual.weather[0].icon}@2x.png`;
+
+        const iconoEl = document.getElementById('icono');
+        iconoEl.className = `wi ${icono(actual.weather[0].icon)}`;
+
         actualizarFondo(actual.weather[0].id, actual.weather[0].icon);
 
         document.getElementById('amanecer').textContent =
@@ -587,6 +659,7 @@
         document.getElementById('atardecer').textContent =
           new Date(datos.city.sunset * 1000).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
 
+        // Previsión horaria
         const contHoras = document.querySelector('.prevision');
         contHoras.innerHTML = '';
         datos.list.slice(1, 4).forEach(f => {
@@ -594,11 +667,12 @@
           contHoras.innerHTML += `
             <div class="franja">
               <span class="franja-hora">${hora}</span>
-              <img class="franja-icono" src="https://openweathermap.org/img/wn/${f.weather[0].icon}@2x.png" alt="">
+              <i class="wi ${icono(f.weather[0].icon)} franja-icono"></i>
               <span class="franja-temp">${Math.round(f.main.temp)}°</span>
             </div>`;
         });
 
+        // Previsión diaria
         const hoy = new Date().toDateString();
         const porDia = {};
         datos.list.forEach(item => {
@@ -618,11 +692,11 @@
         Object.values(porDia).slice(0, 4).forEach(dia => {
           const max = Math.round(Math.max(...dia.temps));
           const min = Math.round(Math.min(...dia.temps));
-          const icono = dia.iconos[Math.floor(dia.iconos.length / 2)];
+          const cod = dia.iconos[Math.floor(dia.iconos.length / 2)];
           contDiario.innerHTML += `
             <div class="dia-card">
               <span class="dia-nombre">${dia.nombre}</span>
-              <img class="dia-icono" src="https://openweathermap.org/img/wn/${icono}@2x.png" alt="">
+              <i class="wi ${icono(cod)} dia-icono"></i>
               <span class="dia-temps">${max}°<span class="min">${min}°</span></span>
             </div>`;
         });
