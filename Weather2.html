@@ -58,9 +58,16 @@
   border-radius: 16px;
   padding: 15px 25px;
   width: 100%;
-  max-width: 400px;
+  max-width: 100%;
   margin-bottom: 15px;
   gap: 20px;
+}
+.contenedor-tiempo {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 400px;   /* ← un solo max-width para los dos */
+  gap: 12px;
 }
 
 .tarjeta-izquierda {
@@ -94,9 +101,9 @@
       grid-template-columns: repeat(3, 1fr);
       gap: 12px 20px;
       width: 100%;
-      max-width: 400px;
+      max-width: 100%;
       margin-top: 15px;
-      padding: 0 15px;
+      padding: 0;
     }
 
     .detalle {
@@ -172,6 +179,7 @@
 
   <div class="bloque-derecha">
   <!-- Reemplaza las líneas del icono, temperatura y descripcion por esta tarjeta -->
+<div class="contenedor-tiempo">
 <div class="tarjeta-tiempo">
   <div class="tarjeta-izquierda">
     <img id="icono" src="" alt="icono">
