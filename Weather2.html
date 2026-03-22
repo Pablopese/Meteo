@@ -7,33 +7,23 @@
   <title>Panel del Tiempo</title>
   <style>
  
-html, body {
-  width: 100%;
-  height: 100%;
-  background: #0a0e1a;   /* solo para el overscroll */
+html {
+  background: #16213e;  /* ← mismo color que el FINAL del gradiente */
   overflow: hidden;
-  margin: 0;
-  padding: 0;
 }
 
 body {
+  background: linear-gradient(135deg, #0a0e1a 0%, #1a1a2e 50%, #16213e 100%);
+  min-height: 100svh;   /* ← "svh" excluye la barra del navegador en iOS */
   color: white;
   font-family: 'Segoe UI', sans-serif;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  overflow: hidden;
 }
 
-#fondo {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: -1;
-  background: linear-gradient(135deg, #0a0e1a 0%, #1a1a2e 50%, #16213e 100%);
-  transition: background 2s ease;
-}
 
 
     #ciudad {
@@ -167,7 +157,6 @@ body {
   </style>
 </head>
 <body>
-    <div id="fondo"></div> 
   <!-- Bloque izquierda: hora y ciudad -->
   <div class="bloque-izquierda">
     <div id="ciudad">Mérida</div>
@@ -299,8 +288,9 @@ function actualizarFondo(condicion, icono) {
     gradiente = 'linear-gradient(135deg, #2c3e50 0%, #4a5568 100%)';
   }
 
-  // ✅ Cambia la variable CSS, no el body directamente
-document.getElementById('fondo').style.background = gradiente;
+
+document.body.style.backgroundImage = gradiente;
+document.body.style.transition = 'background-image 2s ease';
 }
 
 
