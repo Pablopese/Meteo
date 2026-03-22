@@ -295,8 +295,9 @@ async function obtenerUV() {
     else if (valor <= 7) etiqueta = 'Alto';
     else if (valor <= 10) etiqueta = 'Muy alto';
     else etiqueta = 'Extremo';
+document.getElementById('uv-valor').textContent = valor;
+document.getElementById('uv-label').textContent = etiqueta;
 
-    document.getElementById('uv').textContent = `${valor} · ${etiqueta}`;
   } catch(e) {
     document.getElementById('uv').textContent = 'N/D';
   }
