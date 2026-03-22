@@ -26,7 +26,6 @@
       position: relative;
     }
 
-    /* Animación */
     #animacion {
       position: fixed;
       top: 0; left: 0;
@@ -71,7 +70,6 @@
       94% { opacity: 0; }
     }
 
-    /* Layout */
     .layout {
       position: relative;
       z-index: 2;
@@ -83,7 +81,6 @@
       align-items: center;
     }
 
-    /* Columna izquierda */
     .col-izquierda {
       display: flex;
       flex-direction: column;
@@ -104,13 +101,11 @@
       width: 100%;
     }
 
-    /* Columna derecha */
     .col-derecha {
       width: 100%;
       max-width: 400px;
     }
 
-    /* Botón */
     #btn-ciudad {
       background: rgba(255,255,255,0.1);
       border: 1px solid rgba(255,255,255,0.2);
@@ -147,7 +142,6 @@
       margin-bottom: 12px;
     }
 
-    /* Sol cards */
     .sol-cards {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -177,43 +171,49 @@
       font-weight: bold;
     }
 
-    /* Previsión diaria */
+    /* Previsión diaria — una tarjeta horizontal */
     .prevision-diaria {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
       width: 100%;
+      background: rgba(255,255,255,0.05);
+      border-radius: 12px;
+      padding: 10px 5px;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+      align-items: center;
     }
 
     .dia-card {
       display: flex;
-      flex-direction: row;
+      flex-direction: column;
       align-items: center;
-      justify-content: space-between;
-      background: rgba(255,255,255,0.05);
-      border-radius: 10px;
-      padding: 8px 15px;
+      gap: 4px;
+      padding: 0 5px;
     }
 
     .dia-nombre {
-      font-size: 0.9em;
-      opacity: 0.7;
-      width: 80px;
+      font-size: 0.75em;
+      opacity: 0.6;
       text-transform: capitalize;
+      text-align: center;
     }
 
-    .dia-icono { width: 34px; height: 34px; }
+    .dia-icono { width: 32px; height: 32px; }
 
-    .dia-temps { font-size: 0.95em; font-weight: bold; }
+    .dia-temps {
+      font-size: 0.9em;
+      font-weight: bold;
+      text-align: center;
+    }
 
     .dia-temps .min {
+      display: block;
       opacity: 0.5;
       font-weight: normal;
-      margin-left: 8px;
-      font-size: 0.9em;
+      font-size: 0.85em;
     }
 
-    /* Contenedor tiempo derecha */
+    /* Contenedor derecha */
     .contenedor-tiempo {
       display: flex;
       flex-direction: column;
@@ -295,7 +295,6 @@
       font-weight: bold;
     }
 
-    /* Grid detalles */
     .detalles {
       width: 100%;
       display: grid;
@@ -339,7 +338,6 @@
       z-index: 2;
     }
 
-    /* Landscape: dos columnas */
     @media (orientation: landscape) {
       .layout {
         flex-direction: row;
@@ -374,7 +372,6 @@
       #fecha { font-size: 0.95em; margin-bottom: 10px; }
       #temperatura { font-size: 4em; }
       #icono { width: 58px; height: 58px; }
-      .sol-card span:last-child { font-size: 1em; }
     }
   </style>
 </head>
@@ -384,9 +381,7 @@
 
   <div class="layout">
 
-    <!-- Columna izquierda -->
     <div class="col-izquierda">
-
       <div class="cuadrante-superior">
         <button id="btn-ciudad" onclick="cambiarCiudad()">Cáceres</button>
         <div id="ciudad">Mérida</div>
@@ -401,10 +396,8 @@
       <div class="cuadrante-inferior">
         <div class="prevision-diaria"></div>
       </div>
-
     </div>
 
-    <!-- Columna derecha -->
     <div class="col-derecha">
       <div class="contenedor-tiempo">
 
@@ -579,7 +572,6 @@
         const resp = await fetch(url);
         const datos = await resp.json();
 
-        // Tiempo actual
         const actual = datos.list[0];
         document.getElementById('temperatura').textContent = Math.round(actual.main.temp) + '°';
         document.getElementById('descripcion').textContent = actual.weather[0].description;
@@ -590,13 +582,11 @@
         document.getElementById('icono').src = `https://openweathermap.org/img/wn/${actual.weather[0].icon}@2x.png`;
         actualizarFondo(actual.weather[0].id, actual.weather[0].icon);
 
-        // Amanecer / Atardecer
         document.getElementById('amanecer').textContent =
           new Date(datos.city.sunrise * 1000).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
         document.getElementById('atardecer').textContent =
           new Date(datos.city.sunset * 1000).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
 
-        // Previsión horaria (+3h, +6h, +9h)
         const contHoras = document.querySelector('.prevision');
         contHoras.innerHTML = '';
         datos.list.slice(1, 4).forEach(f => {
@@ -609,7 +599,6 @@
             </div>`;
         });
 
-        // Previsión diaria (próximos 4 días)
         const hoy = new Date().toDateString();
         const porDia = {};
         datos.list.forEach(item => {
@@ -634,7 +623,7 @@
             <div class="dia-card">
               <span class="dia-nombre">${dia.nombre}</span>
               <img class="dia-icono" src="https://openweathermap.org/img/wn/${icono}@2x.png" alt="">
-              <span class="dia-temps">${max}° <span class="min">${min}°</span></span>
+              <span class="dia-temps">${max}°<span class="min">${min}°</span></span>
             </div>`;
         });
 
