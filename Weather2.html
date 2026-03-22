@@ -185,6 +185,8 @@
       <div class="detalle"><span>Sensación</span><span id="sensacion">--°</span></div>
       <div class="detalle"><span>Presión</span><span id="presion">-- hPa</span></div>
       <div class="detalle"><span>Polen</span><span id="polen">--</span></div>
+      <div class="detalle"><span>UV</span><span id="uv">--</span></div>
+
     </div>
   </div>
 
@@ -275,6 +277,28 @@
         document.getElementById('descripcion').textContent = 'Error de conexión';
       }
     }
+async function obtenerUV() {
+  try {
+    const url = `https://api.openweathermap.org/data/2.5/uvi?lat=${LAT}&lon=${LON}&appid=${API_KEY}`;
+    const resp = await fetch(url);
+    const datos = await resp.json();
+    const valor = datos.value;
+
+    // Etiqueta descriptiva
+    let etiqueta;
+    if (valor <= 2) etiqueta = 'Bajo';
+    else if (valor <= 5) etiqueta = 'Moderado';
+    else if (valor <= 7) etiqueta = 'Alto';
+    else if (valor <= 10) etiqueta = 'Muy alto';
+    else etiqueta = 'Extremo';
+
+    document.getElementById('uv').textContent = `${valor} · ${etiqueta}`;
+  } catch(e) {
+    document.getElementById('uv').textContent = 'N/D';
+  }
+}
+obtenerUV();
+setInterval(obtenerUV, 60 * 60 * 1000); // cada hora
 
     obtenerTiempo();
     obtenerPolen();
