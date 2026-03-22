@@ -6,37 +6,34 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Panel del Tiempo</title>
   <style>
- html {
+ 
+html, body {
   width: 100%;
   height: 100%;
-  background: #0a0e1a;
+  background: #0a0e1a;   /* solo para el overscroll */
   overflow: hidden;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  background: transparent;
-  position: relative;
   color: white;
   font-family: 'Segoe UI', sans-serif;
-  width: 100%;
-  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
 }
 
-body::before {
-  content: '';
+#fondo {
   position: fixed;
-  top: 0; right: 0; bottom: 0; left: 0;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
   z-index: -1;
-  background: var(--bg-gradient, linear-gradient(135deg, #0a0e1a 0%, #1a1a2e 50%, #16213e 100%));
+  background: linear-gradient(135deg, #0a0e1a 0%, #1a1a2e 50%, #16213e 100%);
   transition: background 2s ease;
 }
-
-
 
 
     #ciudad {
@@ -170,6 +167,7 @@ body::before {
   </style>
 </head>
 <body>
+    <div id="fondo"></div> 
   <!-- Bloque izquierda: hora y ciudad -->
   <div class="bloque-izquierda">
     <div id="ciudad">Mérida</div>
@@ -298,7 +296,7 @@ function actualizarFondo(condicion, icono) {
   }
 
   // ✅ Cambia la variable CSS, no el body directamente
-  document.documentElement.style.setProperty('--bg-gradient', gradiente);
+document.getElementById('fondo').style.background = gradiente;
 }
 
 
