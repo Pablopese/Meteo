@@ -33,35 +33,33 @@
       50%     { opacity:1;   transform:scale(1.4); }
     }
 
-.sol-halo {
-  position: absolute;
-  border-radius: 50%;
-  background: radial-gradient(circle,
-    rgba(255, 255, 255, 1.00)  0%,
-    rgba(255, 255, 255, 0.75) 20%,
-    rgba(255, 252, 240, 0.35) 50%,
-    rgba(255, 248, 220, 0.08) 75%,
-    transparent 100%
-  );
-  filter: blur(18px);
-  animation: haloRespira 5s ease-in-out infinite;
-}
+    .sol-halo {
+      position:absolute; border-radius:50%;
+      background: radial-gradient(circle,
+        rgba(255,255,255,1.00)  0%,
+        rgba(255,255,255,0.75) 20%,
+        rgba(255,252,240,0.35) 50%,
+        rgba(255,248,220,0.08) 75%,
+        transparent 100%
+      );
+      filter: blur(18px);
+      animation: haloRespira 5s ease-in-out infinite;
+    }
     @keyframes haloRespira {
       0%,100% { transform:scale(1);    opacity:0.75; }
       50%     { transform:scale(1.12); opacity:1; }
     }
-.sol-rayo-difuso {
-  position: absolute;
-  border-radius: 50%;
-  background: radial-gradient(ellipse at center,
-    rgba(255, 255, 255, 0.18) 0%,
-    rgba(255, 255, 255, 0.06) 45%,
-    transparent 70%
-  );
-  filter: blur(28px);
-  transform-origin: center center;
-  animation: rayoDifusoGira 20s linear infinite;
-}
+    .sol-rayo-difuso {
+      position:absolute; border-radius:50%;
+      background: radial-gradient(ellipse at center,
+        rgba(255,255,255,0.18) 0%,
+        rgba(255,255,255,0.06) 45%,
+        transparent 70%
+      );
+      filter: blur(28px);
+      transform-origin:center center;
+      animation: rayoDifusoGira 20s linear infinite;
+    }
     @keyframes rayoDifusoGira {
       from { transform:rotate(0deg)   scale(1);   }
       to   { transform:rotate(360deg) scale(1.1); }
@@ -86,7 +84,7 @@
     .layout {
       position:relative; z-index:2;
       display:grid;
-      grid-template-rows: 1fr auto auto;
+      grid-template-rows:1fr auto auto;
       grid-template-columns:1fr;
       width:100vw; height:100svh;
       padding:2vh 2vw; gap:1.5vh;
@@ -97,23 +95,46 @@
 
     .fila-superior { display:grid; grid-template-columns:38% 62%; gap:2vw; min-height:0; }
 
+    /* ── COL IZQUIERDA ── */
     .col-izquierda { display:flex; flex-direction:column; justify-content:center; align-items:center; gap:1vh; min-width:0; }
-    .ciudades-selector { display:flex; gap:0.8vw; }
-    .ciudad-pill {
-      padding:0.4vh 1.2vw; border-radius:20px;
-      font-size:clamp(0.6rem,0.9vw,0.9rem); letter-spacing:1px;
-      text-transform:uppercase; opacity:0.35; cursor:pointer;
-      transition:all 0.3s; border:1px solid transparent;
+
+    .buscador-wrap { position:relative; width:100%; }
+    #buscador {
+      width:100%; padding:0.6vh 1.2vw;
+      border-radius:20px; border:1px solid rgba(255,255,255,0.25);
+      background:rgba(255,255,255,0.1); color:white;
+      font-size:clamp(0.7rem,1vw,1rem); letter-spacing:1px;
+      outline:none; transition:border-color 0.3s;
     }
-    .ciudad-pill.activa { opacity:1; border-color:rgba(255,255,255,0.3); background:rgba(255,255,255,0.1); }
+    #buscador::placeholder { color:rgba(255,255,255,0.4); }
+    #buscador:focus { border-color:rgba(255,255,255,0.6); }
+
+    #sugerencias {
+      position:absolute; top:calc(100% + 6px); left:0; right:0;
+      background:rgba(20,30,55,0.95); border-radius:12px;
+      overflow:hidden; z-index:10; display:none;
+      box-shadow:0 8px 24px rgba(0,0,0,0.4);
+    }
+    .sugerencia-item {
+      padding:0.8vh 1.2vw;
+      font-size:clamp(0.65rem,0.95vw,0.9rem);
+      cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.05);
+      transition:background 0.2s; white-space:nowrap;
+      overflow:hidden; text-overflow:ellipsis;
+    }
+    .sugerencia-item:last-child { border-bottom:none; }
+    .sugerencia-item:hover { background:rgba(255,255,255,0.12); }
+
     #ciudad { font-size:clamp(1.2rem,3vw,2.8rem); opacity:0.7; letter-spacing:4px; text-transform:uppercase; line-height:1; text-align:center; }
     #hora   { font-size:clamp(3rem,10vw,8rem); font-weight:bold; letter-spacing:2px; line-height:1; text-align:center; }
     #fecha  { font-size:clamp(0.8rem,1.5vw,1.3rem); opacity:0.6; text-align:center; }
+
     .sol-cards { display:grid; grid-template-columns:1fr 1fr; gap:1vw; width:100%; }
     .sol-card { display:flex; flex-direction:column; align-items:center; background:rgba(255,255,255,0.05); border-radius:10px; padding:0.8vh 0.5vw; gap:0.2vh; }
     .sol-card span:first-child { font-size:clamp(0.5rem,0.75vw,0.75rem); letter-spacing:2px; text-transform:uppercase; opacity:0.5; }
     .sol-card span:last-child  { font-size:clamp(0.85rem,1.4vw,1.3rem); font-weight:bold; }
 
+    /* ── COL DERECHA ── */
     .col-derecha { display:flex; flex-direction:column; justify-content:flex-start; gap:0; min-width:0; padding-right:2vw; height:100%; }
     .tarjeta-tiempo { flex:1; display:flex; flex-direction:column; background:rgba(255,255,255,0.05); border-radius:16px; padding:1.5vh 2vw; gap:1.2vh; }
     .tiempo-actual  { flex:1; display:flex; flex-direction:row; align-items:center; justify-content:space-between; }
@@ -128,12 +149,18 @@
     .franja img, .dia-icono { width:clamp(1.5rem,3vw,2.8rem); height:clamp(1.5rem,3vw,2.8rem); }
     .franja-temp { font-size:clamp(0.8rem,1.3vw,1.1rem); font-weight:bold; }
 
+    /* ── DETALLES ── */
     .detalles { display:grid; grid-template-columns:repeat(6,1fr); gap:1.2vw; width:100%; }
-    .detalle { display:flex; flex-direction:column; align-items:center;justify-content: center; background:rgba(255,255,255,0.05); border-radius:12px; padding:1.5vh 1vw; gap:0.5vh; }
+    .detalle {
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      background:rgba(255,255,255,0.05); border-radius:12px;
+      padding:1.5vh 1vw; gap:0.5vh;
+    }
     .detalle span:first-child { font-size:clamp(0.65rem,1vw,1rem); letter-spacing:2px; text-transform:uppercase; opacity:0.5; }
     .detalle span:nth-child(2){ font-size:clamp(1.3rem,2.8vw,2.4rem); font-weight:bold; }
     .detalle span:nth-child(3){ font-size:clamp(0.8rem,1.3vw,1.2rem); opacity:0.7; }
 
+    /* ── PREVISION DIARIA ── */
     .fila-inferior { width:100%; }
     .prevision-diaria { width:100%; background:rgba(255,255,255,0.05); border-radius:12px; padding:1.2vh 1vw; display:grid; grid-template-columns:repeat(5,1fr); }
     .dia-card { display:flex; flex-direction:column; align-items:center; gap:0.4vh; }
@@ -150,10 +177,11 @@
 
   <div class="layout">
     <div class="fila-superior">
+
       <div class="col-izquierda">
-        <div class="ciudades-selector">
-          <span class="ciudad-pill activa" id="pill-merida"  onclick="cambiarCiudad('merida')">Mérida</span>
-          <span class="ciudad-pill"        id="pill-caceres" onclick="cambiarCiudad('caceres')">Cáceres</span>
+        <div class="buscador-wrap">
+          <input id="buscador" type="text" placeholder="Buscar ciudad..." autocomplete="off" />
+          <div id="sugerencias"></div>
         </div>
         <div id="ciudad">Mérida</div>
         <div id="hora">--:--</div>
@@ -163,6 +191,7 @@
           <div class="sol-card"><span>Atardecer</span><span id="atardecer">--:--</span></div>
         </div>
       </div>
+
       <div class="col-derecha">
         <div class="tarjeta-tiempo">
           <div class="tiempo-actual">
@@ -176,6 +205,7 @@
           <div class="prevision"></div>
         </div>
       </div>
+
     </div>
 
     <div class="detalles">
@@ -199,15 +229,11 @@
     const GOOGLE_KEY = 'AIzaSyAubTqmFTe-pZiyJ61ddvvm8BQGRe0mknY';
     const BASE_ICON  = 'https://cdn.jsdelivr.net/gh/basmilius/weather-icons@master/production/fill/all/';
 
-    const CIUDADES = {
-      merida:  { nombre:'Mérida',  lat:38.9166, lon:-6.3441 },
-      caceres: { nombre:'Cáceres', lat:39.4753, lon:-6.3724 }
-    };
-    let ciudadActual = 'merida';
+    let ciudadActual = { nombre:'Mérida', lat:38.9166, lon:-6.3441 };
     let cambiando = false;
 
     const mapaIconos = {
-      '01d':'clear-day.svg',       '01n':'clear-night.svg',
+      '01d':'clear-day.svg',        '01n':'clear-night.svg',
       '02d':'partly-cloudy-day.svg','02n':'partly-cloudy-night.svg',
       '03d':'cloudy.svg',           '03n':'cloudy.svg',
       '04d':'overcast-day.svg',     '04n':'overcast-night.svg',
@@ -222,28 +248,70 @@
       return BASE_ICON + (mapaIconos[codigo] || 'not-available.svg');
     }
 
-    let touchStartX = 0;
-    document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive:true });
-    document.addEventListener('touchend',   e => {
-      if (Math.abs(e.changedTouches[0].clientX - touchStartX) > 80)
-        cambiarCiudad(ciudadActual === 'merida' ? 'caceres' : 'merida');
-    }, { passive:true });
+    function colorEscala(valor, min, max) {
+      const t = Math.max(0, Math.min(1, (valor - min) / (max - min)));
+      const h = Math.round((1 - t) * 120);
+      const s = 70;
+      const l = t < 0.5 ? 58 : 52;
+      return `hsl(${h}, ${s}%, ${l}%)`;
+    }
 
-    async function cambiarCiudad(nueva) {
-      if (nueva === ciudadActual || cambiando) return;
+    // ── BUSCADOR ──
+    let debounceTimer;
+    const inputBuscador   = document.getElementById('buscador');
+    const contSugerencias = document.getElementById('sugerencias');
+
+    inputBuscador.addEventListener('input', () => {
+      clearTimeout(debounceTimer);
+      const q = inputBuscador.value.trim();
+      if (q.length < 2) { contSugerencias.style.display = 'none'; return; }
+      debounceTimer = setTimeout(() => buscarCiudades(q), 350);
+    });
+
+    inputBuscador.addEventListener('keydown', e => {
+      if (e.key === 'Escape') { contSugerencias.style.display = 'none'; inputBuscador.blur(); }
+    });
+
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.buscador-wrap')) contSugerencias.style.display = 'none';
+    });
+
+    async function buscarCiudades(q) {
+      try {
+        const r = await fetch(`https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(q)}&limit=5&appid=${API_KEY}`);
+        const d = await r.json();
+        if (!d.length) { contSugerencias.style.display = 'none'; return; }
+        contSugerencias.innerHTML = '';
+        d.forEach(c => {
+          const item   = document.createElement('div');
+          item.className = 'sugerencia-item';
+          const estado = c.state   ? `, ${c.state}` : '';
+          const pais   = c.country || '';
+          item.textContent = `${c.name}${estado}, ${pais}`;
+          item.addEventListener('click', () => seleccionarCiudad(c));
+          contSugerencias.appendChild(item);
+        });
+        contSugerencias.style.display = 'block';
+      } catch(e) { contSugerencias.style.display = 'none'; }
+    }
+
+    async function seleccionarCiudad(c) {
+      contSugerencias.style.display = 'none';
+      inputBuscador.value = '';
+      inputBuscador.blur();
+      if (cambiando) return;
       cambiando = true;
       const layout = document.querySelector('.layout');
       layout.classList.add('fade-out');
       await new Promise(r => setTimeout(r, 380));
-      ciudadActual = nueva;
-      document.getElementById('ciudad').textContent = CIUDADES[ciudadActual].nombre;
-      document.querySelectorAll('.ciudad-pill').forEach(p => p.classList.remove('activa'));
-      document.getElementById('pill-' + ciudadActual).classList.add('activa');
+      ciudadActual = { nombre: c.local_names?.es || c.name, lat: c.lat, lon: c.lon };
+      document.getElementById('ciudad').textContent = ciudadActual.nombre;
       await Promise.all([obtenerTiempoYPrevision(), obtenerUV(), obtenerPolen()]);
       layout.classList.remove('fade-out');
       cambiando = false;
     }
 
+    // ── FONDO Y ANIMACION ──
     function actualizarFondo(condicion, cod) {
       const esNoche = cod.includes('n');
       const id = condicion;
@@ -263,11 +331,9 @@
     function iniciarAnimacion(id) {
       const cont = document.getElementById('animacion');
       cont.innerHTML = '';
-
       const hora = new Date().getHours();
       const esNoche = hora < 7 || hora >= 20;
 
-      // Cielo estrellado de noche
       if (esNoche) {
         for (let i = 0; i < 80; i++) {
           const s = document.createElement('div');
@@ -283,37 +349,32 @@
         }
       }
 
-      // Sol difuso (código 800 de día)
-    if (id === 800 && !esNoche) {
-  const sz = Math.min(window.innerWidth, window.innerHeight) * 0.85;
-  const cx = window.innerWidth  * 0.97;
-  const cy = window.innerHeight * -0.05;
+      if (id === 800 && !esNoche) {
+        const sz = Math.min(window.innerWidth, window.innerHeight) * 0.85;
+        const cx = window.innerWidth  * 0.97;
+        const cy = window.innerHeight * -0.05;
+        [1.8, 1.4, 1.0].forEach((mult, i) => {
+          const halo = document.createElement('div');
+          halo.className = 'sol-rayo-difuso';
+          const s = sz * mult;
+          halo.style.cssText = `
+            width:${s}px; height:${s}px;
+            top:${cy - s/2}px; left:${cx - s/2}px;
+            animation-duration:${18 + i*7}s;
+            animation-delay:-${i*4}s;
+          `;
+          cont.appendChild(halo);
+        });
+        const nucleo = document.createElement('div');
+        nucleo.className = 'sol-halo';
+        const sn = sz * 0.55;
+        nucleo.style.cssText = `
+          width:${sn}px; height:${sn}px;
+          top:${cy - sn/2}px; left:${cx - sn/2}px;
+        `;
+        cont.appendChild(nucleo);
+      }
 
-  [1.8, 1.4, 1.0].forEach((mult, i) => {
-    const halo = document.createElement('div');
-    halo.className = 'sol-rayo-difuso';
-    const s = sz * mult;
-    halo.style.cssText = `
-      width:${s}px; height:${s}px;
-      top:${cy - s/2}px; left:${cx - s/2}px;
-      animation-duration:${18 + i*7}s;
-      animation-delay:-${i*4}s;
-    `;
-    cont.appendChild(halo);
-  });
-
-  const nucleo = document.createElement('div');
-  nucleo.className = 'sol-halo';
-  const sn = sz * 0.55;
-  nucleo.style.cssText = `
-    width:${sn}px; height:${sn}px;
-    top:${cy - sn/2}px; left:${cx - sn/2}px;
-  `;
-  cont.appendChild(nucleo);
-}
-
-
-      // Nubes flotantes (801–804)
       if (id >= 801 && id <= 804) {
         const nNubes = id === 801 ? 2 : id === 802 ? 3 : 5;
         for (let i = 0; i < nNubes; i++) {
@@ -331,7 +392,6 @@
         }
       }
 
-      // Lluvia y nieve
       if (id >= 200 && id < 300) {
         const f = document.createElement('div'); f.className = 'flash'; cont.appendChild(f);
         crearGotas(cont, 40);
@@ -341,19 +401,11 @@
         crearCopos(cont, 30);
       }
     }
-    function colorEscala(valor, min, max) {
-      const t = Math.max(0, Math.min(1, (valor - min) / (max - min)));
-      // Verde (120°) → Amarillo (60°) → Rojo (0°)
-      const h = Math.round((1 - t) * 120);
-      const s = 70;
-      const l = t < 0.5 ? 58 : 52;
-      return `hsl(${h}, ${s}%, ${l}%)`;
-    }
 
     function crearGotas(cont, n) {
       for (let i=0;i<n;i++) {
         const g = document.createElement('div'); g.className='gota';
-        g.style.left = (Math.random()*100)+'vw';
+        g.style.left              = (Math.random()*100)+'vw';
         g.style.animationDuration = (Math.random()*0.4+0.4)+'s';
         g.style.animationDelay    = (Math.random()*2)+'s';
         g.style.opacity           = (Math.random()*0.4+0.3).toString();
@@ -364,7 +416,7 @@
     function crearCopos(cont, n) {
       for (let i=0;i<n;i++) {
         const c = document.createElement('div'); c.className='copo';
-        c.textContent = '❄';
+        c.textContent             = '❄';
         c.style.left              = (Math.random()*100)+'vw';
         c.style.animationDuration = (Math.random()*3+2)+'s';
         c.style.animationDelay    = (Math.random()*3)+'s';
@@ -373,6 +425,7 @@
       }
     }
 
+    // ── RELOJ ──
     function actualizarReloj() {
       const a = new Date();
       document.getElementById('hora').textContent  = a.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
@@ -381,23 +434,23 @@
     setInterval(actualizarReloj, 1000);
     actualizarReloj();
 
-   async function obtenerPolen() {
-  const {lat,lon} = CIUDADES[ciudadActual];
-  try {
-    const r = await fetch(`https://pollen.googleapis.com/v1/forecast:lookup?key=${GOOGLE_KEY}&location.longitude=${lon}&location.latitude=${lat}&days=1`);
-    const d = await r.json();
-    const tipos = d.dailyInfo[0].pollenTypeInfo;
-    const max = Math.max(0, ...tipos.filter(t=>t.indexInfo&&t.indexInfo.value>0).map(t=>t.indexInfo.value));
-    const labels = {0:'Muy bajo',1:'Muy bajo',2:'Bajo',3:'Moderado',4:'Alto',5:'Muy alto'};
-    const el = document.getElementById('polen-valor');
-    el.textContent = labels[max] || '--';
-    el.style.color = colorEscala(max, 0, 5);
-  } catch(e) { document.getElementById('polen-valor').textContent = 'N/D'; }
-}
+    // ── DATOS ──
+    async function obtenerPolen() {
+      const {lat,lon} = ciudadActual;
+      try {
+        const r = await fetch(`https://pollen.googleapis.com/v1/forecast:lookup?key=${GOOGLE_KEY}&location.longitude=${lon}&location.latitude=${lat}&days=1`);
+        const d = await r.json();
+        const tipos = d.dailyInfo[0].pollenTypeInfo;
+        const max = Math.max(0, ...tipos.filter(t=>t.indexInfo&&t.indexInfo.value>0).map(t=>t.indexInfo.value));
+        const labels = {0:'Muy bajo',1:'Muy bajo',2:'Bajo',3:'Moderado',4:'Alto',5:'Muy alto'};
+        const el = document.getElementById('polen-valor');
+        el.textContent = labels[max] || '--';
+        el.style.color = colorEscala(max, 0, 5);
+      } catch(e) { document.getElementById('polen-valor').textContent = 'N/D'; }
+    }
 
-
-        async function obtenerUV() {
-      const {lat,lon} = CIUDADES[ciudadActual];
+    async function obtenerUV() {
+      const {lat,lon} = ciudadActual;
       try {
         const r = await fetch(`https://api.openweathermap.org/data/2.5/uvi?lat=${lat}&lon=${lon}&appid=${API_KEY}`);
         const d = await r.json();
@@ -414,25 +467,25 @@
       }
     }
 
-
     async function obtenerTiempoYPrevision() {
-      const {lat,lon} = CIUDADES[ciudadActual];
+      const {lat,lon} = ciudadActual;
       try {
         const r = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&lang=es&appid=${API_KEY}`);
         const d = await r.json();
 
         const a = d.list[0];
-        document.getElementById('temperatura').textContent  = Math.round(a.main.temp)+'°';
-        document.getElementById('descripcion').textContent  = a.weather[0].description;
-        document.getElementById('humedad').textContent      = a.main.humidity+'%';
-        document.getElementById('viento').textContent       = Math.round(a.wind.speed*3.6)+' km/h';
+        document.getElementById('temperatura').textContent = Math.round(a.main.temp)+'°';
+        document.getElementById('descripcion').textContent = a.weather[0].description;
+        document.getElementById('humedad').textContent     = a.main.humidity+'%';
+        document.getElementById('viento').textContent      = Math.round(a.wind.speed*3.6)+' km/h';
+        document.getElementById('presion').textContent     = a.main.pressure+' hPa';
+        document.getElementById('icono').src               = iconoUrl(a.weather[0].icon);
+        actualizarFondo(a.weather[0].id, a.weather[0].icon);
+
         const sensVal = Math.round(a.main.feels_like);
         const elSens  = document.getElementById('sensacion');
-        elSens.textContent  = sensVal+'°';
-        elSens.style.color  = colorEscala(sensVal, 0, 40);
-        document.getElementById('presion').textContent      = a.main.pressure+' hPa';
-        document.getElementById('icono').src                = iconoUrl(a.weather[0].icon);
-        actualizarFondo(a.weather[0].id, a.weather[0].icon);
+        elSens.textContent = sensVal+'°';
+        elSens.style.color = colorEscala(sensVal, 0, 40);
 
         document.getElementById('amanecer').textContent  = new Date(d.city.sunrise*1000).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
         document.getElementById('atardecer').textContent = new Date(d.city.sunset*1000).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
@@ -487,3 +540,4 @@
   </script>
 </body>
 </html>
+
