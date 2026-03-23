@@ -427,10 +427,14 @@
 
     // ── RELOJ ──
     function actualizarReloj() {
-      const a = new Date();
-      document.getElementById('hora').textContent  = a.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
-      document.getElementById('fecha').textContent = a.toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'});
-    }
+  const ahora = new Date();
+  const utc = ahora.getTime() + ahora.getTimezoneOffset() * 60000;
+  const local = new Date(utc + (ciudadActual.tzOffset || 0) * 1000);
+
+  document.getElementById('hora').textContent  = local.toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'});
+  document.getElementById('fecha').textContent = local.toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'});
+}
+
     setInterval(actualizarReloj, 1000);
     actualizarReloj();
 
@@ -472,7 +476,7 @@
       try {
         const r = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&lang=es&appid=${API_KEY}`);
         const d = await r.json();
-
+        ciudadActual.tzOffset = d.city.timezone; // offset en segundos
         const a = d.list[0];
         document.getElementById('temperatura').textContent = Math.round(a.main.temp)+'°';
         document.getElementById('descripcion').textContent = a.weather[0].description;
