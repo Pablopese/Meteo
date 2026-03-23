@@ -35,11 +35,11 @@
     @keyframes relampago { 0%,92%,100%{opacity:0;} 93%,95%{opacity:0.15;} 94%{opacity:0;} }
 
     /* ── LAYOUT: 3 filas ── */
-    .layout {
+      .layout {
       position: relative;
       z-index: 2;
       display: grid;
-      grid-template-rows: 1fr auto auto;
+      grid-template-rows: 55vh auto auto;
       grid-template-columns: 1fr;
       width: 100vw;
       height: 100svh;
@@ -47,6 +47,7 @@
       gap: 1.5vh;
       transition: opacity 0.4s ease;
     }
+
     .layout.fade-out { opacity: 0; }
 
     /* ── FILA SUPERIOR: 2 columnas ── */
@@ -61,12 +62,12 @@
     .col-izquierda {
       display: flex;
       flex-direction: column;
-      justify-content: flex-start;
+      justify-content: center;
       align-items: center;
       gap: 1vh;
       min-width: 0;
-      padding-top: 1vh;
     }
+
 
     .ciudades-selector {
       display: flex;
@@ -218,28 +219,29 @@
     }
 
     .detalle {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      background: rgba(255,255,255,0.05);
-      border-radius: 12px;
-      padding: 2vh 1vw;
-      gap: 0.5vh;
-    }
-    .detalle span:first-child {
-      font-size: clamp(0.55rem, 0.85vw, 0.82rem);
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      opacity: 0.5;
-    }
-    .detalle span:nth-child(2) {
-      font-size: clamp(1rem, 2vw, 1.7rem);
-      font-weight: bold;
-    }
-    .detalle span:nth-child(3) {
-      font-size: clamp(0.7rem, 1.1vw, 1rem);
-      opacity: 0.7;
-    }
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255,255,255,0.05);
+  border-radius: 12px;
+  padding: 3vh 1vw;
+  gap: 0.8vh;
+}
+.detalle span:first-child {
+  font-size: clamp(0.65rem, 1vw, 1rem);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  opacity: 0.5;
+}
+.detalle span:nth-child(2) {
+  font-size: clamp(1.3rem, 2.8vw, 2.4rem);
+  font-weight: bold;
+}
+.detalle span:nth-child(3) {
+  font-size: clamp(0.8rem, 1.3vw, 1.2rem);
+  opacity: 0.7;
+}
+
 
     /* ── FILA INFERIOR: previsión diaria ── */
     .fila-inferior { width: 100%; }
