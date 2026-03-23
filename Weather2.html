@@ -35,18 +35,19 @@
     @keyframes relampago { 0%,92%,100%{opacity:0;} 93%,95%{opacity:0.15;} 94%{opacity:0;} }
 
     /* ── LAYOUT PRINCIPAL: 2 filas ── */
-    .layout {
-      position: relative;
-      z-index: 2;
-      display: grid;
-      grid-template-rows: 1fr auto;
-      grid-template-columns: 1fr;
-      width: 100vw;
-      height: 100svh;
-      padding: 2vh 2vw;
-      gap: 1.5vh;
-      transition: opacity 0.4s ease;
-    }
+ .layout {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-rows: 1fr auto auto;
+  grid-template-columns: 1fr;
+  width: 100vw;
+  height: 100svh;
+  padding: 2vh 2vw;
+  gap: 1.5vh;
+  transition: opacity 0.4s ease;
+}
+
     .layout.fade-out { opacity: 0; }
 
     /* ── FILA SUPERIOR: 2 columnas ── */
@@ -57,14 +58,16 @@
       min-height: 0;
     }
 
-    .col-izquierda {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      gap: 1vh;
-      min-width: 0;
-    }
+  .col-izquierda {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 1vh;
+  min-width: 0;
+  padding-top: 1vh;
+}
+
 
 
     .ciudades-selector {
@@ -141,15 +144,17 @@
     }
 
     /* ── COLUMNA DERECHA ── */
-      .col-derecha {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 1.5vh;
-      min-width: 0;
-      padding-right: 2vw;
-      height: 100%;
-    }
+ .col-derecha {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 0;
+  min-width: 0;
+  padding-right: 2vw;
+  height: 100%;
+}
+
+
 
 
 
@@ -219,20 +224,23 @@
 
     /* Grid detalles */
     .detalles {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1vw;
-    }
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 1.2vw;
+  width: 100%;
+}
 
-    .detalle {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      background: rgba(255,255,255,0.05);
-      border-radius: 10px;
-      padding: 0.8vh 0.5vw;
-      gap: 0.2vh;
-    }
+
+  .detalle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255,255,255,0.05);
+  border-radius: 12px;
+  padding: 2vh 1vw;
+  gap: 0.5vh;
+}
+
     .detalle span:first-child {
       font-size: clamp(0.5rem, 0.78vw, 0.78rem);
       letter-spacing: 2px;
@@ -323,7 +331,14 @@
           <div class="sol-card"><span>Atardecer</span><span id="atardecer">--:--</span></div>
         </div>
       </div>
-
+   <div class="detalles">
+          <div class="detalle"><span>Humedad</span><span id="humedad">--%</span></div>
+          <div class="detalle"><span>Viento</span><span id="viento">-- km/h</span></div>
+          <div class="detalle"><span>Sensación</span><span id="sensacion">--°</span></div>
+          <div class="detalle"><span>Presión</span><span id="presion">-- hPa</span></div>
+          <div class="detalle"><span>Polen</span><span id="polen-valor">--</span></div>
+          <div class="detalle"><span>UV</span><span id="uv-valor">--</span><span id="uv-label">--</span></div>
+        </div>
       <!-- Derecha: tiempo actual + grid -->
       <div class="col-derecha">
 
@@ -337,15 +352,6 @@
           </div>
           <div class="separador"></div>
           <div class="prevision"></div>
-        </div>
-
-        <div class="detalles">
-          <div class="detalle"><span>Humedad</span><span id="humedad">--%</span></div>
-          <div class="detalle"><span>Viento</span><span id="viento">-- km/h</span></div>
-          <div class="detalle"><span>Sensación</span><span id="sensacion">--°</span></div>
-          <div class="detalle"><span>Presión</span><span id="presion">-- hPa</span></div>
-          <div class="detalle"><span>Polen</span><span id="polen-valor">--</span></div>
-          <div class="detalle"><span>UV</span><span id="uv-valor">--</span><span id="uv-label">--</span></div>
         </div>
 
       </div>
