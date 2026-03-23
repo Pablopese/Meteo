@@ -587,17 +587,23 @@
         const ch = document.querySelector('.prevision');
         ch.innerHTML = '';
         d.list.slice(1,5).forEach(f => {
-          const h   = new Date(f.dt*1000).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
-          const pop = Math.round(f.pop * 100);
-          const popHtml = pop > 0
-            ? `<span style="font-size:clamp(0.55rem,0.8vw,0.75rem);color:${colorEscala(pop,0,100)}">💧${pop}%</span>`
-            : `<span style="font-size:clamp(0.55rem,0.8vw,0.75rem);opacity:0"></span>`;
-          ch.innerHTML += `<div class="franja">
-            <span class="franja-hora">${h}</span>
-            <img src="${iconoUrl(f.weather[0].icon)}" alt="">
-            <span class="franja-temp">${Math.round(f.main.temp)}°</span>
-            ${popHtml}
-          </div>`;
+        const h   = new Date(f.dt*1000).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
+        const pop = Math.round(f.pop * 100);
+        const popHtml = pop > 0
+          ? `<div style="display:flex;align-items:center;justify-content:center;gap:0.3vw;">
+              <svg width="clamp(8px,1vw,12px)" height="clamp(8px,1vw,12px)" viewBox="0 0 24 24" fill="rgba(255,255,255,0.75)" xmlns="http://www.w3.org/2000/svg" style="width:clamp(8px,1vw,12px);height:clamp(8px,1vw,12px);flex-shrink:0;">
+                <path d="M12 2C12 2 5 10.5 5 15a7 7 0 0 0 14 0C19 10.5 12 2 12 2Z"/>
+              </svg>
+              <span style="font-size:clamp(0.65rem,1vw,0.9rem);opacity:0.85;">${pop}%</span>
+            </div>`
+          : `<div style="height:clamp(0.65rem,1vw,0.9rem);"></div>`;
+      
+        ch.innerHTML += `<div class="franja">
+          <span class="franja-hora">${h}</span>
+          <img src="${iconoUrl(f.weather[0].icon)}" alt="">
+          <span class="franja-temp">${Math.round(f.main.temp)}°</span>
+          ${popHtml}
+        </div>`;
         });
 
         const hoy = new Date().toDateString();
