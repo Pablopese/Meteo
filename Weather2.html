@@ -565,10 +565,16 @@
         const pop = Math.round(a.pop * 100);
         const elPop = document.getElementById('precipitacion');
         if (pop > 0) {
-          elPop.textContent = `💧 ${pop}% prob. lluvia`;
-          elPop.style.color = colorEscala(pop, 0, 100);
+          elPop.innerHTML = `
+            <div style="display:flex;align-items:center;justify-content:center;gap:0.4vw;margin-top:0.3vh;">
+              <svg viewBox="0 0 24 24" fill="rgba(255,255,255,0.75)" xmlns="http://www.w3.org/2000/svg"
+                style="width:clamp(10px,1.2vw,16px);height:clamp(10px,1.2vw,16px);flex-shrink:0;">
+                <path d="M12 2C12 2 5 10.5 5 15a7 7 0 0 0 14 0C19 10.5 12 2 12 2Z"/>
+              </svg>
+              <span style="font-size:clamp(0.75rem,1.2vw,1.05rem);opacity:0.85;">${pop}%</span>
+            </div>`;
         } else {
-          elPop.textContent = '';
+          elPop.innerHTML = '';
         }
         document.getElementById('humedad').textContent     = a.main.humidity+'%';
         document.getElementById('viento').textContent      = Math.round(a.wind.speed*3.6)+' km/h';
