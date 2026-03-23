@@ -5,6 +5,63 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Panel del Tiempo</title>
   <style>
+/* ── ESTRELLA ── */
+.estrella {
+  position: absolute;
+  background: white;
+  border-radius: 50%;
+  animation: parpadeo ease-in-out infinite;
+}
+@keyframes parpadeo {
+  0%, 100% { opacity: 0.2; transform: scale(1); }
+  50%       { opacity: 1;   transform: scale(1.4); }
+}
+
+/* ── SOL ── */
+.sol-anim {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffe066 40%, #ffb300 100%);
+  box-shadow: 0 0 40px 15px rgba(255,200,0,0.25);
+  animation: solFlota 6s ease-in-out infinite;
+}
+@keyframes solFlota {
+  0%, 100% { transform: translateY(0)   scale(1);    opacity: 0.85; }
+  50%       { transform: translateY(-8px) scale(1.04); opacity: 1; }
+}
+.rayo {
+  position: absolute;
+  background: rgba(255, 220, 80, 0.35);
+  border-radius: 2px;
+  transform-origin: center center;
+  animation: rayoFlota 6s ease-in-out infinite;
+}
+@keyframes rayoFlota {
+  0%, 100% { opacity: 0.35; }
+  50%       { opacity: 0.6; }
+}
+
+/* ── NUBE ── */
+.nube-anim {
+  position: absolute;
+  background: rgba(255,255,255,0.12);
+  border-radius: 50px;
+  filter: blur(6px);
+  animation: nubeDeriva linear infinite;
+}
+.nube-anim::before, .nube-anim::after {
+  content: '';
+  position: absolute;
+  background: rgba(255,255,255,0.12);
+  border-radius: 50%;
+}
+.nube-anim::before { width: 60%; height: 130%; top: -40%; left: 20%; }
+.nube-anim::after  { width: 40%; height: 110%; top: -30%; right: 15%; }
+@keyframes nubeDeriva {
+  from { transform: translateX(-150px); }
+  to   { transform: translateX(110vw);  }
+}
+
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     html, body {
@@ -427,13 +484,85 @@
       iniciarAnimacion(id);
     }
 
-    function iniciarAnimacion(id) {
-      const cont = document.getElementById('animacion');
-      cont.innerHTML = '';
-      if (id>=200&&id<300) { const f=document.createElement('div'); f.className='flash'; cont.appendChild(f); crearGotas(cont,40); }
-      else if (id>=300&&id<600) crearGotas(cont, id>=500?50:25);
-      else if (id>=600&&id<700) crearCopos(cont,30);
+function iniciarAnimacion(id) {
+  const cont = document.getElementById('animacion');
+  cont.innerHTML = '';
+
+  const hora = new Date().getHours();
+  const esNoche = hora < 7 || hora >= 20;
+
+  // Cielo estrellado de noche (cualquier condición)
+  if (esNoche) {
+    for (let i = 0; i < 80; i++) {
+      const s = document.createElement('div');
+      s.className = 'estrella';
+      const size = Math.random() * 2.5 + 1;
+      s.style.cssText = `
+        width:${size}px; height:${size}px;
+        top:${Math.random() * 100}vh;
+        left:${Math.random() * 100}vw;
+        animation-duration:${Math.random() * 3 + 2}s;
+        animation-delay:${Math.random() * 4}s;
+      `;
+      cont.appendChild(s);
     }
+  }
+
+  // Sol (código 800 de día)
+  if (id === 800 && !esNoche) {
+    const sol = document.createElement('div');
+    const sz = Math.min(window.innerWidth, window.innerHeight) * 0.18;
+    sol.className = 'sol-anim';
+    sol.style.cssText = `width:${sz}px; height:${sz}px; top:6vh; right:8vw;`;
+    cont.appendChild(sol);
+
+    // Rayos
+    for (let i = 0; i < 12; i++) {
+      const r = document.createElement('div');
+      r.className = 'rayo';
+      const ang = (i / 12) * 360;
+      const largo = sz * 0.7;
+      r.style.cssText = `
+        width:${sz * 0.05}px; height:${largo}px;
+        top:${6 + (sz/2 - largo/2) / window.innerHeight * 100}vh;
+        right:calc(8vw + ${sz/2 - sz*0.025}px);
+        transform: rotate(${ang}deg) translateY(-${sz * 0.6}px);
+        animation-delay:${(i/12)*6}s;
+      `;
+      cont.appendChild(r);
+    }
+  }
+
+  // Nubes flotantes (nublado, 801–804)
+  if (id >= 801 && id <= 804) {
+    const nNubes = id === 801 ? 2 : id === 802 ? 3 : 5;
+    for (let i = 0; i < nNubes; i++) {
+      const n = document.createElement('div');
+      n.className = 'nube-anim';
+      const w = Math.random() * 180 + 120;
+      const dur = Math.random() * 30 + 40;
+      n.style.cssText = `
+        width:${w}px; height:${w * 0.4}px;
+        top:${Math.random() * 40 + 5}vh;
+        left:-${w + 50}px;
+        animation-duration:${dur}s;
+        animation-delay:-${Math.random() * dur}s;
+      `;
+      cont.appendChild(n);
+    }
+  }
+
+  // Lluvia y nieve (igual que antes)
+  if (id >= 200 && id < 300) {
+    const f = document.createElement('div'); f.className = 'flash'; cont.appendChild(f);
+    crearGotas(cont, 40);
+  } else if (id >= 300 && id < 600) {
+    crearGotas(cont, id >= 500 ? 50 : 25);
+  } else if (id >= 600 && id < 700) {
+    crearCopos(cont, 30);
+  }
+}
+
 
     function crearGotas(cont,n) {
       for(let i=0;i<n;i++){const g=document.createElement('div');g.className='gota';g.style.left=(Math.random()*100)+'vw';g.style.animationDuration=(Math.random()*0.4+0.4)+'s';g.style.animationDelay=(Math.random()*2)+'s';g.style.opacity=(Math.random()*0.4+0.3).toString();cont.appendChild(g);}
