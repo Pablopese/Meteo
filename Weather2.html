@@ -42,7 +42,6 @@
       border-radius: 2px;
       animation: caerGota linear infinite;
     }
-
     @keyframes caerGota { to { transform: translateY(110vh); } }
 
     .copo {
@@ -51,7 +50,6 @@
       color: rgba(255,255,255,0.8);
       animation: caerNieve linear infinite;
     }
-
     @keyframes caerNieve { to { transform: translateY(110vh) rotate(360deg); } }
 
     .flash {
@@ -60,14 +58,13 @@
       background: white; opacity: 0;
       animation: relampago 5s infinite;
     }
-
     @keyframes relampago {
       0%, 92%, 100% { opacity: 0; }
       93%, 95% { opacity: 0.15; }
       94% { opacity: 0; }
     }
 
-    /* ── LAYOUT SIEMPRE DOS COLUMNAS ── */
+    /* ── LAYOUT ── */
     .layout {
       position: relative;
       z-index: 2;
@@ -82,13 +79,15 @@
 
     .layout.fade-out { opacity: 0; }
 
+    /* Columna izquierda: 45% del ancho */
     .col-izquierda {
-      flex: 1;
+      flex: 0 0 45%;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       align-items: center;
       height: 100%;
+      min-width: 0;
     }
 
     .cuadrante-superior {
@@ -96,31 +95,35 @@
       flex-direction: column;
       align-items: center;
       width: 100%;
+      flex-shrink: 0;
     }
 
     .cuadrante-inferior {
       width: 100%;
+      flex-shrink: 0;
     }
 
+    /* Columna derecha: resto del ancho */
     .col-derecha {
       flex: 1;
       display: flex;
       flex-direction: column;
       justify-content: center;
       height: 100%;
+      min-width: 0;
     }
 
     /* Selector ciudades */
     .ciudades-selector {
       display: flex;
-      gap: 0.8vw;
+      gap: 1vw;
       margin-bottom: 1.5vh;
     }
 
     .ciudad-pill {
-      padding: 0.4vh 1.2vw;
-      border-radius: 15px;
-      font-size: clamp(0.6rem, 1vw, 1rem);
+      padding: 0.5vh 1.5vw;
+      border-radius: 20px;
+      font-size: clamp(0.65rem, 1.1vw, 1rem);
       letter-spacing: 1px;
       text-transform: uppercase;
       opacity: 0.35;
@@ -136,7 +139,7 @@
     }
 
     #ciudad {
-      font-size: clamp(1rem, 2.5vw, 2.2rem);
+      font-size: clamp(1rem, 2.8vw, 2.5rem);
       opacity: 0.7;
       letter-spacing: 4px;
       text-transform: uppercase;
@@ -144,14 +147,14 @@
     }
 
     #hora {
-      font-size: clamp(2.5rem, 9vw, 7rem);
+      font-size: clamp(3rem, 10vw, 8rem);
       font-weight: bold;
       letter-spacing: 2px;
       line-height: 1;
     }
 
     #fecha {
-      font-size: clamp(0.75rem, 1.5vw, 1.3rem);
+      font-size: clamp(0.8rem, 1.6vw, 1.4rem);
       opacity: 0.6;
       margin-bottom: 1.5vh;
     }
@@ -182,40 +185,45 @@
     }
 
     .sol-card span:last-child {
-      font-size: clamp(0.9rem, 1.5vw, 1.3rem);
+      font-size: clamp(0.9rem, 1.6vw, 1.4rem);
       font-weight: bold;
     }
 
-    /* Previsión diaria */
+    /* ── PREVISIÓN DIARIA — forzada horizontal ── */
     .prevision-diaria {
       width: 100%;
       background: rgba(255,255,255,0.05);
       border-radius: 12px;
-      padding: 1.5vh 0.5vw;
+      padding: 1.5vh 1vw;
       display: flex;
-      flex-direction: row;
+      flex-direction: row;          /* siempre horizontal */
+      flex-wrap: nowrap;            /* no permite salto de línea */
       justify-content: space-around;
       align-items: center;
+      gap: 0;
     }
 
     .dia-card {
+      flex: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 0.4vh;
+      gap: 0.5vh;
+      min-width: 0;
     }
 
     .dia-nombre {
-      font-size: clamp(0.6rem, 1vw, 0.9rem);
+      font-size: clamp(0.6rem, 1vw, 0.95rem);
       opacity: 0.6;
       text-transform: capitalize;
       text-align: center;
+      white-space: nowrap;
     }
 
-    .dia-icono { font-size: clamp(1.2rem, 2.5vw, 2.2rem); line-height: 1.2; }
+    .dia-icono { font-size: clamp(1.2rem, 2.8vw, 2.4rem); line-height: 1.2; }
 
     .dia-temps {
-      font-size: clamp(0.75rem, 1.2vw, 1.1rem);
+      font-size: clamp(0.75rem, 1.3vw, 1.15rem);
       font-weight: bold;
       text-align: center;
     }
@@ -227,7 +235,7 @@
       font-size: 0.88em;
     }
 
-    /* Contenedor derecha */
+    /* ── DERECHA ── */
     .contenedor-tiempo {
       display: flex;
       flex-direction: column;
@@ -259,7 +267,7 @@
       gap: 0.8vh;
     }
 
-    #icono { font-size: clamp(3rem, 8vw, 7rem); line-height: 1; }
+    #icono { font-size: clamp(3rem, 7vw, 6rem); line-height: 1; }
 
     #descripcion {
       font-size: clamp(0.75rem, 1.3vw, 1.1rem);
@@ -269,7 +277,7 @@
     }
 
     #temperatura {
-      font-size: clamp(3rem, 9vw, 7.5rem);
+      font-size: clamp(3.5rem, 9vw, 7.5rem);
       font-weight: 300;
       line-height: 1;
     }
@@ -280,6 +288,7 @@
       background: rgba(255,255,255,0.1);
     }
 
+    /* Previsión horaria */
     .prevision {
       width: 100%;
       display: flex;
@@ -296,14 +305,9 @@
       gap: 0.3vh;
     }
 
-    .franja-hora {
-      font-size: clamp(0.6rem, 1vw, 0.9rem);
-      opacity: 0.5;
-      letter-spacing: 1px;
-    }
-
+    .franja-hora { font-size: clamp(0.6rem, 1vw, 0.9rem); opacity: 0.5; letter-spacing: 1px; }
     .franja-icono { font-size: clamp(1.2rem, 2.5vw, 2rem); line-height: 1.2; }
-    .franja-temp { font-size: clamp(0.85rem, 1.3vw, 1.1rem); font-weight: bold; }
+    .franja-temp { font-size: clamp(0.85rem, 1.4vw, 1.15rem); font-weight: bold; }
 
     /* Grid detalles */
     .detalles {
@@ -324,7 +328,7 @@
     }
 
     .detalle span:first-child {
-      font-size: clamp(0.55rem, 0.9vw, 0.8rem);
+      font-size: clamp(0.55rem, 0.9vw, 0.82rem);
       letter-spacing: 2px;
       text-transform: uppercase;
       opacity: 0.5;
@@ -344,7 +348,7 @@
       position: fixed;
       bottom: 1.5vh;
       right: 1.5vw;
-      font-size: clamp(0.55rem, 0.8vw, 0.75rem);
+      font-size: clamp(0.5rem, 0.8vw, 0.75rem);
       opacity: 0.3;
       z-index: 2;
     }
@@ -433,15 +437,10 @@
     function icono(codigo) { return mapaIconos[codigo] || 'wi-na'; }
 
     let touchStartX = 0;
-    document.addEventListener('touchstart', e => {
-      touchStartX = e.touches[0].clientX;
-    }, { passive: true });
-
+    document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
     document.addEventListener('touchend', e => {
-      const delta = e.changedTouches[0].clientX - touchStartX;
-      if (Math.abs(delta) > 80) {
+      if (Math.abs(e.changedTouches[0].clientX - touchStartX) > 80)
         cambiarCiudad(ciudadActual === 'merida' ? 'caceres' : 'merida');
-      }
     }, { passive: true });
 
     async function cambiarCiudad(nueva) {
@@ -463,14 +462,14 @@
       const esNoche = cod.includes('n');
       const id = condicion;
       let g;
-      if (esNoche)              g = 'linear-gradient(135deg, #0a0e1a 0%, #1a1a2e 50%, #16213e 100%)';
-      else if (id < 300)        g = 'linear-gradient(135deg, #1a1a2e 0%, #2d3561 50%, #1a1a2e 100%)';
-      else if (id < 600)        g = 'linear-gradient(135deg, #2c3e50 0%, #3498db 100%)';
-      else if (id < 700)        g = 'linear-gradient(135deg, #e0e0e0 0%, #b0c4de 50%, #a8c0d6 100%)';
-      else if (id < 800)        g = 'linear-gradient(135deg, #606c88 0%, #3f4c6b 100%)';
-      else if (id === 800)      g = 'linear-gradient(135deg, #1a6fa8 0%, #2e9fd4 50%, #87ceeb 100%)';
-      else if (id <= 802)       g = 'linear-gradient(135deg, #1c3a5e 0%, #4a7fa5 100%)';
-      else                      g = 'linear-gradient(135deg, #2c3e50 0%, #4a5568 100%)';
+      if (esNoche)          g = 'linear-gradient(135deg, #0a0e1a 0%, #1a1a2e 50%, #16213e 100%)';
+      else if (id < 300)    g = 'linear-gradient(135deg, #1a1a2e 0%, #2d3561 50%, #1a1a2e 100%)';
+      else if (id < 600)    g = 'linear-gradient(135deg, #2c3e50 0%, #3498db 100%)';
+      else if (id < 700)    g = 'linear-gradient(135deg, #e0e0e0 0%, #b0c4de 50%, #a8c0d6 100%)';
+      else if (id < 800)    g = 'linear-gradient(135deg, #606c88 0%, #3f4c6b 100%)';
+      else if (id === 800)  g = 'linear-gradient(135deg, #1a6fa8 0%, #2e9fd4 50%, #87ceeb 100%)';
+      else if (id <= 802)   g = 'linear-gradient(135deg, #1c3a5e 0%, #4a7fa5 100%)';
+      else                  g = 'linear-gradient(135deg, #2c3e50 0%, #4a5568 100%)';
       document.body.style.backgroundImage = g;
       iniciarAnimacion(id);
     }
