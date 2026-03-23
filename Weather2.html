@@ -18,27 +18,36 @@
 }
 
 /* ── SOL ── */
-.sol-anim {
+/* ── SOL difuso ── */
+.sol-halo {
   position: absolute;
   border-radius: 50%;
-  background: radial-gradient(circle, #ffe066 40%, #ffb300 100%);
-  box-shadow: 0 0 40px 15px rgba(255,200,0,0.25);
-  animation: solFlota 6s ease-in-out infinite;
+  background: radial-gradient(circle,
+    rgba(255, 230, 80, 0.55) 0%,
+    rgba(255, 180, 0, 0.25) 40%,
+    rgba(255, 140, 0, 0.08) 70%,
+    transparent 100%
+  );
+  animation: haloRespira 5s ease-in-out infinite;
 }
-@keyframes solFlota {
-  0%, 100% { transform: translateY(0)   scale(1);    opacity: 0.85; }
-  50%       { transform: translateY(-8px) scale(1.04); opacity: 1; }
+@keyframes haloRespira {
+  0%, 100% { transform: scale(1);    opacity: 0.75; }
+  50%       { transform: scale(1.12); opacity: 1;   }
 }
-.rayo {
+
+.sol-rayo-difuso {
   position: absolute;
-  background: rgba(255, 220, 80, 0.35);
-  border-radius: 2px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center,
+    rgba(255, 220, 60, 0.18) 0%,
+    transparent 70%
+  );
   transform-origin: center center;
-  animation: rayoFlota 6s ease-in-out infinite;
+  animation: rayoDifusoGira 20s linear infinite;
 }
-@keyframes rayoFlota {
-  0%, 100% { opacity: 0.35; }
-  50%       { opacity: 0.6; }
+@keyframes rayoDifusoGira {
+  from { transform: rotate(0deg)   scale(1);   }
+  to   { transform: rotate(360deg) scale(1.1); }
 }
 
 /* ── NUBE ── */
@@ -510,12 +519,35 @@ function iniciarAnimacion(id) {
   }
 
   // Sol (código 800 de día)
-  if (id === 800 && !esNoche) {
-    const sol = document.createElement('div');
-    const sz = Math.min(window.innerWidth, window.innerHeight) * 0.18;
-    sol.className = 'sol-anim';
-    sol.style.cssText = `width:${sz}px; height:${sz}px; top:6vh; right:8vw;`;
-    cont.appendChild(sol);
+ if (id === 800 && !esNoche) {
+  const sz = Math.min(window.innerWidth, window.innerHeight) * 0.55;
+  const cx = window.innerWidth * 0.82;
+  const cy = window.innerHeight * 0.12;
+
+  // Halo exterior muy difuso
+  [1.8, 1.4, 1.0].forEach((mult, i) => {
+    const halo = document.createElement('div');
+    halo.className = 'sol-rayo-difuso';
+    const s = sz * mult;
+    halo.style.cssText = `
+      width:${s}px; height:${s}px;
+      top:${cy - s/2}px; left:${cx - s/2}px;
+      animation-duration:${18 + i * 7}s;
+      animation-delay:-${i * 4}s;
+    `;
+    cont.appendChild(halo);
+  });
+
+  // Núcleo brillante
+  const nucleo = document.createElement('div');
+  nucleo.className = 'sol-halo';
+  const sn = sz * 0.45;
+  nucleo.style.cssText = `
+    width:${sn}px; height:${sn}px;
+    top:${cy - sn/2}px; left:${cx - sn/2}px;
+  `;
+  cont.appendChild(nucleo);
+}
 
     // Rayos
     for (let i = 0; i < 12; i++) {
