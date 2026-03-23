@@ -551,90 +551,108 @@
       } catch(e) { document.getElementById('uv-valor').textContent='N/D'; document.getElementById('uv-label').textContent=''; }
     }
 
-    async function obtenerTiempoYPrevision() {
-      const {lat,lon} = ciudadActual;
-      try {
-        const r = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&lang=es&appid=${API_KEY}`);
-        const d = await r.json();
+   async function obtenerTiempoYPrevision() {
+  const {lat, lon} = ciudadActual;
+  try {
+    const [rCurrent, rForecast] = await Promise.all([
+      fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&lang=es&appid=${API_KEY}`),
+      fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&lang=es&appid=${API_KEY}`)
+    ]);
+    const current  = await rCurrent.json();
+    const forecast = await rForecast.json();
 
-        ciudadActual.tzOffset = d.city.timezone;
+    // ── DATO ACTUAL (de weather, más preciso) ──
+    document.getElementById('temperatura').textContent = Math.round(current.main.temp)+'°';
+    document.getElementById('descripcion').textContent = current.weather[0].description;
+    document.getElementById('humedad').textContent     = current.main.humidity+'%';
+    document.getElementById('viento').textContent      = Math.round(current.wind.speed*3.6)+' km/h';
+    document.getElementById('presion').textContent     = current.main.pressure+' hPa';
+    document.getElementById('icono').src               = iconoUrl(current.weather[0].icon);
+    actualizarFondo(current.weather[0].id, current.weather[0].icon);
 
-        const a = d.list[0];
-        document.getElementById('temperatura').textContent = Math.round(a.main.temp)+'°';
-        document.getElementById('descripcion').textContent = a.weather[0].description;
-        const pop = Math.round(a.pop * 100);
-        const elPop = document.getElementById('precipitacion');
-        if (pop > 0) {
-          elPop.innerHTML = `
-          <div style="display:flex;align-items:center;justify-content:center;gap:0.4vw;margin-top:0.3vh;">
+    const sensVal = Math.round(current.main.feels_like);
+    const elSens  = document.getElementById('sensacion');
+    elSens.textContent = sensVal+'°';
+    elSens.style.color = colorEscala(sensVal, 0, 40);
+
+    // ── TIMEZONE (del forecast) ──
+    ciudadActual.tzOffset = forecast.city.timezone;
+
+    // ── AMANECER / ATARDECER ──
+    document.getElementById('amanecer').textContent  = new Date(forecast.city.sunrise*1000).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
+    document.getElementById('atardecer').textContent = new Date(forecast.city.sunset*1000).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
+
+    // ── POP ACTUAL (del primer bloque del forecast) ──
+    const pop = Math.round(forecast.list[0].pop * 100);
+    const elPop = document.getElementById('precipitacion');
+    if (pop > 0) {
+      elPop.innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:center;gap:0.4vw;margin-top:0.3vh;">
+          <svg viewBox="0 0 24 24" fill="rgba(255,255,255,0.75)" xmlns="http://www.w3.org/2000/svg"
+            style="width:clamp(14px,1.8vw,22px);height:clamp(14px,1.8vw,22px);flex-shrink:0;">
+            <path d="M12 2C12 2 5 10.5 5 15a7 7 0 0 0 14 0C19 10.5 12 2 12 2Z"/>
+          </svg>
+          <span style="font-size:clamp(1rem,1.6vw,1.5rem);opacity:0.85;">${pop}%</span>
+        </div>`;
+    } else {
+      elPop.innerHTML = '';
+    }
+
+    // ── PREVISIÓN HORARIA ──
+    const ch = document.querySelector('.prevision');
+    ch.innerHTML = '';
+    forecast.list.slice(1,5).forEach(f => {
+      const h   = new Date(f.dt*1000).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
+      const pop = Math.round(f.pop * 100);
+      const popHtml = pop > 0
+        ? `<div style="display:flex;align-items:center;justify-content:center;gap:0.3vw;">
             <svg viewBox="0 0 24 24" fill="rgba(255,255,255,0.75)" xmlns="http://www.w3.org/2000/svg"
-              style="width:clamp(14px,1.8vw,22px);height:clamp(14px,1.8vw,22px);flex-shrink:0;">
+              style="width:clamp(8px,1vw,12px);height:clamp(8px,1vw,12px);flex-shrink:0;">
               <path d="M12 2C12 2 5 10.5 5 15a7 7 0 0 0 14 0C19 10.5 12 2 12 2Z"/>
             </svg>
-            <span style="font-size:clamp(1rem,1.6vw,1.5rem);opacity:0.85;">${pop}%</span>
-          </div>`;
-        } else {
-          elPop.innerHTML = '';
-        }
-        document.getElementById('humedad').textContent     = a.main.humidity+'%';
-        document.getElementById('viento').textContent      = Math.round(a.wind.speed*3.6)+' km/h';
-        document.getElementById('presion').textContent     = a.main.pressure+' hPa';
-        document.getElementById('icono').src               = iconoUrl(a.weather[0].icon);
-        actualizarFondo(a.weather[0].id, a.weather[0].icon);
+            <span style="font-size:clamp(0.65rem,1vw,0.9rem);opacity:0.85;">${pop}%</span>
+          </div>`
+        : `<div style="height:clamp(0.65rem,1vw,0.9rem);"></div>`;
 
-        const sensVal = Math.round(a.main.feels_like);
-        const elSens  = document.getElementById('sensacion');
-        elSens.textContent = sensVal+'°';
-        elSens.style.color = colorEscala(sensVal, 0, 40);
+      ch.innerHTML += `<div class="franja">
+        <span class="franja-hora">${h}</span>
+        <img src="${iconoUrl(f.weather[0].icon)}" alt="">
+        <span class="franja-temp">${Math.round(f.main.temp)}°</span>
+        ${popHtml}
+      </div>`;
+    });
 
-        document.getElementById('amanecer').textContent  = new Date(d.city.sunrise*1000).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
-        document.getElementById('atardecer').textContent = new Date(d.city.sunset*1000).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
+    // ── PREVISIÓN DIARIA ──
+    const hoy = new Date().toDateString();
+    const porDia = {};
+    forecast.list.forEach(item => {
+      const fecha = new Date(item.dt*1000);
+      const key   = fecha.toDateString();
+      if (key === hoy) return;
+      if (!porDia[key]) porDia[key] = { nombre:fecha.toLocaleDateString('es-ES',{weekday:'short',day:'numeric'}), temps:[], iconos:[] };
+      porDia[key].temps.push(item.main.temp);
+      porDia[key].iconos.push(item.weather[0].icon);
+    });
 
-        const ch = document.querySelector('.prevision');
-        ch.innerHTML = '';
-        d.list.slice(1,5).forEach(f => {
-        const h   = new Date(f.dt*1000).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
-        const pop = Math.round(f.pop * 100);
-        const popHtml = pop > 0
-          ? `<div style="display:flex;align-items:center;justify-content:center;gap:0.3vw;">
-              <svg width="clamp(8px,1vw,12px)" height="clamp(8px,1vw,12px)" viewBox="0 0 24 24" fill="rgba(255,255,255,0.75)" xmlns="http://www.w3.org/2000/svg" style="width:clamp(8px,1vw,12px);height:clamp(8px,1vw,12px);flex-shrink:0;">
-                <path d="M12 2C12 2 5 10.5 5 15a7 7 0 0 0 14 0C19 10.5 12 2 12 2Z"/>
-              </svg>
-              <span style="font-size:clamp(0.65rem,1vw,0.9rem);opacity:0.85;">${pop}%</span>
-            </div>`
-          : `<div style="height:clamp(0.65rem,1vw,0.9rem);"></div>`;
-      
-        ch.innerHTML += `<div class="franja">
-          <span class="franja-hora">${h}</span>
-          <img src="${iconoUrl(f.weather[0].icon)}" alt="">
-          <span class="franja-temp">${Math.round(f.main.temp)}°</span>
-          ${popHtml}
-        </div>`;
-        });
+    const cd = document.querySelector('.prevision-diaria');
+    cd.innerHTML = '';
+    Object.values(porDia).slice(0,5).forEach(dia => {
+      const max = Math.round(Math.max(...dia.temps));
+      const min = Math.round(Math.min(...dia.temps));
+      const cod = dia.iconos[Math.floor(dia.iconos.length/2)];
+      cd.innerHTML += `<div class="dia-card">
+        <span class="dia-nombre">${dia.nombre}</span>
+        <img class="dia-icono" src="${iconoUrl(cod)}" alt="">
+        <span class="dia-temps">${max}°<span class="min">${min}°</span></span>
+      </div>`;
+    });
 
-        const hoy = new Date().toDateString();
-        const porDia = {};
-        d.list.forEach(item => {
-          const fecha = new Date(item.dt*1000);
-          const key   = fecha.toDateString();
-          if (key===hoy) return;
-          if (!porDia[key]) porDia[key]={nombre:fecha.toLocaleDateString('es-ES',{weekday:'short',day:'numeric'}),temps:[],iconos:[]};
-          porDia[key].temps.push(item.main.temp);
-          porDia[key].iconos.push(item.weather[0].icon);
-        });
+    document.getElementById('ultima-actualizacion').textContent = 'Actualizado: ' + new Date().toLocaleTimeString('es-ES');
+  } catch(e) {
+    document.getElementById('descripcion').textContent = 'Error de conexión';
+  }
+}
 
-        const cd = document.querySelector('.prevision-diaria');
-        cd.innerHTML = '';
-        Object.values(porDia).slice(0,5).forEach(dia => {
-          const max=Math.round(Math.max(...dia.temps));
-          const min=Math.round(Math.min(...dia.temps));
-          const cod=dia.iconos[Math.floor(dia.iconos.length/2)];
-          cd.innerHTML += `<div class="dia-card"><span class="dia-nombre">${dia.nombre}</span><img class="dia-icono" src="${iconoUrl(cod)}" alt=""><span class="dia-temps">${max}°<span class="min">${min}°</span></span></div>`;
-        });
-
-        document.getElementById('ultima-actualizacion').textContent = 'Actualizado: '+new Date().toLocaleTimeString('es-ES');
-      } catch(e) { document.getElementById('descripcion').textContent='Error de conexión'; }
-    }
 
     obtenerTiempoYPrevision();
     obtenerPolen();
