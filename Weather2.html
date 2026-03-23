@@ -32,39 +32,32 @@
       0%,100% { opacity:0.2; transform:scale(1); }
       50%     { opacity:1;   transform:scale(1.4); }
     }
-
     .sol-halo {
       position:absolute; border-radius:50%;
       background: radial-gradient(circle,
-        rgba(255,255,255,1.00)  0%,
-        rgba(255,255,255,0.75) 20%,
-        rgba(255,252,240,0.35) 50%,
-        rgba(255,248,220,0.08) 75%,
-        transparent 100%
+        rgba(255,255,255,1.00)  0%, rgba(255,255,255,0.75) 20%,
+        rgba(255,252,240,0.35) 50%, rgba(255,248,220,0.08) 75%, transparent 100%
       );
       filter: blur(18px);
       animation: haloRespira 5s ease-in-out infinite;
     }
     @keyframes haloRespira {
-      0%,100% { transform:scale(1);    opacity:0.75; }
+      0%,100% { transform:scale(1); opacity:0.75; }
       50%     { transform:scale(1.12); opacity:1; }
     }
     .sol-rayo-difuso {
       position:absolute; border-radius:50%;
       background: radial-gradient(ellipse at center,
-        rgba(255,255,255,0.18) 0%,
-        rgba(255,255,255,0.06) 45%,
-        transparent 70%
+        rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 45%, transparent 70%
       );
       filter: blur(28px);
       transform-origin:center center;
       animation: rayoDifusoGira 20s linear infinite;
     }
     @keyframes rayoDifusoGira {
-      from { transform:rotate(0deg)   scale(1);   }
+      from { transform:rotate(0deg) scale(1); }
       to   { transform:rotate(360deg) scale(1.1); }
     }
-
     .nube-anim {
       position:absolute; background:rgba(255,255,255,0.12);
       border-radius:50px; filter:blur(6px);
@@ -79,6 +72,71 @@
       from { transform:translateX(-150px); }
       to   { transform:translateX(110vw); }
     }
+
+    /* ── OVERLAY BÚSQUEDA ── */
+    #overlay-busqueda {
+      position: fixed; top:0; left:0; width:100vw; height:100vh;
+      background: rgba(10,14,26,0.55);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index: 50;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      animation: fadeInOverlay 0.25s ease;
+    }
+    #overlay-busqueda.activo { display: flex; }
+    @keyframes fadeInOverlay {
+      from { opacity:0; }
+      to   { opacity:1; }
+    }
+    .busqueda-modal {
+      width: clamp(280px, 50vw, 560px);
+      display: flex;
+      flex-direction: column;
+      gap: 0.8vh;
+    }
+    .busqueda-input-wrap {
+      display: flex;
+      align-items: center;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 16px;
+      padding: 1vh 1.5vw;
+      gap: 0.8vw;
+    }
+    .busqueda-input-wrap svg { opacity: 0.6; flex-shrink:0; }
+    #buscador {
+      flex:1; background:transparent; border:none; outline:none;
+      color:white; font-size:clamp(1rem,1.5vw,1.3rem);
+      letter-spacing: 0.5px;
+    }
+    #buscador::placeholder { color:rgba(255,255,255,0.4); }
+    #btn-cerrar-busqueda {
+      background: none; border: none; color: rgba(255,255,255,0.5);
+      font-size: 1.4rem; cursor: pointer; line-height:1;
+      transition: color 0.2s;
+    }
+    #btn-cerrar-busqueda:hover { color: white; }
+
+    #sugerencias {
+      background: rgba(20,30,55,0.97);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+      display: none;
+    }
+    #sugerencias.visible { display: block; }
+    .sugerencia-item {
+      padding: 1.2vh 1.5vw;
+      font-size: clamp(0.75rem, 1.1vw, 1rem);
+      cursor: pointer;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      transition: background 0.2s;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .sugerencia-item:last-child { border-bottom: none; }
+    .sugerencia-item:hover { background: rgba(255,255,255,0.12); }
 
     /* ── LAYOUT ── */
     .layout {
@@ -96,38 +154,56 @@
     .fila-superior { display:grid; grid-template-columns:38% 62%; gap:2vw; min-height:0; }
 
     /* ── COL IZQUIERDA ── */
-    .col-izquierda { display:flex; flex-direction:column; justify-content:center; align-items:center; gap:1vh; min-width:0; }
-
-    .buscador-wrap { position:relative; width:100%; }
-    #buscador {
-      width:100%; padding:0.6vh 1.2vw;
-      border-radius:20px; border:1px solid rgba(255,255,255,0.25);
-      background:rgba(255,255,255,0.1); color:white;
-      font-size:clamp(0.7rem,1vw,1rem); letter-spacing:1px;
-      outline:none; transition:border-color 0.3s;
+    .col-izquierda {
+      display:flex; flex-direction:column;
+      justify-content:center; align-items:center;
+      gap:1vh; min-width:0;
     }
-    #buscador::placeholder { color:rgba(255,255,255,0.4); }
-    #buscador:focus { border-color:rgba(255,255,255,0.6); }
-
-    #sugerencias {
-      position:absolute; top:calc(100% + 6px); left:0; right:0;
-      background:rgba(20,30,55,0.95); border-radius:12px;
-      overflow:hidden; z-index:10; display:none;
-      box-shadow:0 8px 24px rgba(0,0,0,0.4);
-    }
-    .sugerencia-item {
-      padding:0.8vh 1.2vw;
-      font-size:clamp(0.65rem,0.95vw,0.9rem);
-      cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.05);
-      transition:background 0.2s; white-space:nowrap;
-      overflow:hidden; text-overflow:ellipsis;
-    }
-    .sugerencia-item:last-child { border-bottom:none; }
-    .sugerencia-item:hover { background:rgba(255,255,255,0.12); }
 
     #ciudad { font-size:clamp(1.2rem,3vw,2.8rem); opacity:0.7; letter-spacing:4px; text-transform:uppercase; line-height:1; text-align:center; }
     #hora   { font-size:clamp(3rem,10vw,8rem); font-weight:bold; letter-spacing:2px; line-height:1; text-align:center; }
     #fecha  { font-size:clamp(0.8rem,1.5vw,1.3rem); opacity:0.6; text-align:center; }
+
+    /* ── BARRA INFERIOR COL IZQ ── */
+    .barra-acciones {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.8vw;
+      width: 100%;
+      margin-top: 0.5vh;
+    }
+    .ciudad-shortcut {
+      padding: 0.4vh 1.2vw;
+      border-radius: 20px;
+      font-size: clamp(0.6rem, 0.85vw, 0.85rem);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      opacity: 0.4;
+      cursor: pointer;
+      transition: all 0.3s;
+      border: 1px solid transparent;
+      user-select: none;
+    }
+    .ciudad-shortcut:hover,
+    .ciudad-shortcut.activa {
+      opacity: 1;
+      border-color: rgba(255,255,255,0.3);
+      background: rgba(255,255,255,0.1);
+    }
+    .btn-lupa {
+      width: clamp(28px, 2.2vw, 38px);
+      height: clamp(28px, 2.2vw, 38px);
+      border-radius: 50%;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.25);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+      flex-shrink: 0;
+    }
+    .btn-lupa:hover { background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.5); }
+    .btn-lupa svg { width:55%; height:55%; opacity:0.8; }
 
     .sol-cards { display:grid; grid-template-columns:1fr 1fr; gap:1vw; width:100%; }
     .sol-card { display:flex; flex-direction:column; align-items:center; background:rgba(255,255,255,0.05); border-radius:10px; padding:0.8vh 0.5vw; gap:0.2vh; }
@@ -153,8 +229,7 @@
     .detalles { display:grid; grid-template-columns:repeat(6,1fr); gap:1.2vw; width:100%; }
     .detalle {
       display:flex; flex-direction:column; align-items:center; justify-content:center;
-      background:rgba(255,255,255,0.05); border-radius:12px;
-      padding:1.5vh 1vw; gap:0.5vh;
+      background:rgba(255,255,255,0.05); border-radius:12px; padding:1.5vh 1vw; gap:0.5vh;
     }
     .detalle span:first-child { font-size:clamp(0.65rem,1vw,1rem); letter-spacing:2px; text-transform:uppercase; opacity:0.5; }
     .detalle span:nth-child(2){ font-size:clamp(1.3rem,2.8vw,2.4rem); font-weight:bold; }
@@ -175,20 +250,39 @@
 
   <div id="animacion"></div>
 
+  <!-- OVERLAY BÚSQUEDA -->
+  <div id="overlay-busqueda">
+    <div class="busqueda-modal">
+      <div class="busqueda-input-wrap">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input id="buscador" type="text" placeholder="Buscar ciudad..." autocomplete="off" />
+        <button id="btn-cerrar-busqueda">✕</button>
+      </div>
+      <div id="sugerencias"></div>
+    </div>
+  </div>
+
   <div class="layout">
     <div class="fila-superior">
 
       <div class="col-izquierda">
-        <div class="buscador-wrap">
-          <input id="buscador" type="text" placeholder="Buscar ciudad..." autocomplete="off" />
-          <div id="sugerencias"></div>
-        </div>
         <div id="ciudad">Mérida</div>
         <div id="hora">--:--</div>
         <div id="fecha">--</div>
         <div class="sol-cards">
           <div class="sol-card"><span>Amanecer</span><span id="amanecer">--:--</span></div>
           <div class="sol-card"><span>Atardecer</span><span id="atardecer">--:--</span></div>
+        </div>
+        <div class="barra-acciones">
+          <span class="ciudad-shortcut activa" id="sc-merida"  onclick="cargarShortcut('merida')">Mérida</span>
+          <span class="ciudad-shortcut"        id="sc-caceres" onclick="cargarShortcut('caceres')">Cáceres</span>
+          <div class="btn-lupa" id="btn-lupa" title="Buscar ciudad">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+          </div>
         </div>
       </div>
 
@@ -229,8 +323,14 @@
     const GOOGLE_KEY = 'AIzaSyAubTqmFTe-pZiyJ61ddvvm8BQGRe0mknY';
     const BASE_ICON  = 'https://cdn.jsdelivr.net/gh/basmilius/weather-icons@master/production/fill/all/';
 
-    let ciudadActual = { nombre:'Mérida', lat:38.9166, lon:-6.3441 };
+    const SHORTCUTS = {
+      merida:  { nombre:'Mérida',  lat:38.9166, lon:-6.3441 },
+      caceres: { nombre:'Cáceres', lat:39.4753, lon:-6.3724 }
+    };
+
+    let ciudadActual = { ...SHORTCUTS.merida, tzOffset: 3600 };
     let cambiando = false;
+    let shortcutActivo = 'merida';
 
     const mapaIconos = {
       '01d':'clear-day.svg',        '01n':'clear-night.svg',
@@ -244,67 +344,86 @@
       '50d':'mist.svg',             '50n':'mist.svg',
     };
 
-    function iconoUrl(codigo) {
-      return BASE_ICON + (mapaIconos[codigo] || 'not-available.svg');
-    }
+    function iconoUrl(c) { return BASE_ICON + (mapaIconos[c] || 'not-available.svg'); }
 
     function colorEscala(valor, min, max) {
       const t = Math.max(0, Math.min(1, (valor - min) / (max - min)));
       const h = Math.round((1 - t) * 120);
-      const s = 70;
-      const l = t < 0.5 ? 58 : 52;
-      return `hsl(${h}, ${s}%, ${l}%)`;
+      return `hsl(${h}, 70%, ${t < 0.5 ? 58 : 52}%)`;
     }
 
-    // ── BUSCADOR ──
-    let debounceTimer;
-    const inputBuscador   = document.getElementById('buscador');
-    const contSugerencias = document.getElementById('sugerencias');
+    // ── OVERLAY BÚSQUEDA ──
+    const overlay       = document.getElementById('overlay-busqueda');
+    const inputBuscador = document.getElementById('buscador');
+    const contSugs      = document.getElementById('sugerencias');
 
+    document.getElementById('btn-lupa').addEventListener('click', abrirBusqueda);
+    document.getElementById('btn-cerrar-busqueda').addEventListener('click', cerrarBusqueda);
+    overlay.addEventListener('click', e => { if (e.target === overlay) cerrarBusqueda(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') cerrarBusqueda(); });
+
+    function abrirBusqueda() {
+      overlay.classList.add('activo');
+      setTimeout(() => inputBuscador.focus(), 50);
+    }
+    function cerrarBusqueda() {
+      overlay.classList.remove('activo');
+      inputBuscador.value = '';
+      contSugs.innerHTML = '';
+      contSugs.classList.remove('visible');
+    }
+
+    let debounceTimer;
     inputBuscador.addEventListener('input', () => {
       clearTimeout(debounceTimer);
       const q = inputBuscador.value.trim();
-      if (q.length < 2) { contSugerencias.style.display = 'none'; return; }
+      if (q.length < 2) { contSugs.classList.remove('visible'); return; }
       debounceTimer = setTimeout(() => buscarCiudades(q), 350);
-    });
-
-    inputBuscador.addEventListener('keydown', e => {
-      if (e.key === 'Escape') { contSugerencias.style.display = 'none'; inputBuscador.blur(); }
-    });
-
-    document.addEventListener('click', e => {
-      if (!e.target.closest('.buscador-wrap')) contSugerencias.style.display = 'none';
     });
 
     async function buscarCiudades(q) {
       try {
         const r = await fetch(`https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(q)}&limit=5&appid=${API_KEY}`);
         const d = await r.json();
-        if (!d.length) { contSugerencias.style.display = 'none'; return; }
-        contSugerencias.innerHTML = '';
+        if (!d.length) { contSugs.classList.remove('visible'); return; }
+        contSugs.innerHTML = '';
         d.forEach(c => {
-          const item   = document.createElement('div');
+          const item = document.createElement('div');
           item.className = 'sugerencia-item';
-          const estado = c.state   ? `, ${c.state}` : '';
-          const pais   = c.country || '';
-          item.textContent = `${c.name}${estado}, ${pais}`;
+          item.textContent = `${c.name}${c.state ? ', '+c.state : ''}, ${c.country||''}`;
           item.addEventListener('click', () => seleccionarCiudad(c));
-          contSugerencias.appendChild(item);
+          contSugs.appendChild(item);
         });
-        contSugerencias.style.display = 'block';
-      } catch(e) { contSugerencias.style.display = 'none'; }
+        contSugs.classList.add('visible');
+      } catch(e) { contSugs.classList.remove('visible'); }
     }
 
     async function seleccionarCiudad(c) {
-      contSugerencias.style.display = 'none';
-      inputBuscador.value = '';
-      inputBuscador.blur();
+      cerrarBusqueda();
+      shortcutActivo = null;
+      actualizarShortcuts();
+      await cargarCiudad({ nombre: c.local_names?.es || c.name, lat: c.lat, lon: c.lon });
+    }
+
+    async function cargarShortcut(key) {
+      if (cambiando) return;
+      shortcutActivo = key;
+      actualizarShortcuts();
+      await cargarCiudad({ ...SHORTCUTS[key] });
+    }
+
+    function actualizarShortcuts() {
+      document.getElementById('sc-merida').classList.toggle('activa',  shortcutActivo === 'merida');
+      document.getElementById('sc-caceres').classList.toggle('activa', shortcutActivo === 'caceres');
+    }
+
+    async function cargarCiudad(nueva) {
       if (cambiando) return;
       cambiando = true;
       const layout = document.querySelector('.layout');
       layout.classList.add('fade-out');
       await new Promise(r => setTimeout(r, 380));
-      ciudadActual = { nombre: c.local_names?.es || c.name, lat: c.lat, lon: c.lon };
+      ciudadActual = { ...ciudadActual, ...nueva };
       document.getElementById('ciudad').textContent = ciudadActual.nombre;
       await Promise.all([obtenerTiempoYPrevision(), obtenerUV(), obtenerPolen()]);
       layout.classList.remove('fade-out');
@@ -339,39 +458,26 @@
           const s = document.createElement('div');
           s.className = 'estrella';
           const size = Math.random() * 2.5 + 1;
-          s.style.cssText = `
-            width:${size}px; height:${size}px;
-            top:${Math.random()*100}vh; left:${Math.random()*100}vw;
-            animation-duration:${Math.random()*3+2}s;
-            animation-delay:${Math.random()*4}s;
-          `;
+          s.style.cssText = `width:${size}px;height:${size}px;top:${Math.random()*100}vh;left:${Math.random()*100}vw;animation-duration:${Math.random()*3+2}s;animation-delay:${Math.random()*4}s;`;
           cont.appendChild(s);
         }
       }
 
       if (id === 800 && !esNoche) {
         const sz = Math.min(window.innerWidth, window.innerHeight) * 0.85;
-        const cx = window.innerWidth  * 0.97;
+        const cx = window.innerWidth * 0.97;
         const cy = window.innerHeight * -0.05;
         [1.8, 1.4, 1.0].forEach((mult, i) => {
           const halo = document.createElement('div');
           halo.className = 'sol-rayo-difuso';
           const s = sz * mult;
-          halo.style.cssText = `
-            width:${s}px; height:${s}px;
-            top:${cy - s/2}px; left:${cx - s/2}px;
-            animation-duration:${18 + i*7}s;
-            animation-delay:-${i*4}s;
-          `;
+          halo.style.cssText = `width:${s}px;height:${s}px;top:${cy-s/2}px;left:${cx-s/2}px;animation-duration:${18+i*7}s;animation-delay:-${i*4}s;`;
           cont.appendChild(halo);
         });
         const nucleo = document.createElement('div');
         nucleo.className = 'sol-halo';
         const sn = sz * 0.55;
-        nucleo.style.cssText = `
-          width:${sn}px; height:${sn}px;
-          top:${cy - sn/2}px; left:${cx - sn/2}px;
-        `;
+        nucleo.style.cssText = `width:${sn}px;height:${sn}px;top:${cy-sn/2}px;left:${cx-sn/2}px;`;
         cont.appendChild(nucleo);
       }
 
@@ -382,18 +488,13 @@
           n.className = 'nube-anim';
           const w = Math.random() * 180 + 120;
           const dur = Math.random() * 30 + 40;
-          n.style.cssText = `
-            width:${w}px; height:${w*0.4}px;
-            top:${Math.random()*40+5}vh; left:-${w+50}px;
-            animation-duration:${dur}s;
-            animation-delay:-${Math.random()*dur}s;
-          `;
+          n.style.cssText = `width:${w}px;height:${w*0.4}px;top:${Math.random()*40+5}vh;left:-${w+50}px;animation-duration:${dur}s;animation-delay:-${Math.random()*dur}s;`;
           cont.appendChild(n);
         }
       }
 
       if (id >= 200 && id < 300) {
-        const f = document.createElement('div'); f.className = 'flash'; cont.appendChild(f);
+        const f = document.createElement('div'); f.className='flash'; cont.appendChild(f);
         crearGotas(cont, 40);
       } else if (id >= 300 && id < 600) {
         crearGotas(cont, id >= 500 ? 50 : 25);
@@ -403,38 +504,20 @@
     }
 
     function crearGotas(cont, n) {
-      for (let i=0;i<n;i++) {
-        const g = document.createElement('div'); g.className='gota';
-        g.style.left              = (Math.random()*100)+'vw';
-        g.style.animationDuration = (Math.random()*0.4+0.4)+'s';
-        g.style.animationDelay    = (Math.random()*2)+'s';
-        g.style.opacity           = (Math.random()*0.4+0.3).toString();
-        cont.appendChild(g);
-      }
+      for (let i=0;i<n;i++){const g=document.createElement('div');g.className='gota';g.style.left=(Math.random()*100)+'vw';g.style.animationDuration=(Math.random()*0.4+0.4)+'s';g.style.animationDelay=(Math.random()*2)+'s';g.style.opacity=(Math.random()*0.4+0.3).toString();cont.appendChild(g);}
     }
-
     function crearCopos(cont, n) {
-      for (let i=0;i<n;i++) {
-        const c = document.createElement('div'); c.className='copo';
-        c.textContent             = '❄';
-        c.style.left              = (Math.random()*100)+'vw';
-        c.style.animationDuration = (Math.random()*3+2)+'s';
-        c.style.animationDelay    = (Math.random()*3)+'s';
-        c.style.fontSize          = (Math.random()*8+8)+'px';
-        cont.appendChild(c);
-      }
+      for (let i=0;i<n;i++){const c=document.createElement('div');c.className='copo';c.textContent='❄';c.style.left=(Math.random()*100)+'vw';c.style.animationDuration=(Math.random()*3+2)+'s';c.style.animationDelay=(Math.random()*3)+'s';c.style.fontSize=(Math.random()*8+8)+'px';cont.appendChild(c);}
     }
 
     // ── RELOJ ──
     function actualizarReloj() {
-  const ahora = new Date();
-  const utc = ahora.getTime() + ahora.getTimezoneOffset() * 60000;
-  const local = new Date(utc + (ciudadActual.tzOffset || 0) * 1000);
-
-  document.getElementById('hora').textContent  = local.toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'});
-  document.getElementById('fecha').textContent = local.toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'});
-}
-
+      const ahora = new Date();
+      const utc   = ahora.getTime() + ahora.getTimezoneOffset() * 60000;
+      const local = new Date(utc + (ciudadActual.tzOffset || 0) * 1000);
+      document.getElementById('hora').textContent  = local.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
+      document.getElementById('fecha').textContent = local.toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'});
+    }
     setInterval(actualizarReloj, 1000);
     actualizarReloj();
 
@@ -445,12 +528,11 @@
         const r = await fetch(`https://pollen.googleapis.com/v1/forecast:lookup?key=${GOOGLE_KEY}&location.longitude=${lon}&location.latitude=${lat}&days=1`);
         const d = await r.json();
         const tipos = d.dailyInfo[0].pollenTypeInfo;
-        const max = Math.max(0, ...tipos.filter(t=>t.indexInfo&&t.indexInfo.value>0).map(t=>t.indexInfo.value));
-        const labels = {0:'Muy bajo',1:'Muy bajo',2:'Bajo',3:'Moderado',4:'Alto',5:'Muy alto'};
+        const max = Math.max(0,...tipos.filter(t=>t.indexInfo&&t.indexInfo.value>0).map(t=>t.indexInfo.value));
         const el = document.getElementById('polen-valor');
-        el.textContent = labels[max] || '--';
+        el.textContent = {0:'Muy bajo',1:'Muy bajo',2:'Bajo',3:'Moderado',4:'Alto',5:'Muy alto'}[max]||'--';
         el.style.color = colorEscala(max, 0, 5);
-      } catch(e) { document.getElementById('polen-valor').textContent = 'N/D'; }
+      } catch(e) { document.getElementById('polen-valor').textContent='N/D'; }
     }
 
     async function obtenerUV() {
@@ -459,16 +541,13 @@
         const r = await fetch(`https://api.openweathermap.org/data/2.5/uvi?lat=${lat}&lon=${lon}&appid=${API_KEY}`);
         const d = await r.json();
         const v = d.value;
-        const elVal   = document.getElementById('uv-valor');
-        const elLabel = document.getElementById('uv-label');
-        elVal.textContent   = v;
-        elLabel.textContent = v<=2?'Bajo':v<=5?'Moderado':v<=7?'Alto':v<=10?'Muy alto':'Extremo';
-        elVal.style.color   = colorEscala(v, 0, 11);
-        elLabel.style.color = colorEscala(v, 0, 11);
-      } catch(e) {
-        document.getElementById('uv-valor').textContent  = 'N/D';
-        document.getElementById('uv-label').textContent  = '';
-      }
+        const elVal = document.getElementById('uv-valor');
+        const elLbl = document.getElementById('uv-label');
+        elVal.textContent = v;
+        elLbl.textContent = v<=2?'Bajo':v<=5?'Moderado':v<=7?'Alto':v<=10?'Muy alto':'Extremo';
+        elVal.style.color = colorEscala(v, 0, 11);
+        elLbl.style.color = colorEscala(v, 0, 11);
+      } catch(e) { document.getElementById('uv-valor').textContent='N/D'; document.getElementById('uv-label').textContent=''; }
     }
 
     async function obtenerTiempoYPrevision() {
@@ -476,7 +555,9 @@
       try {
         const r = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&lang=es&appid=${API_KEY}`);
         const d = await r.json();
-        ciudadActual.tzOffset = d.city.timezone; // offset en segundos
+
+        ciudadActual.tzOffset = d.city.timezone;
+
         const a = d.list[0];
         document.getElementById('temperatura').textContent = Math.round(a.main.temp)+'°';
         document.getElementById('descripcion').textContent = a.weather[0].description;
@@ -498,11 +579,7 @@
         ch.innerHTML = '';
         d.list.slice(1,5).forEach(f => {
           const h = new Date(f.dt*1000).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
-          ch.innerHTML += `<div class="franja">
-            <span class="franja-hora">${h}</span>
-            <img src="${iconoUrl(f.weather[0].icon)}" alt="">
-            <span class="franja-temp">${Math.round(f.main.temp)}°</span>
-          </div>`;
+          ch.innerHTML += `<div class="franja"><span class="franja-hora">${h}</span><img src="${iconoUrl(f.weather[0].icon)}" alt=""><span class="franja-temp">${Math.round(f.main.temp)}°</span></div>`;
         });
 
         const hoy = new Date().toDateString();
@@ -510,8 +587,8 @@
         d.list.forEach(item => {
           const fecha = new Date(item.dt*1000);
           const key   = fecha.toDateString();
-          if (key === hoy) return;
-          if (!porDia[key]) porDia[key] = { nombre:fecha.toLocaleDateString('es-ES',{weekday:'short',day:'numeric'}), temps:[], iconos:[] };
+          if (key===hoy) return;
+          if (!porDia[key]) porDia[key]={nombre:fecha.toLocaleDateString('es-ES',{weekday:'short',day:'numeric'}),temps:[],iconos:[]};
           porDia[key].temps.push(item.main.temp);
           porDia[key].iconos.push(item.weather[0].icon);
         });
@@ -519,20 +596,14 @@
         const cd = document.querySelector('.prevision-diaria');
         cd.innerHTML = '';
         Object.values(porDia).slice(0,5).forEach(dia => {
-          const max = Math.round(Math.max(...dia.temps));
-          const min = Math.round(Math.min(...dia.temps));
-          const cod = dia.iconos[Math.floor(dia.iconos.length/2)];
-          cd.innerHTML += `<div class="dia-card">
-            <span class="dia-nombre">${dia.nombre}</span>
-            <img class="dia-icono" src="${iconoUrl(cod)}" alt="">
-            <span class="dia-temps">${max}°<span class="min">${min}°</span></span>
-          </div>`;
+          const max=Math.round(Math.max(...dia.temps));
+          const min=Math.round(Math.min(...dia.temps));
+          const cod=dia.iconos[Math.floor(dia.iconos.length/2)];
+          cd.innerHTML += `<div class="dia-card"><span class="dia-nombre">${dia.nombre}</span><img class="dia-icono" src="${iconoUrl(cod)}" alt=""><span class="dia-temps">${max}°<span class="min">${min}°</span></span></div>`;
         });
 
-        document.getElementById('ultima-actualizacion').textContent = 'Actualizado: ' + new Date().toLocaleTimeString('es-ES');
-      } catch(e) {
-        document.getElementById('descripcion').textContent = 'Error de conexión';
-      }
+        document.getElementById('ultima-actualizacion').textContent = 'Actualizado: '+new Date().toLocaleTimeString('es-ES');
+      } catch(e) { document.getElementById('descripcion').textContent='Error de conexión'; }
     }
 
     obtenerTiempoYPrevision();
@@ -544,4 +615,3 @@
   </script>
 </body>
 </html>
-
