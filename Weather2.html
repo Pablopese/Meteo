@@ -138,18 +138,21 @@
     }
 
     /* ── COLUMNA DERECHA ── */
-        .col-derecha {
+      .col-derecha {
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      justify-content: space-between;
       gap: 1.5vh;
       min-width: 0;
       padding-right: 2vw;
+      height: 100%;
     }
+
 
 
     /* Tarjeta tiempo: icono + temp + previsión horaria */
     .tarjeta-tiempo {
+      flex: 1;
       display: flex;
       flex-direction: column;
       background: rgba(255,255,255,0.05);
@@ -157,6 +160,7 @@
       padding: 1.5vh 2vw;
       gap: 1.2vh;
     }
+
 
     .tiempo-actual {
       display: flex;
