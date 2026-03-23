@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Panel del Tiempo</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.12/css/weather-icons.min.css">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -35,7 +34,7 @@
     @keyframes relampago { 0%,92%,100%{opacity:0;} 93%,95%{opacity:0.15;} 94%{opacity:0;} }
 
     /* ── LAYOUT: 3 filas ── */
-      .layout {
+    .layout {
       position: relative;
       z-index: 2;
       display: grid;
@@ -47,10 +46,9 @@
       gap: 1.5vh;
       transition: opacity 0.4s ease;
     }
-
     .layout.fade-out { opacity: 0; }
 
-    /* ── FILA SUPERIOR: 2 columnas ── */
+    /* ── FILA SUPERIOR ── */
     .fila-superior {
       display: grid;
       grid-template-columns: 38% 62%;
@@ -68,11 +66,7 @@
       min-width: 0;
     }
 
-
-    .ciudades-selector {
-      display: flex;
-      gap: 0.8vw;
-    }
+    .ciudades-selector { display: flex; gap: 0.8vw; }
 
     .ciudad-pill {
       padding: 0.4vh 1.2vw;
@@ -141,7 +135,7 @@
       font-weight: bold;
     }
 
-    /* ── COL DERECHA: solo tarjeta tiempo ── */
+    /* ── COL DERECHA ── */
     .col-derecha {
       display: flex;
       flex-direction: column;
@@ -177,7 +171,11 @@
       gap: 0.5vh;
     }
 
-    #icono { font-size: clamp(4rem, 10vw, 9rem); line-height: 1; }
+    /* Icono principal grande */
+    #icono {
+      width: clamp(4rem, 10vw, 9rem);
+      height: clamp(4rem, 10vw, 9rem);
+    }
 
     #descripcion {
       font-size: clamp(1rem, 1.8vw, 1.6rem);
@@ -196,7 +194,7 @@
 
     .prevision {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(3, 1fr);
     }
 
     .franja {
@@ -207,10 +205,16 @@
     }
 
     .franja-hora { font-size: clamp(0.6rem, 0.9vw, 0.85rem); opacity: 0.5; letter-spacing: 1px; }
-    .franja-icono { font-size: clamp(1.1rem, 2.2vw, 1.9rem); line-height: 1.2; }
+
+    /* Iconos pequeños previsión horaria y diaria */
+    .franja img, .dia-icono {
+      width: clamp(1.5rem, 3vw, 2.8rem);
+      height: clamp(1.5rem, 3vw, 2.8rem);
+    }
+
     .franja-temp { font-size: clamp(0.8rem, 1.3vw, 1.1rem); font-weight: bold; }
 
-    /* ── FILA MEDIA: grid detalles a ancho completo ── */
+    /* ── FILA MEDIA: grid detalles ── */
     .detalles {
       display: grid;
       grid-template-columns: repeat(6, 1fr);
@@ -219,29 +223,28 @@
     }
 
     .detalle {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: rgba(255,255,255,0.05);
-  border-radius: 12px;
-  padding: 3vh 1vw;
-  gap: 0.8vh;
-}
-.detalle span:first-child {
-  font-size: clamp(0.65rem, 1vw, 1rem);
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  opacity: 0.5;
-}
-.detalle span:nth-child(2) {
-  font-size: clamp(1.3rem, 2.8vw, 2.4rem);
-  font-weight: bold;
-}
-.detalle span:nth-child(3) {
-  font-size: clamp(0.8rem, 1.3vw, 1.2rem);
-  opacity: 0.7;
-}
-
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: rgba(255,255,255,0.05);
+      border-radius: 12px;
+      padding: 3vh 1vw;
+      gap: 0.8vh;
+    }
+    .detalle span:first-child {
+      font-size: clamp(0.65rem, 1vw, 1rem);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      opacity: 0.5;
+    }
+    .detalle span:nth-child(2) {
+      font-size: clamp(1.3rem, 2.8vw, 2.4rem);
+      font-weight: bold;
+    }
+    .detalle span:nth-child(3) {
+      font-size: clamp(0.8rem, 1.3vw, 1.2rem);
+      opacity: 0.7;
+    }
 
     /* ── FILA INFERIOR: previsión diaria ── */
     .fila-inferior { width: 100%; }
@@ -252,7 +255,7 @@
       border-radius: 12px;
       padding: 1.2vh 1vw;
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
+      grid-template-columns: repeat(7, 1fr);
     }
 
     .dia-card {
@@ -269,8 +272,6 @@
       text-align: center;
       white-space: nowrap;
     }
-
-    .dia-icono { font-size: clamp(1.3rem, 2.8vw, 2.4rem); line-height: 1.2; }
 
     .dia-temps {
       font-size: clamp(0.8rem, 1.3vw, 1.15rem);
@@ -299,7 +300,6 @@
 
   <div class="layout">
 
-    <!-- FILA SUPERIOR -->
     <div class="fila-superior">
 
       <div class="col-izquierda">
@@ -320,7 +320,7 @@
         <div class="tarjeta-tiempo">
           <div class="tiempo-actual">
             <div class="tarjeta-izquierda">
-              <i id="icono" class="wi wi-na"></i>
+              <img id="icono" src="" alt="tiempo">
               <div id="descripcion">Cargando...</div>
             </div>
             <div id="temperatura">--°</div>
@@ -332,7 +332,6 @@
 
     </div>
 
-    <!-- FILA MEDIA: grid detalles ancho completo -->
     <div class="detalles">
       <div class="detalle"><span>Humedad</span><span id="humedad">--%</span></div>
       <div class="detalle"><span>Viento</span><span id="viento">-- km/h</span></div>
@@ -342,7 +341,6 @@
       <div class="detalle"><span>UV</span><span id="uv-valor">--</span><span id="uv-label">--</span></div>
     </div>
 
-    <!-- FILA INFERIOR: previsión días -->
     <div class="fila-inferior">
       <div class="prevision-diaria"></div>
     </div>
@@ -354,6 +352,7 @@
   <script>
     const API_KEY = '200d7683a1565e363b0b2e6ca5496e01';
     const GOOGLE_KEY = 'AIzaSyAubTqmFTe-pZiyJ61ddvvm8BQGRe0mknY';
+    const BASE_ICON = 'https://cdn.jsdelivr.net/gh/basmilius/weather-icons@master/production/fill/all/';
 
     const CIUDADES = {
       merida:  { nombre: 'Mérida',  lat: 38.9166, lon: -6.3441 },
@@ -363,18 +362,29 @@
     let cambiando = false;
 
     const mapaIconos = {
-      '01d':'wi-day-sunny',     '01n':'wi-night-clear',
-      '02d':'wi-day-cloudy',    '02n':'wi-night-alt-cloudy',
-      '03d':'wi-cloud',         '03n':'wi-cloud',
-      '04d':'wi-cloudy',        '04n':'wi-cloudy',
-      '09d':'wi-showers',       '09n':'wi-showers',
-      '10d':'wi-day-rain',      '10n':'wi-night-alt-rain',
-      '11d':'wi-thunderstorm',  '11n':'wi-thunderstorm',
-      '13d':'wi-snow',          '13n':'wi-snow',
-      '50d':'wi-fog',           '50n':'wi-fog'
+      '01d': 'clear-day.svg',
+      '01n': 'clear-night.svg',
+      '02d': 'partly-cloudy-day.svg',
+      '02n': 'partly-cloudy-night.svg',
+      '03d': 'cloudy.svg',
+      '03n': 'cloudy.svg',
+      '04d': 'overcast-day.svg',
+      '04n': 'overcast-night.svg',
+      '09d': 'drizzle.svg',
+      '09n': 'drizzle.svg',
+      '10d': 'rain.svg',
+      '10n': 'rain.svg',
+      '11d': 'thunderstorms-rain.svg',
+      '11n': 'thunderstorms-rain.svg',
+      '13d': 'snow.svg',
+      '13n': 'snow.svg',
+      '50d': 'mist.svg',
+      '50n': 'mist.svg',
     };
 
-    function icono(c) { return mapaIconos[c] || 'wi-na'; }
+    function iconoUrl(codigo) {
+      return BASE_ICON + (mapaIconos[codigo] || 'not-available.svg');
+    }
 
     let touchStartX = 0;
     document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
@@ -472,7 +482,7 @@
         document.getElementById('viento').textContent = Math.round(a.wind.speed*3.6)+' km/h';
         document.getElementById('sensacion').textContent = Math.round(a.main.feels_like)+'°';
         document.getElementById('presion').textContent = a.main.pressure+' hPa';
-        document.getElementById('icono').className = `wi ${icono(a.weather[0].icon)}`;
+        document.getElementById('icono').src = iconoUrl(a.weather[0].icon);
         actualizarFondo(a.weather[0].id, a.weather[0].icon);
 
         document.getElementById('amanecer').textContent = new Date(d.city.sunrise*1000).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
@@ -480,9 +490,13 @@
 
         const ch = document.querySelector('.prevision');
         ch.innerHTML = '';
-        d.list.slice(1,5).forEach(f => {
+        d.list.slice(1,4).forEach(f => {
           const h = new Date(f.dt*1000).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
-          ch.innerHTML += `<div class="franja"><span class="franja-hora">${h}</span><i class="wi ${icono(f.weather[0].icon)} franja-icono"></i><span class="franja-temp">${Math.round(f.main.temp)}°</span></div>`;
+          ch.innerHTML += `<div class="franja">
+            <span class="franja-hora">${h}</span>
+            <img src="${iconoUrl(f.weather[0].icon)}" alt="">
+            <span class="franja-temp">${Math.round(f.main.temp)}°</span>
+          </div>`;
         });
 
         const hoy = new Date().toDateString();
@@ -498,11 +512,15 @@
 
         const cd = document.querySelector('.prevision-diaria');
         cd.innerHTML = '';
-        Object.values(porDia).slice(0,5).forEach(dia => {
+        Object.values(porDia).slice(0,7).forEach(dia => {
           const max=Math.round(Math.max(...dia.temps));
           const min=Math.round(Math.min(...dia.temps));
           const cod=dia.iconos[Math.floor(dia.iconos.length/2)];
-          cd.innerHTML += `<div class="dia-card"><span class="dia-nombre">${dia.nombre}</span><i class="wi ${icono(cod)} dia-icono"></i><span class="dia-temps">${max}°<span class="min">${min}°</span></span></div>`;
+          cd.innerHTML += `<div class="dia-card">
+            <span class="dia-nombre">${dia.nombre}</span>
+            <img class="dia-icono" src="${iconoUrl(cod)}" alt="">
+            <span class="dia-temps">${max}°<span class="min">${min}°</span></span>
+          </div>`;
         });
 
         document.getElementById('ultima-actualizacion').textContent = 'Actualizado: '+new Date().toLocaleTimeString('es-ES');
