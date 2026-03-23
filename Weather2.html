@@ -23,98 +23,60 @@
     }
 
     #animacion {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      pointer-events: none;
-      z-index: 1;
-      overflow: hidden;
+      position: fixed; top:0; left:0;
+      width:100vw; height:100vh;
+      pointer-events:none; z-index:1; overflow:hidden;
     }
+    .gota { position:absolute; top:-20px; width:2px; height:15px; background:rgba(174,214,241,0.5); border-radius:2px; animation:caerGota linear infinite; }
+    @keyframes caerGota { to { transform:translateY(110vh); } }
+    .copo { position:absolute; top:-20px; color:rgba(255,255,255,0.8); animation:caerNieve linear infinite; }
+    @keyframes caerNieve { to { transform:translateY(110vh) rotate(360deg); } }
+    .flash { position:absolute; top:0; left:0; width:100%; height:100%; background:white; opacity:0; animation:relampago 5s infinite; }
+    @keyframes relampago { 0%,92%,100%{opacity:0;} 93%,95%{opacity:0.15;} 94%{opacity:0;} }
 
-    .gota {
-      position: absolute; top: -20px;
-      width: 2px; height: 15px;
-      background: rgba(174,214,241,0.5);
-      border-radius: 2px;
-      animation: caerGota linear infinite;
-    }
-    @keyframes caerGota { to { transform: translateY(110vh); } }
-
-    .copo {
-      position: absolute; top: -20px;
-      color: rgba(255,255,255,0.8);
-      animation: caerNieve linear infinite;
-    }
-    @keyframes caerNieve { to { transform: translateY(110vh) rotate(360deg); } }
-
-    .flash {
-      position: absolute; top:0; left:0; width:100%; height:100%;
-      background: white; opacity: 0;
-      animation: relampago 5s infinite;
-    }
-    @keyframes relampago {
-      0%,92%,100% { opacity:0; } 93%,95% { opacity:0.15; } 94% { opacity:0; }
-    }
-
-    /* ── LAYOUT GRID: 2 columnas, altura fija ── */
+    /* ── LAYOUT PRINCIPAL: 2 filas ── */
     .layout {
       position: relative;
       z-index: 2;
       display: grid;
-      grid-template-columns: 42% 58%;
-      grid-template-rows: 100svh;
+      grid-template-rows: 1fr auto;
+      grid-template-columns: 1fr;
       width: 100vw;
       height: 100svh;
-      padding: 1.5vh 1.5vw;
-      gap: 1.5vw;
+      padding: 2vh 2vw;
+      gap: 1.5vh;
       transition: opacity 0.4s ease;
     }
-
     .layout.fade-out { opacity: 0; }
 
-    /* ── COLUMNA IZQUIERDA: grid de 2 filas ── */
-    .col-izquierda {
+    /* ── FILA SUPERIOR: 2 columnas ── */
+    .fila-superior {
       display: grid;
-      grid-template-rows: 1fr auto;
-      gap: 1.5vh;
-      min-width: 0;
-      overflow: hidden;
+      grid-template-columns: 38% 62%;
+      gap: 2vw;
+      min-height: 0;
     }
 
-    .cuadrante-superior {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      overflow: hidden;
-    }
-
-    .cuadrante-inferior {
-      width: 100%;
-    }
-
-    /* ── COLUMNA DERECHA ── */
-    .col-derecha {
+    /* ── COL IZQUIERDA ── */
+    .col-izquierda {
       display: flex;
       flex-direction: column;
       justify-content: center;
-      gap: 1.5vh;
+      align-items: flex-start;
+      gap: 1vh;
       min-width: 0;
-      overflow: hidden;
+      padding-left: 0.5vw;
     }
 
-    /* Selector ciudades */
     .ciudades-selector {
       display: flex;
-      gap: 1vw;
-      margin-bottom: 1vh;
+      gap: 0.8vw;
     }
 
     .ciudad-pill {
-      padding: 0.4vh 1.5vw;
+      padding: 0.4vh 1.2vw;
       border-radius: 20px;
-      font-size: clamp(0.6rem, 1vw, 1rem);
+      font-size: clamp(0.6rem, 0.9vw, 0.9rem);
       letter-spacing: 1px;
       text-transform: uppercase;
       opacity: 0.35;
@@ -122,7 +84,6 @@
       transition: all 0.3s;
       border: 1px solid transparent;
     }
-
     .ciudad-pill.activa {
       opacity: 1;
       border-color: rgba(255,255,255,0.3);
@@ -130,27 +91,25 @@
     }
 
     #ciudad {
-      font-size: clamp(1rem, 2.5vw, 2.2rem);
+      font-size: clamp(1.2rem, 3vw, 2.8rem);
       opacity: 0.7;
       letter-spacing: 4px;
       text-transform: uppercase;
-      margin-bottom: 0.3vh;
+      line-height: 1;
     }
 
     #hora {
-      font-size: clamp(2.5rem, 9vw, 7.5rem);
+      font-size: clamp(3rem, 10vw, 8rem);
       font-weight: bold;
       letter-spacing: 2px;
       line-height: 1;
     }
 
     #fecha {
-      font-size: clamp(0.75rem, 1.4vw, 1.2rem);
+      font-size: clamp(0.8rem, 1.5vw, 1.3rem);
       opacity: 0.6;
-      margin-bottom: 1vh;
     }
 
-    /* Sol */
     .sol-cards {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -167,67 +126,33 @@
       padding: 0.8vh 0.5vw;
       gap: 0.2vh;
     }
-
     .sol-card span:first-child {
-      font-size: clamp(0.5rem, 0.8vw, 0.8rem);
+      font-size: clamp(0.5rem, 0.75vw, 0.75rem);
       letter-spacing: 2px;
       text-transform: uppercase;
       opacity: 0.5;
     }
-
     .sol-card span:last-child {
       font-size: clamp(0.85rem, 1.4vw, 1.3rem);
       font-weight: bold;
     }
 
-    /* ── PREVISIÓN DIARIA ── */
-    .prevision-diaria {
-      width: 100%;
-      background: rgba(255,255,255,0.05);
-      border-radius: 12px;
-      padding: 1.2vh 1vw;
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);  /* 4 columnas fijas */
-    }
-
-    .dia-card {
+    /* ── COL DERECHA ── */
+    .col-derecha {
       display: flex;
       flex-direction: column;
-      align-items: center;
-      gap: 0.4vh;
+      justify-content: center;
+      gap: 1.5vh;
+      min-width: 0;
     }
 
-    .dia-nombre {
-      font-size: clamp(0.6rem, 0.9vw, 0.9rem);
-      opacity: 0.6;
-      text-transform: capitalize;
-      text-align: center;
-      white-space: nowrap;
-    }
-
-    .dia-icono { font-size: clamp(1.2rem, 2.5vw, 2.2rem); line-height: 1.2; }
-
-    .dia-temps {
-      font-size: clamp(0.75rem, 1.2vw, 1.1rem);
-      font-weight: bold;
-      text-align: center;
-    }
-
-    .dia-temps .min {
-      display: block;
-      opacity: 0.5;
-      font-weight: normal;
-      font-size: 0.88em;
-    }
-
-    /* ── TARJETA TIEMPO ── */
+    /* Tarjeta tiempo: icono + temp + previsión horaria */
     .tarjeta-tiempo {
-      width: 100%;
       display: flex;
       flex-direction: column;
       background: rgba(255,255,255,0.05);
       border-radius: 16px;
-      padding: 1.8vh 2vw;
+      padding: 1.5vh 2vw;
       gap: 1.2vh;
     }
 
@@ -242,32 +167,28 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 0.6vh;
+      gap: 0.5vh;
     }
 
     #icono { font-size: clamp(2.5rem, 6vw, 5.5rem); line-height: 1; }
 
     #descripcion {
-      font-size: clamp(0.7rem, 1.2vw, 1rem);
+      font-size: clamp(0.7rem, 1.1vw, 1rem);
       opacity: 0.8;
       text-transform: capitalize;
       text-align: center;
     }
 
     #temperatura {
-      font-size: clamp(3rem, 8.5vw, 7rem);
+      font-size: clamp(3rem, 9vw, 7.5rem);
       font-weight: 300;
       line-height: 1;
     }
 
-    .separador {
-      width: 100%; height: 1px;
-      background: rgba(255,255,255,0.1);
-    }
+    .separador { width:100%; height:1px; background:rgba(255,255,255,0.1); }
 
     /* Previsión horaria */
     .prevision {
-      width: 100%;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
     }
@@ -280,12 +201,11 @@
     }
 
     .franja-hora { font-size: clamp(0.6rem, 0.9vw, 0.85rem); opacity: 0.5; letter-spacing: 1px; }
-    .franja-icono { font-size: clamp(1.1rem, 2.2vw, 1.8rem); line-height: 1.2; }
+    .franja-icono { font-size: clamp(1.1rem, 2.2vw, 1.9rem); line-height: 1.2; }
     .franja-temp { font-size: clamp(0.8rem, 1.3vw, 1.1rem); font-weight: bold; }
 
     /* Grid detalles */
     .detalles {
-      width: 100%;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 1vw;
@@ -300,28 +220,68 @@
       padding: 0.8vh 0.5vw;
       gap: 0.2vh;
     }
-
     .detalle span:first-child {
-      font-size: clamp(0.5rem, 0.8vw, 0.78rem);
+      font-size: clamp(0.5rem, 0.78vw, 0.78rem);
       letter-spacing: 2px;
       text-transform: uppercase;
       opacity: 0.5;
     }
-
     .detalle span:nth-child(2) {
       font-size: clamp(0.85rem, 1.7vw, 1.4rem);
       font-weight: bold;
     }
-
     .detalle span:nth-child(3) {
       font-size: clamp(0.65rem, 1vw, 0.9rem);
       opacity: 0.7;
     }
 
+    /* ── FILA INFERIOR: previsión diaria ancho completo ── */
+    .fila-inferior {
+      width: 100%;
+    }
+
+    .prevision-diaria {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border-radius: 12px;
+      padding: 1.2vh 1vw;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .dia-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4vh;
+    }
+
+    .dia-nombre {
+      font-size: clamp(0.6rem, 1vw, 0.95rem);
+      opacity: 0.6;
+      text-transform: capitalize;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .dia-icono { font-size: clamp(1.3rem, 2.8vw, 2.4rem); line-height: 1.2; }
+
+    .dia-temps {
+      font-size: clamp(0.8rem, 1.3vw, 1.15rem);
+      font-weight: bold;
+      text-align: center;
+    }
+    .dia-temps .min {
+      display: block;
+      opacity: 0.5;
+      font-weight: normal;
+      font-size: 0.88em;
+    }
+
     #ultima-actualizacion {
       position: fixed;
-      bottom: 1.2vh; right: 1.2vw;
-      font-size: clamp(0.5rem, 0.75vw, 0.7rem);
+      bottom: 1vh; right: 1.2vw;
+      font-size: clamp(0.5rem, 0.7vw, 0.7rem);
       opacity: 0.3;
       z-index: 2;
     }
@@ -333,8 +293,11 @@
 
   <div class="layout">
 
-    <div class="col-izquierda">
-      <div class="cuadrante-superior">
+    <!-- FILA SUPERIOR -->
+    <div class="fila-superior">
+
+      <!-- Izquierda: hora, ciudad, sol -->
+      <div class="col-izquierda">
         <div class="ciudades-selector">
           <span class="ciudad-pill activa" id="pill-merida" onclick="cambiarCiudad('merida')">Mérida</span>
           <span class="ciudad-pill" id="pill-caceres" onclick="cambiarCiudad('caceres')">Cáceres</span>
@@ -348,32 +311,36 @@
         </div>
       </div>
 
-      <div class="cuadrante-inferior">
-        <div class="prevision-diaria"></div>
+      <!-- Derecha: tiempo actual + grid -->
+      <div class="col-derecha">
+
+        <div class="tarjeta-tiempo">
+          <div class="tiempo-actual">
+            <div class="tarjeta-izquierda">
+              <i id="icono" class="wi wi-na"></i>
+              <div id="descripcion">Cargando...</div>
+            </div>
+            <div id="temperatura">--°</div>
+          </div>
+          <div class="separador"></div>
+          <div class="prevision"></div>
+        </div>
+
+        <div class="detalles">
+          <div class="detalle"><span>Humedad</span><span id="humedad">--%</span></div>
+          <div class="detalle"><span>Viento</span><span id="viento">-- km/h</span></div>
+          <div class="detalle"><span>Sensación</span><span id="sensacion">--°</span></div>
+          <div class="detalle"><span>Presión</span><span id="presion">-- hPa</span></div>
+          <div class="detalle"><span>Polen</span><span id="polen-valor">--</span></div>
+          <div class="detalle"><span>UV</span><span id="uv-valor">--</span><span id="uv-label">--</span></div>
+        </div>
+
       </div>
     </div>
 
-    <div class="col-derecha">
-      <div class="tarjeta-tiempo">
-        <div class="tiempo-actual">
-          <div class="tarjeta-izquierda">
-            <i id="icono" class="wi wi-na"></i>
-            <div id="descripcion">Cargando...</div>
-          </div>
-          <div id="temperatura">--°</div>
-        </div>
-        <div class="separador"></div>
-        <div class="prevision"></div>
-      </div>
-
-      <div class="detalles">
-        <div class="detalle"><span>Humedad</span><span id="humedad">--%</span></div>
-        <div class="detalle"><span>Viento</span><span id="viento">-- km/h</span></div>
-        <div class="detalle"><span>Sensación</span><span id="sensacion">--°</span></div>
-        <div class="detalle"><span>Presión</span><span id="presion">-- hPa</span></div>
-        <div class="detalle"><span>Polen</span><span id="polen-valor">--</span></div>
-        <div class="detalle"><span>UV</span><span id="uv-valor">--</span><span id="uv-label">--</span></div>
-      </div>
+    <!-- FILA INFERIOR: previsión días -->
+    <div class="fila-inferior">
+      <div class="prevision-diaria"></div>
     </div>
 
   </div>
@@ -507,7 +474,6 @@
         document.getElementById('amanecer').textContent = new Date(d.city.sunrise*1000).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
         document.getElementById('atardecer').textContent = new Date(d.city.sunset*1000).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
 
-        // Horaria
         const ch = document.querySelector('.prevision');
         ch.innerHTML = '';
         d.list.slice(1,4).forEach(f => {
@@ -515,7 +481,6 @@
           ch.innerHTML += `<div class="franja"><span class="franja-hora">${h}</span><i class="wi ${icono(f.weather[0].icon)} franja-icono"></i><span class="franja-temp">${Math.round(f.main.temp)}°</span></div>`;
         });
 
-        // Diaria
         const hoy = new Date().toDateString();
         const porDia = {};
         d.list.forEach(item => {
