@@ -34,20 +34,31 @@
     }
 
     .sol-halo {
-      position:absolute; border-radius:50%;
-      background: radial-gradient(circle, rgba(255,230,80,0.55) 0%, rgba(255,180,0,0.25) 40%, rgba(255,140,0,0.08) 70%, transparent 100%);
+      position: absolute;
+      border-radius: 50%;
+      background: radial-gradient(circle,
+        rgba(255, 255, 255, 0.90) 0%,
+        rgba(255, 245, 200, 0.55) 30%,
+        rgba(255, 220, 120, 0.20) 60%,
+        transparent 100%
+      );
       animation: haloRespira 5s ease-in-out infinite;
     }
     @keyframes haloRespira {
       0%,100% { transform:scale(1);    opacity:0.75; }
       50%     { transform:scale(1.12); opacity:1; }
     }
-    .sol-rayo-difuso {
-      position:absolute; border-radius:50%;
-      background: radial-gradient(ellipse at center, rgba(255,220,60,0.18) 0%, transparent 70%);
-      transform-origin:center center;
-      animation: rayoDifusoGira 20s linear infinite;
-    }
+  .sol-rayo-difuso {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center,
+    rgba(255, 250, 230, 0.22) 0%,
+    rgba(255, 240, 200, 0.08) 50%,
+    transparent 75%
+  );
+  transform-origin: center center;
+  animation: rayoDifusoGira 20s linear infinite;
+}
     @keyframes rayoDifusoGira {
       from { transform:rotate(0deg)   scale(1);   }
       to   { transform:rotate(360deg) scale(1.1); }
@@ -270,33 +281,34 @@
       }
 
       // Sol difuso (código 800 de día)
-      if (id === 800 && !esNoche) {
-        const sz = Math.min(window.innerWidth, window.innerHeight) * 0.55;
-        const cx = window.innerWidth  * 0.82;
-        const cy = window.innerHeight * 0.12;
+    if (id === 800 && !esNoche) {
+  const sz = Math.min(window.innerWidth, window.innerHeight) * 0.85;
+  const cx = window.innerWidth  * 0.97;
+  const cy = window.innerHeight * -0.05;
 
-        [1.8, 1.4, 1.0].forEach((mult, i) => {
-          const halo = document.createElement('div');
-          halo.className = 'sol-rayo-difuso';
-          const s = sz * mult;
-          halo.style.cssText = `
-            width:${s}px; height:${s}px;
-            top:${cy - s/2}px; left:${cx - s/2}px;
-            animation-duration:${18 + i*7}s;
-            animation-delay:-${i*4}s;
-          `;
-          cont.appendChild(halo);
-        });
+  [1.8, 1.4, 1.0].forEach((mult, i) => {
+    const halo = document.createElement('div');
+    halo.className = 'sol-rayo-difuso';
+    const s = sz * mult;
+    halo.style.cssText = `
+      width:${s}px; height:${s}px;
+      top:${cy - s/2}px; left:${cx - s/2}px;
+      animation-duration:${18 + i*7}s;
+      animation-delay:-${i*4}s;
+    `;
+    cont.appendChild(halo);
+  });
 
-        const nucleo = document.createElement('div');
-        nucleo.className = 'sol-halo';
-        const sn = sz * 0.45;
-        nucleo.style.cssText = `
-          width:${sn}px; height:${sn}px;
-          top:${cy - sn/2}px; left:${cx - sn/2}px;
-        `;
-        cont.appendChild(nucleo);
-      }
+  const nucleo = document.createElement('div');
+  nucleo.className = 'sol-halo';
+  const sn = sz * 0.55;
+  nucleo.style.cssText = `
+    width:${sn}px; height:${sn}px;
+    top:${cy - sn/2}px; left:${cx - sn/2}px;
+  `;
+  cont.appendChild(nucleo);
+}
+
 
       // Nubes flotantes (801–804)
       if (id >= 801 && id <= 804) {
