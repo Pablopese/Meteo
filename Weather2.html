@@ -587,8 +587,17 @@
         const ch = document.querySelector('.prevision');
         ch.innerHTML = '';
         d.list.slice(1,5).forEach(f => {
-          const h = new Date(f.dt*1000).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
-          ch.innerHTML += `<div class="franja"><span class="franja-hora">${h}</span><img src="${iconoUrl(f.weather[0].icon)}" alt=""><span class="franja-temp">${Math.round(f.main.temp)}°</span></div>`;
+          const h   = new Date(f.dt*1000).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
+          const pop = Math.round(f.pop * 100);
+          const popHtml = pop > 0
+            ? `<span style="font-size:clamp(0.55rem,0.8vw,0.75rem);color:${colorEscala(pop,0,100)}">💧${pop}%</span>`
+            : `<span style="font-size:clamp(0.55rem,0.8vw,0.75rem);opacity:0"></span>`;
+          ch.innerHTML += `<div class="franja">
+            <span class="franja-hora">${h}</span>
+            <img src="${iconoUrl(f.weather[0].icon)}" alt="">
+            <span class="franja-temp">${Math.round(f.main.temp)}°</span>
+            ${popHtml}
+          </div>`;
         });
 
         const hoy = new Date().toDateString();
