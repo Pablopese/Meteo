@@ -196,7 +196,7 @@
 
     .prevision {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
     }
 
     .franja {
@@ -252,7 +252,7 @@
       border-radius: 12px;
       padding: 1.2vh 1vw;
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(7, 1fr);
     }
 
     .dia-card {
@@ -480,7 +480,7 @@
 
         const ch = document.querySelector('.prevision');
         ch.innerHTML = '';
-        d.list.slice(1,4).forEach(f => {
+        d.list.slice(1,5).forEach(f => {
           const h = new Date(f.dt*1000).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
           ch.innerHTML += `<div class="franja"><span class="franja-hora">${h}</span><i class="wi ${icono(f.weather[0].icon)} franja-icono"></i><span class="franja-temp">${Math.round(f.main.temp)}°</span></div>`;
         });
@@ -498,7 +498,7 @@
 
         const cd = document.querySelector('.prevision-diaria');
         cd.innerHTML = '';
-        Object.values(porDia).slice(0,4).forEach(dia => {
+        Object.values(porDia).slice(0,7).forEach(dia => {
           const max=Math.round(Math.max(...dia.temps));
           const min=Math.round(Math.min(...dia.temps));
           const cod=dia.iconos[Math.floor(dia.iconos.length/2)];
