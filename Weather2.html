@@ -8,18 +8,20 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    html { background: #16213e; overflow: hidden; width: 100vw; }
+    html, body {
+      width: 100vw;
+      height: 100svh;
+      overflow: hidden;
+      background: #16213e;
+    }
 
     body {
       background: linear-gradient(135deg, #0a0e1a 0%, #1a1a2e 50%, #16213e 100%);
-      min-height: 100svh;
-      width: 100vw;
       color: white;
       font-family: 'Segoe UI', sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
-      overflow: hidden;
       position: relative;
     }
 
@@ -54,10 +56,8 @@
 
     .flash {
       position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: white;
-      opacity: 0;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: white; opacity: 0;
       animation: relampago 5s infinite;
     }
 
@@ -67,32 +67,60 @@
       94% { opacity: 0; }
     }
 
-    /* Transición del layout */
+    /* ── LAYOUT SIEMPRE DOS COLUMNAS ── */
     .layout {
       position: relative;
       z-index: 2;
       display: flex;
-      flex-direction: column;
-      width: 100%;
-      padding: 20px;
-      gap: 15px;
-      align-items: center;
+      flex-direction: row;
+      width: 100vw;
+      height: 100svh;
+      padding: 2vh 2vw;
+      gap: 2vw;
       transition: opacity 0.4s ease;
     }
 
     .layout.fade-out { opacity: 0; }
 
-    /* Selector de ciudades */
+    .col-izquierda {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      height: 100%;
+    }
+
+    .cuadrante-superior {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    .cuadrante-inferior {
+      width: 100%;
+    }
+
+    .col-derecha {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      height: 100%;
+    }
+
+    /* Selector ciudades */
     .ciudades-selector {
       display: flex;
-      gap: 8px;
-      margin-bottom: 12px;
+      gap: 0.8vw;
+      margin-bottom: 1.5vh;
     }
 
     .ciudad-pill {
-      padding: 4px 14px;
+      padding: 0.4vh 1.2vw;
       border-radius: 15px;
-      font-size: 0.8em;
+      font-size: clamp(0.6rem, 1vw, 1rem);
       letter-spacing: 1px;
       text-transform: uppercase;
       opacity: 0.35;
@@ -108,29 +136,31 @@
     }
 
     #ciudad {
-      font-size: 1.8em;
+      font-size: clamp(1rem, 2.5vw, 2.2rem);
       opacity: 0.7;
       letter-spacing: 4px;
       text-transform: uppercase;
-      margin-bottom: 8px;
+      margin-bottom: 0.5vh;
     }
 
     #hora {
-      font-size: 5em;
+      font-size: clamp(2.5rem, 9vw, 7rem);
       font-weight: bold;
       letter-spacing: 2px;
+      line-height: 1;
     }
 
     #fecha {
-      font-size: 1.1em;
+      font-size: clamp(0.75rem, 1.5vw, 1.3rem);
       opacity: 0.6;
-      margin-bottom: 12px;
+      margin-bottom: 1.5vh;
     }
 
+    /* Sol */
     .sol-cards {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
+      gap: 1vw;
       width: 100%;
     }
 
@@ -140,44 +170,20 @@
       align-items: center;
       background: rgba(255,255,255,0.05);
       border-radius: 10px;
-      padding: 8px 5px;
-      gap: 4px;
+      padding: 1vh 0.5vw;
+      gap: 0.3vh;
     }
 
     .sol-card span:first-child {
-      font-size: 0.7em;
+      font-size: clamp(0.55rem, 0.9vw, 0.85rem);
       letter-spacing: 2px;
       text-transform: uppercase;
       opacity: 0.5;
     }
 
     .sol-card span:last-child {
-      font-size: 1.1em;
+      font-size: clamp(0.9rem, 1.5vw, 1.3rem);
       font-weight: bold;
-    }
-
-    /* Columnas */
-    .col-izquierda {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 15px;
-      width: 100%;
-      max-width: 400px;
-    }
-
-    .cuadrante-superior {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: 100%;
-    }
-
-    .cuadrante-inferior { width: 100%; }
-
-    .col-derecha {
-      width: 100%;
-      max-width: 400px;
     }
 
     /* Previsión diaria */
@@ -185,7 +191,7 @@
       width: 100%;
       background: rgba(255,255,255,0.05);
       border-radius: 12px;
-      padding: 10px 5px;
+      padding: 1.5vh 0.5vw;
       display: flex;
       flex-direction: row;
       justify-content: space-around;
@@ -196,24 +202,20 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 4px;
-      padding: 0 5px;
+      gap: 0.4vh;
     }
 
     .dia-nombre {
-      font-size: 0.75em;
+      font-size: clamp(0.6rem, 1vw, 0.9rem);
       opacity: 0.6;
       text-transform: capitalize;
       text-align: center;
     }
 
-    .dia-icono {
-      font-size: 1.6em;
-      line-height: 1.2;
-    }
+    .dia-icono { font-size: clamp(1.2rem, 2.5vw, 2.2rem); line-height: 1.2; }
 
     .dia-temps {
-      font-size: 0.9em;
+      font-size: clamp(0.75rem, 1.2vw, 1.1rem);
       font-weight: bold;
       text-align: center;
     }
@@ -222,15 +224,15 @@
       display: block;
       opacity: 0.5;
       font-weight: normal;
-      font-size: 0.85em;
+      font-size: 0.88em;
     }
 
-    /* Tarjeta tiempo */
+    /* Contenedor derecha */
     .contenedor-tiempo {
       display: flex;
       flex-direction: column;
       width: 100%;
-      gap: 12px;
+      gap: 1.5vh;
     }
 
     .tarjeta-tiempo {
@@ -239,8 +241,8 @@
       flex-direction: column;
       background: rgba(255,255,255,0.05);
       border-radius: 16px;
-      padding: 15px 20px;
-      gap: 12px;
+      padding: 2vh 2vw;
+      gap: 1.5vh;
     }
 
     .tiempo-actual {
@@ -254,23 +256,20 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 8px;
+      gap: 0.8vh;
     }
 
-    #icono {
-      font-size: 4.5em;
-      line-height: 1;
-    }
+    #icono { font-size: clamp(3rem, 8vw, 7rem); line-height: 1; }
 
     #descripcion {
-      font-size: 0.95em;
+      font-size: clamp(0.75rem, 1.3vw, 1.1rem);
       opacity: 0.8;
       text-transform: capitalize;
       text-align: center;
     }
 
     #temperatura {
-      font-size: 5em;
+      font-size: clamp(3rem, 9vw, 7.5rem);
       font-weight: 300;
       line-height: 1;
     }
@@ -286,7 +285,7 @@
       display: flex;
       flex-direction: row;
       justify-content: space-between;
-      gap: 8px;
+      gap: 0.5vw;
     }
 
     .franja {
@@ -294,31 +293,24 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 4px;
+      gap: 0.3vh;
     }
 
     .franja-hora {
-      font-size: 0.72em;
+      font-size: clamp(0.6rem, 1vw, 0.9rem);
       opacity: 0.5;
       letter-spacing: 1px;
     }
 
-    .franja-icono {
-      font-size: 1.6em;
-      line-height: 1.2;
-    }
-
-    .franja-temp {
-      font-size: 1em;
-      font-weight: bold;
-    }
+    .franja-icono { font-size: clamp(1.2rem, 2.5vw, 2rem); line-height: 1.2; }
+    .franja-temp { font-size: clamp(0.85rem, 1.3vw, 1.1rem); font-weight: bold; }
 
     /* Grid detalles */
     .detalles {
       width: 100%;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
+      gap: 1vw;
     }
 
     .detalle {
@@ -327,68 +319,34 @@
       align-items: center;
       background: rgba(255,255,255,0.05);
       border-radius: 10px;
-      padding: 8px 5px;
-      gap: 4px;
+      padding: 1vh 0.5vw;
+      gap: 0.3vh;
     }
 
     .detalle span:first-child {
-      font-size: 0.7em;
+      font-size: clamp(0.55rem, 0.9vw, 0.8rem);
       letter-spacing: 2px;
       text-transform: uppercase;
       opacity: 0.5;
     }
 
     .detalle span:nth-child(2) {
-      font-size: 1.2em;
+      font-size: clamp(0.9rem, 1.8vw, 1.5rem);
       font-weight: bold;
     }
 
     .detalle span:nth-child(3) {
-      font-size: 0.85em;
+      font-size: clamp(0.7rem, 1.1vw, 0.95rem);
       opacity: 0.7;
     }
 
     #ultima-actualizacion {
       position: fixed;
-      bottom: 15px;
-      right: 20px;
-      font-size: 0.7em;
+      bottom: 1.5vh;
+      right: 1.5vw;
+      font-size: clamp(0.55rem, 0.8vw, 0.75rem);
       opacity: 0.3;
       z-index: 2;
-    }
-
-    @media (orientation: landscape) {
-      .layout {
-        flex-direction: row;
-        align-items: stretch;
-        justify-content: center;
-        padding: 15px 30px;
-        gap: 25px;
-        max-width: 960px;
-        margin: 0 auto;
-      }
-
-      .col-izquierda {
-        flex: 1;
-        max-width: 340px;
-        justify-content: space-between;
-      }
-
-      .cuadrante-superior { align-items: center; }
-
-      .col-derecha {
-        flex: 1;
-        max-width: 400px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-      }
-
-      #hora { font-size: 3.2em; }
-      #ciudad { font-size: 1.3em; }
-      #fecha { font-size: 0.95em; margin-bottom: 10px; }
-      #temperatura { font-size: 4em; }
-      #icono { font-size: 3.5em; }
     }
   </style>
 </head>
@@ -461,31 +419,19 @@
     let cambiando = false;
 
     const mapaIconos = {
-      '01d': 'wi-day-sunny',
-      '01n': 'wi-night-clear',
-      '02d': 'wi-day-cloudy',
-      '02n': 'wi-night-alt-cloudy',
-      '03d': 'wi-cloud',
-      '03n': 'wi-cloud',
-      '04d': 'wi-cloudy',
-      '04n': 'wi-cloudy',
-      '09d': 'wi-showers',
-      '09n': 'wi-showers',
-      '10d': 'wi-day-rain',
-      '10n': 'wi-night-alt-rain',
-      '11d': 'wi-thunderstorm',
-      '11n': 'wi-thunderstorm',
-      '13d': 'wi-snow',
-      '13n': 'wi-snow',
-      '50d': 'wi-fog',
-      '50n': 'wi-fog'
+      '01d': 'wi-day-sunny',       '01n': 'wi-night-clear',
+      '02d': 'wi-day-cloudy',      '02n': 'wi-night-alt-cloudy',
+      '03d': 'wi-cloud',           '03n': 'wi-cloud',
+      '04d': 'wi-cloudy',          '04n': 'wi-cloudy',
+      '09d': 'wi-showers',         '09n': 'wi-showers',
+      '10d': 'wi-day-rain',        '10n': 'wi-night-alt-rain',
+      '11d': 'wi-thunderstorm',    '11n': 'wi-thunderstorm',
+      '13d': 'wi-snow',            '13n': 'wi-snow',
+      '50d': 'wi-fog',             '50n': 'wi-fog'
     };
 
-    function icono(codigo) {
-      return mapaIconos[codigo] || 'wi-na';
-    }
+    function icono(codigo) { return mapaIconos[codigo] || 'wi-na'; }
 
-    // Swipe
     let touchStartX = 0;
     document.addEventListener('touchstart', e => {
       touchStartX = e.touches[0].clientX;
@@ -493,27 +439,22 @@
 
     document.addEventListener('touchend', e => {
       const delta = e.changedTouches[0].clientX - touchStartX;
-      if (Math.abs(delta) > 60) {
-        const nueva = ciudadActual === 'merida' ? 'caceres' : 'merida';
-        cambiarCiudad(nueva);
+      if (Math.abs(delta) > 80) {
+        cambiarCiudad(ciudadActual === 'merida' ? 'caceres' : 'merida');
       }
     }, { passive: true });
 
     async function cambiarCiudad(nueva) {
       if (nueva === ciudadActual || cambiando) return;
       cambiando = true;
-
       const layout = document.querySelector('.layout');
       layout.classList.add('fade-out');
       await new Promise(r => setTimeout(r, 380));
-
       ciudadActual = nueva;
       document.getElementById('ciudad').textContent = CIUDADES[ciudadActual].nombre;
       document.querySelectorAll('.ciudad-pill').forEach(p => p.classList.remove('activa'));
       document.getElementById('pill-' + ciudadActual).classList.add('activa');
-
       await Promise.all([obtenerTiempoYPrevision(), obtenerUV(), obtenerPolen()]);
-
       layout.classList.remove('fade-out');
       cambiando = false;
     }
@@ -521,25 +462,16 @@
     function actualizarFondo(condicion, cod) {
       const esNoche = cod.includes('n');
       const id = condicion;
-      let gradiente;
-      if (esNoche) {
-        gradiente = 'linear-gradient(135deg, #0a0e1a 0%, #1a1a2e 50%, #16213e 100%)';
-      } else if (id >= 200 && id < 300) {
-        gradiente = 'linear-gradient(135deg, #1a1a2e 0%, #2d3561 50%, #1a1a2e 100%)';
-      } else if (id >= 300 && id < 600) {
-        gradiente = 'linear-gradient(135deg, #2c3e50 0%, #3498db 100%)';
-      } else if (id >= 600 && id < 700) {
-        gradiente = 'linear-gradient(135deg, #e0e0e0 0%, #b0c4de 50%, #a8c0d6 100%)';
-      } else if (id >= 700 && id < 800) {
-        gradiente = 'linear-gradient(135deg, #606c88 0%, #3f4c6b 100%)';
-      } else if (id === 800) {
-        gradiente = 'linear-gradient(135deg, #1a6fa8 0%, #2e9fd4 50%, #87ceeb 100%)';
-      } else if (id === 801 || id === 802) {
-        gradiente = 'linear-gradient(135deg, #1c3a5e 0%, #4a7fa5 100%)';
-      } else {
-        gradiente = 'linear-gradient(135deg, #2c3e50 0%, #4a5568 100%)';
-      }
-      document.body.style.backgroundImage = gradiente;
+      let g;
+      if (esNoche)              g = 'linear-gradient(135deg, #0a0e1a 0%, #1a1a2e 50%, #16213e 100%)';
+      else if (id < 300)        g = 'linear-gradient(135deg, #1a1a2e 0%, #2d3561 50%, #1a1a2e 100%)';
+      else if (id < 600)        g = 'linear-gradient(135deg, #2c3e50 0%, #3498db 100%)';
+      else if (id < 700)        g = 'linear-gradient(135deg, #e0e0e0 0%, #b0c4de 50%, #a8c0d6 100%)';
+      else if (id < 800)        g = 'linear-gradient(135deg, #606c88 0%, #3f4c6b 100%)';
+      else if (id === 800)      g = 'linear-gradient(135deg, #1a6fa8 0%, #2e9fd4 50%, #87ceeb 100%)';
+      else if (id <= 802)       g = 'linear-gradient(135deg, #1c3a5e 0%, #4a7fa5 100%)';
+      else                      g = 'linear-gradient(135deg, #2c3e50 0%, #4a5568 100%)';
+      document.body.style.backgroundImage = g;
       iniciarAnimacion(id);
     }
 
@@ -558,8 +490,8 @@
       }
     }
 
-    function crearGotas(cont, cantidad) {
-      for (let i = 0; i < cantidad; i++) {
+    function crearGotas(cont, n) {
+      for (let i = 0; i < n; i++) {
         const g = document.createElement('div');
         g.className = 'gota';
         g.style.left = (Math.random() * 100) + 'vw';
@@ -570,8 +502,8 @@
       }
     }
 
-    function crearCopos(cont, cantidad) {
-      for (let i = 0; i < cantidad; i++) {
+    function crearCopos(cont, n) {
+      for (let i = 0; i < n; i++) {
         const c = document.createElement('div');
         c.className = 'copo';
         c.textContent = '❄';
@@ -601,13 +533,9 @@
         const datos = await resp.json();
         const tipos = datos.dailyInfo[0].pollenTypeInfo;
         const conDatos = tipos.filter(t => t.indexInfo && t.indexInfo.value > 0);
-        if (conDatos.length === 0) {
-          document.getElementById('polen-valor').textContent = 'Muy bajo';
-          return;
-        }
-        const maxValor = Math.max(...conDatos.map(t => t.indexInfo.value));
-        const categorias = {1: 'Muy bajo', 2: 'Bajo', 3: 'Moderado', 4: 'Alto', 5: 'Muy alto'};
-        document.getElementById('polen-valor').textContent = categorias[maxValor] || '--';
+        const maxValor = conDatos.length ? Math.max(...conDatos.map(t => t.indexInfo.value)) : 0;
+        const cats = {0: 'Muy bajo', 1: 'Muy bajo', 2: 'Bajo', 3: 'Moderado', 4: 'Alto', 5: 'Muy alto'};
+        document.getElementById('polen-valor').textContent = cats[maxValor] || '--';
       } catch(e) {
         document.getElementById('polen-valor').textContent = 'N/D';
       }
@@ -620,12 +548,7 @@
         const resp = await fetch(url);
         const datos = await resp.json();
         const valor = datos.value;
-        let etiqueta;
-        if (valor <= 2) etiqueta = 'Bajo';
-        else if (valor <= 5) etiqueta = 'Moderado';
-        else if (valor <= 7) etiqueta = 'Alto';
-        else if (valor <= 10) etiqueta = 'Muy alto';
-        else etiqueta = 'Extremo';
+        const etiqueta = valor <= 2 ? 'Bajo' : valor <= 5 ? 'Moderado' : valor <= 7 ? 'Alto' : valor <= 10 ? 'Muy alto' : 'Extremo';
         document.getElementById('uv-valor').textContent = valor;
         document.getElementById('uv-label').textContent = etiqueta;
       } catch(e) {
@@ -648,10 +571,7 @@
         document.getElementById('viento').textContent = Math.round(actual.wind.speed * 3.6) + ' km/h';
         document.getElementById('sensacion').textContent = Math.round(actual.main.feels_like) + '°';
         document.getElementById('presion').textContent = actual.main.pressure + ' hPa';
-
-        const iconoEl = document.getElementById('icono');
-        iconoEl.className = `wi ${icono(actual.weather[0].icon)}`;
-
+        document.getElementById('icono').className = `wi ${icono(actual.weather[0].icon)}`;
         actualizarFondo(actual.weather[0].id, actual.weather[0].icon);
 
         document.getElementById('amanecer').textContent =
@@ -659,7 +579,6 @@
         document.getElementById('atardecer').textContent =
           new Date(datos.city.sunset * 1000).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
 
-        // Previsión horaria
         const contHoras = document.querySelector('.prevision');
         contHoras.innerHTML = '';
         datos.list.slice(1, 4).forEach(f => {
@@ -672,7 +591,6 @@
             </div>`;
         });
 
-        // Previsión diaria
         const hoy = new Date().toDateString();
         const porDia = {};
         datos.list.forEach(item => {
