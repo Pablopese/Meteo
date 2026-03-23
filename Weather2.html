@@ -292,6 +292,7 @@
             <div class="tarjeta-izquierda">
               <img id="icono" src="" alt="tiempo">
               <div id="descripcion">Cargando...</div>
+              <div id="precipitacion" style="font-size:clamp(0.7rem,1.1vw,1rem); opacity:0.6; text-align:center;"></div>
             </div>
             <div id="temperatura">--°</div>
           </div>
@@ -561,6 +562,14 @@
         const a = d.list[0];
         document.getElementById('temperatura').textContent = Math.round(a.main.temp)+'°';
         document.getElementById('descripcion').textContent = a.weather[0].description;
+        const pop = Math.round(a.pop * 100);
+        const elPop = document.getElementById('precipitacion');
+        if (pop > 0) {
+          elPop.textContent = `💧 ${pop}% prob. lluvia`;
+          elPop.style.color = colorEscala(pop, 0, 100);
+        } else {
+          elPop.textContent = '';
+        }
         document.getElementById('humedad').textContent     = a.main.humidity+'%';
         document.getElementById('viento').textContent      = Math.round(a.wind.speed*3.6)+' km/h';
         document.getElementById('presion').textContent     = a.main.pressure+' hPa';
