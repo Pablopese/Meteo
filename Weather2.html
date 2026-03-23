@@ -252,7 +252,7 @@
       border-radius: 12px;
       padding: 1.2vh 1vw;
       display: grid;
-      grid-template-columns: repeat(7, 1fr);
+      grid-template-columns: repeat(5, 1fr);
     }
 
     .dia-card {
@@ -498,7 +498,7 @@
 
         const cd = document.querySelector('.prevision-diaria');
         cd.innerHTML = '';
-        Object.values(porDia).slice(0,7).forEach(dia => {
+        Object.values(porDia).slice(0,5).forEach(dia => {
           const max=Math.round(Math.max(...dia.temps));
           const min=Math.round(Math.min(...dia.temps));
           const cod=dia.iconos[Math.floor(dia.iconos.length/2)];
