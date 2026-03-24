@@ -513,8 +513,8 @@
         const tempsHoy = forecast.list
           .filter(f => new Date(f.dt*1000).toDateString() === hoy)
           .map(f => f.main.temp);
-        const tMax = tempsHoy.length ? Math.round(Math.max(...tempsHoy)) : Math.round(current.main.temp);
-        const tMin = tempsHoy.length ? Math.round(Math.min(...tempsHoy)) : Math.round(current.main.temp);
+        const tMax = Math.round(Math.max(...temps24h));
+        const tMin = Math.round(Math.min(...temps24h));
         document.getElementById('temp-minmax').innerHTML =
           `<div style="color:white;opacity:0.75;">▲${tMax}°</div>
            <div style="color:white;opacity:0.75;">▼${tMin}°</div>`;
