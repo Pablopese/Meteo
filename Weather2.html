@@ -510,9 +510,7 @@
 
         // ── MAX/MIN del día desde forecast (una sola declaración de hoy) ──
         const hoy = new Date().toDateString();
-        const tempsHoy = forecast.list
-          .filter(f => new Date(f.dt*1000).toDateString() === hoy)
-          .map(f => f.main.temp);
+        const temps24h = forecast.list.slice(0, 8).map(f => f.main.temp);
         const tMax = Math.round(Math.max(...temps24h));
         const tMin = Math.round(Math.min(...temps24h));
         document.getElementById('temp-minmax').innerHTML =
