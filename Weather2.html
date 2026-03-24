@@ -295,7 +295,7 @@
               <div id="precipitacion" style="font-size:clamp(0.7rem,1.1vw,1rem); opacity:0.6; text-align:center;"></div>
               </div>
                 <div id="temperatura">--°</div>
-                <div id="temp-minmax" style="font-size:clamp(0.8rem,1.3vw,1.2rem);opacity:0.6;text-align:center;line-height:1.4;"></div>
+                <div id="temp-minmax" style="font-size:clamp(1rem,1.6vw,1.4rem);text-align:center;line-height:1.6;display:flex;flex-direction:column;align-items:center;"></div>
               </div>
           <div class="separador"></div>
           <div class="prevision"></div>
@@ -564,10 +564,15 @@
 
     // ── DATO ACTUAL (de weather, más preciso) ──
     document.getElementById('temperatura').textContent = Math.round(current.main.temp)+'°';
-      const tMax = Math.round(current.main.temp_max);
-      const tMin = Math.round(current.main.temp_min);
+    const hoy = new Date().toDateString();
+    const tempsHoy = forecast.list
+    .filter(f => new Date(f.dt*1000).toDateString() === hoy)
+    .map(f => f.main.temp);
+    const tMax = tempsHoy.length ? Math.round(Math.max(...tempsHoy)) : Math.round(current.main.temp);
+    const tMin = tempsHoy.length ? Math.round(Math.min(...tempsHoy)) : Math.round(current.main.temp);
     document.getElementById('temp-minmax').innerHTML =
-      `<span style="color:${colorEscala(tMax,0,40)}">▲${tMax}°</span>&nbsp;&nbsp;<span style="color:${colorEscala(tMin,0,40)}">▼${tMin}°</span>`;
+    `<div style="color:white;opacity:0.75;">▲${tMax}°</div>
+     <div style="color:white;opacity:0.75;">▼${tMin}°</div>`;
     document.getElementById('descripcion').textContent = current.weather[0].description;
     document.getElementById('humedad').textContent     = current.main.humidity+'%';
     document.getElementById('viento').textContent      = Math.round(current.wind.speed*3.6)+' km/h';
