@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Panel del Tiempo - 2 Vistas</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width:100vw; height:100svh; overflow:hidden; background:#16213e; }
+    body {
+      background: linear-gradient(135deg, #0a0e1a 0%, #1a1a2e 50%, #16213e 100%);
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      position: relative;
+    }
+
+    /* Vista activa */
+    body.vista-general #vista-general { display:grid; }
+    body.vista-general #vista-prevision { display:none; }
+    body.vista-prevision #vista-general { display:none; }
+    body.vista-prevision #vista-prevision { display:grid; }
+
+    #animacion {
+      position:fixed; top:0; left:0;
+      width:100vw; height:100vh;
+      pointer-events:none; z-index:0; overflow:hidden;
+    }
+    .gota { position:absolute; top:-20px; width:2px; height:15px; background:rgba(174,214,241,0.5); border-radius:2px; animation:caerGota linear infinite; }
+    @keyframes caerGota { to { transform:translateY(110vh); } }
+    .copo { position:absolute; top:-20px; color:rgba(255,255,255,0.8); animation:caerNieve linear infinite; }
+    @keyframes caerNieve { to { transform:translateY(110vh) rotate(360deg); } }
+    .flash { position:absolute; top:0; left:0; width:100%; height:100%; background:white; opacity:0; animation:relampago 5s infinite; }
+    @keyframes relampago { 0%,92%,100%{opacity:0;} 93%,95%{opacity:0.15;} 94%{opacity:0;} }
+
+    .estrella { position:absolute; background:white; border-radius:50%; animation:parpadeo ease-in-out infinite; }
+    @keyframes parpadeo { 0%,100% { opacity:0.2; transform:scale(1); } 50% { opacity:1; transform:scale(1.4); } }
+
+    .sol-halo {
+      position:absolute; border-radius:50%;
+      background: radial-gradient(circle,
+        rgba(255,255,255,1.00) 0%, rgba(255,255,255,0.75) 20%,
+        rgba(255,252,240,0.35) 50%, rgba(255,248,220,0.08) 75%, transparent 100%
+      );
+      filter: blur(18px);
+      animation: haloRespira 5s ease-in-out infinite;
+    }
+    @keyframes haloRespira { 0%,100% { transform:scale(1); opacity:0.75; } 50% { transform:scale(1.12); opacity:1; } }
+
+    .sol-rayo-difuso {
+      position:absolute; border-radius:50%;
+      background: radial-gradient(ellipse at center,
+        rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 45%, transparent 70%
+      );
+      filter: blur(28px);
+      transform-origin:center center;
+      animation: rayoDifusoGira 20s linear infinite;
+    }
+    @keyframes rayoDifusoGira { from { transform:rotate(0deg) scale(1); } to { transform:rotate(360deg) scale(1.1); } }
+
+    .nube-anim {
+      position:absolute; background:rgba(255,255,255,0.12);
+      border-radius:50px; filter:blur(6px);
+      animation:nubeDeriva linear infinite;
+    }
+    .nube-anim::before, .nube-anim::after {
+      content:''; position:absolute; background:rgba(255,255,255,0.12); border-radius:50%;
+    }
+    .nube-anim::before { width:60%; height:130%; top:-40%; left:20%; }
+    .nube-anim::after  { width:40%; height:110%; top:-30%; right:15%; }
+    @keyframes nubeDeriva { from { transform:translateX(-150px); } to { transform:translateX(110vw); } }
+
+    /* Overlay búsqueda */
+    #overlay-busqueda {
+      position:fixed; top:0; left:0; width:100vw; height:100vh;
+      background:rgba(10,14,26,0.55);
+      backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+      z-index:50; display:none;
+      align-items:center; justify-content:center;
+      animation:fadeInOverlay 0.25s ease;
+    }
+    #overlay-busqueda.activo { display:flex; }
+    @keyframes fadeInOverlay { from{opacity:0;} to{opacity:1;} }
+
+    .busqueda-modal { width:clamp(280px,50vw,560px); display:flex; flex-direction:column; gap:0.8vh; }
+    .busqueda-input-wrap {
+      display:flex; align-items:center;
+      background:rgba(255,255,255,0.12);
+      border:1px solid rgba(255,255,255,0.3);
+      border-radius:16px; padding:1vh 1.5vw; gap:0.8vw;
+    }
+    .busqueda-input-wrap svg { opacity:0.6; flex-shrink:0; }
+    #buscador { flex:1; background:transparent; border:none; outline:none; color:white; font-size:clamp(1rem,1.5vw,1.3rem); letter-spacing:0.5px; }
+    #buscador::placeholder { color:rgba(255,255,255,0.4); }
+    #btn-cerrar-busqueda { background:none; border:none; color:rgba(255,255,255,0.5); font-size:1.4rem; cursor:pointer; line-height:1; transition:color 0.2s; }
+    #btn-cerrar-busqueda:hover { color:white; }
+
+    #sugerencias { background:rgba(20,30,55,0.97); border-radius:14px; overflow:hidden; box-shadow:0 12px 32px rgba(0,0,0,0.5); display:none; }
+    #sugerencias.visible { display:block; }
+    .sugerencia-item { padding:1.2vh 1.5vw; font-size:clamp(0.75rem,1.1vw,1rem); cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.06); transition:background 0.2s; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .sugerencia-item:last-child { border-bottom:none; }
+    .sugerencia-item:hover { background:rgba(255,255,255,0.12); }
+
+    /* Vista general layout */
+    #vista-general {
+      position:relative; z-index:2;
+      display:grid;
+      grid-template-rows:1fr auto;
+      grid-template-columns:1fr;
+      width:100vw; height:100svh;
+      padding:2vh 2vw; gap:1.5vh;
+      isolation:isolate;
+    }
+
+    .fila-superior {
+      display:grid; grid-template-columns:38% 62%; gap:2vw; min-height:0;
+    }
+
+    .col-izquierda { display:flex; flex-direction:column; justify-content:center; align-items:center; gap:1vh; min-width:0; }
+    #ciudad { font-size:clamp(1.4rem,3.2vw,3rem); opacity:0.7; letter-spacing:4px; text-transform:uppercase; text-align:center; }
+    #hora   { font-size:clamp(3.2rem,10vw,8rem); font-weight:bold; letter-spacing:2px; text-align:center; }
+    #fecha  { font-size:clamp(0.9rem,1.5vw,1.3rem); opacity:0.6; text-align:center; }
+
+    .sol-cards { display:grid; grid-template-columns:1fr 1fr; gap:1vw; width:100%; }
+    .sol-card { display:flex; flex-direction:column; align-items:center; background:rgba(255,255,255,0.05); border-radius:10px; padding:0.8vh 0.5vw; gap:0.2vh; }
+    .sol-card span:first-child { font-size:clamp(0.55rem,0.8vw,0.8rem); letter-spacing:2px; text-transform:uppercase; opacity:0.5; }
+    .sol-card span:last-child  { font-size:clamp(0.9rem,1.4vw,1.3rem); font-weight:bold; }
+
+    .barra-acciones { display:flex; align-items:center; justify-content:center; gap:0.8vw; width:100%; margin-top:0.5vh; }
+    .ciudad-shortcut { padding:0.4vh 1.2vw; border-radius:20px; font-size:clamp(0.6rem,0.85vw,0.85rem); letter-spacing:1px; text-transform:uppercase; opacity:0.4; cursor:pointer; transition:all 0.3s; border:1px solid transparent; user-select:none; }
+    .ciudad-shortcut:hover, .ciudad-shortcut.activa { opacity:1; border-color:rgba(255,255,255,0.3); background:rgba(255,255,255,0.1); }
+
+    .btn-lupa { width:clamp(28px,2.2vw,38px); height:clamp(28px,2.2vw,38px); border-radius:50%; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.25); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background 0.2s,border-color 0.2s; flex-shrink:0; }
+    .btn-lupa:hover { background:rgba(255,255,255,0.2); border-color:rgba(255,255,255,0.5); }
+    .btn-lupa svg { width:55%; height:55%; opacity:0.8; }
+
+    .btn-prevision { margin-top:1vh; padding:0.5vh 1.4vw; border-radius:999px; border:1px solid rgba(255,255,255,0.35); background:rgba(255,255,255,0.08); font-size:clamp(0.7rem,0.9vw,0.9rem); letter-spacing:1px; text-transform:uppercase; cursor:pointer; color:white; }
+
+    .col-derecha { display:flex; flex-direction:column; justify-content:flex-start; gap:0; min-width:0; padding-right:2vw; height:100%; }
+    .tarjeta-tiempo { flex:1; display:flex; flex-direction:column; background:rgba(255,255,255,0.05); border-radius:16px; padding:1.8vh 2vw; gap:1.2vh; }
+    .tiempo-actual  { flex:1; display:flex; flex-direction:row; align-items:center; justify-content:space-between; }
+    .tarjeta-izquierda { display:flex; flex-direction:column; align-items:center; gap:0.6vh; flex:1; justify-content:center; }
+    #icono { width:clamp(6rem,16vw,14rem); height:clamp(6rem,16vw,14rem); }
+    #descripcion { font-size:clamp(1.3rem,2.4vw,2.2rem); opacity:0.8; text-transform:capitalize; text-align:center; }
+    #temperatura { font-size:clamp(5rem,14vw,12rem); font-weight:300; line-height:1; }
+
+    #precipitacion { text-align:center; }
+    #temp-minmax { font-size:clamp(1rem,1.6vw,1.4rem); text-align:center; line-height:1.6; display:flex; flex-direction:column; align-items:center; }
+
+    .detalles { display:grid; grid-template-columns:repeat(5,1fr); gap:1.2vw; width:100%; }
+    .detalle { display:flex; flex-direction:column; align-items:center; justify-content:center; background:rgba(255,255,255,0.05); border-radius:12px; padding:1.5vh 1vw; gap:0.5vh; }
+    .detalle span:first-child { font-size:clamp(0.65rem,1vw,1rem); letter-spacing:2px; text-transform:uppercase; opacity:0.5; }
+    .detalle span:nth-child(2){ font-size:clamp(1.3rem,2.8vw,2.4rem); font-weight:bold; }
+
+    #ultima-actualizacion { position:fixed; bottom:1vh; right:1.2vw; font-size:clamp(0.5rem,0.7vw,0.7rem); opacity:0.3; z-index:2; }
+
+    /* Vista previsión */
+    #vista-prevision {
+      position:relative; z-index:2;
+      display:grid;
+      grid-template-rows:auto 1fr auto;
+      grid-template-columns:1fr;
+      width:100vw; height:100svh;
+      padding:2vh 2vw; gap:1.5vh;
+    }
+    .header-prevision { display:flex; justify-content:space-between; align-items:center; }
+    .header-prevision h1 { font-size:clamp(1.2rem,2vw,1.8rem); letter-spacing:3px; text-transform:uppercase; opacity:0.8; }
+    .btn-volver { padding:0.5vh 1.4vw; border-radius:999px; border:1px solid rgba(255,255,255,0.35); background:rgba(255,255,255,0.08); font-size:clamp(0.7rem,0.9vw,0.9rem); letter-spacing:1px; text-transform:uppercase; cursor:pointer; color:white; }
+
+    .zona-prevision { display:grid; grid-template-rows:1fr 1fr; gap:1.5vh; }
+    .prevision-horaria, .prevision-diaria { background:rgba(255,255,255,0.05); border-radius:16px; padding:1.5vh 2vw; }
+
+    .prevision-horaria h2, .prevision-diaria h2 { font-size:clamp(0.9rem,1.4vw,1.3rem); margin-bottom:1vh; opacity:0.75; text-transform:uppercase; letter-spacing:2px; }
+
+    .prevision-horaria-lista { display:grid; grid-template-columns:repeat(6,1fr); gap:0.8vw; }
+    .franja-prev { display:flex; flex-direction:column; align-items:center; gap:0.4vh; }
+    .franja-prev .hora { font-size:clamp(0.6rem,0.9vw,0.85rem); opacity:0.6; }
+    .franja-prev img { width:clamp(1.8rem,3vw,3rem); height:clamp(1.8rem,3vw,3rem); }
+    .franja-prev .temp { font-size:clamp(0.9rem,1.3vw,1.15rem); font-weight:bold; }
+
+    .prevision-diaria-lista { display:grid; grid-template-columns:repeat(5,1fr); gap:1vw; }
+    .dia-prev { display:flex; flex-direction:column; align-items:center; gap:0.4vh; }
+    .dia-prev .nombre { font-size:clamp(0.7rem,1vw,0.95rem); opacity:0.6; text-transform:capitalize; }
+    .dia-prev img { width:clamp(2rem,3.2vw,3.4rem); height:clamp(2rem,3.2vw,3.4rem); }
+    .dia-prev .temps { font-size:clamp(0.9rem,1.3vw,1.15rem); font-weight:bold; }
+    .dia-prev .temps .min { display:block; opacity:0.5; font-weight:normal; font-size:0.88em; }
+  </style>
+</head>
+<body class="vista-general">
+
+  <div id="animacion"></div>
+
+  <!-- Overlay búsqueda -->
+  <div id="overlay-busqueda">
+    <div class="busqueda-modal">
+      <div class="busqueda-input-wrap">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input id="buscador" type="text" placeholder="Buscar ciudad..." autocomplete="off" />
+        <button id="btn-cerrar-busqueda">✕</button>
+      </div>
+      <div id="sugerencias"></div>
+    </div>
+  </div>
+
+  <!-- Vista general -->
+  <div id="vista-general">
+    <div class="fila-superior">
+      <div class="col-izquierda">
+        <div id="ciudad">Mérida</div>
+        <div id="hora">--:--</div>
+        <div id="fecha">--</div>
+        <div class="sol-cards">
+          <div class="sol-card"><span>Amanecer</span><span id="amanecer">--:--</span></div>
+          <div class="sol-card"><span>Atardecer</span><span id="atardecer">--:--</span></div>
+        </div>
+        <div class="barra-acciones">
+          <span class="ciudad-shortcut activa" id="sc-merida"  onclick="cargarShortcut('merida')">Mérida</span>
+          <span class="ciudad-shortcut"        id="sc-caceres" onclick="cargarShortcut('caceres')">Cáceres</span>
+          <div class="btn-lupa" id="btn-lupa" title="Buscar ciudad">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+          </div>
+        </div>
+        <button class="btn-prevision" id="btn-ir-prevision">Previsión</button>
+      </div>
+
+      <div class="col-derecha">
+        <div class="tarjeta-tiempo">
+          <div class="tiempo-actual">
+            <div class="tarjeta-izquierda">
+              <img id="icono" src="" alt="tiempo">
+              <div id="descripcion">Cargando...</div>
+              <div id="precipitacion"></div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;">
+              <div id="temperatura">--°</div>
+              <div id="temp-minmax"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="detalles">
+      <div class="detalle"><span>Humedad</span><span id="humedad">--%</span></div>
+      <div class="detalle"><span>Viento</span><span id="viento">-- km/h</span></div>
+      <div class="detalle"><span>Sensación</span><span id="sensacion">--°</span></div>
+      <div class="detalle"><span>Polen</span><span id="polen-valor">--</span></div>
+      <div class="detalle"><span>UV</span><span id="uv-valor">--</span></div>
+    </div>
+  </div>
+
+  <!-- Vista previsión -->
+  <div id="vista-prevision">
+    <div class="header-prevision">
+      <h1 id="titulo-prevision">Previsión</h1>
+      <button class="btn-volver" id="btn-volver">General</button>
+    </div>
+    <div class="zona-prevision">
+      <div class="prevision-horaria">
+        <h2>Próximas horas</h2>
+        <div class="prevision-horaria-lista" id="lista-horaria"></div>
+      </div>
+      <div class="prevision-diaria">
+        <h2>Próximos 5 días</h2>
+        <div class="prevision-diaria-lista" id="lista-diaria"></div>
+      </div>
+    </div>
+    <div style="text-align:right;font-size:clamp(0.5rem,0.8vw,0.75rem);opacity:0.4;">
+      <span id="ultima-actualizacion">Actualizando...</span>
+    </div>
+  </div>
+
+  <script>
+    const API_KEY    = '200d7683a1565e363b0b2e6ca5496e01';
+    const GOOGLE_KEY = 'AIzaSyAubTqmFTe-pZiyJ61ddvvm8BQGRe0mknY';
+    const BASE_ICON  = 'https://cdn.jsdelivr.net/gh/basmilius/weather-icons@master/production/fill/all/';
+
+    const SHORTCUTS = {
+      merida:  { nombre:'Mérida',  lat:38.9166, lon:-6.3441 },
+      caceres: { nombre:'Cáceres', lat:39.4753, lon:-6.3724 }
+    };
+
+    let ciudadActual = { ...SHORTCUTS.merida, tzOffset:3600 };
+    let cambiando = false;
+    let shortcutActivo = 'merida';
+
+    const mapaIconos = {
+      '01d':'clear-day.svg',        '01n':'clear-night.svg',
+      '02d':'partly-cloudy-day.svg','02n':'partly-cloudy-night.svg',
+      '03d':'cloudy.svg',           '03n':'cloudy.svg',
+      '04d':'overcast-day.svg',     '04n':'overcast-night.svg',
+      '09d':'drizzle.svg',          '09n':'drizzle.svg',
+      '10d':'rain.svg',             '10n':'rain.svg',
+      '11d':'thunderstorms-rain.svg','11n':'thunderstorms-rain.svg',
+      '13d':'snow.svg',             '13n':'snow.svg',
+      '50d':'mist.svg',             '50n':'mist.svg',
+    };
+
+    function iconoUrl(c) { return BASE_ICON + (mapaIconos[c] || 'not-available.svg'); }
+
+    function colorEscala(valor, min, max) {
+      const t = Math.max(0, Math.min(1, (valor - min) / (max - min)));
+      const h = Math.round((1 - t) * 120);
+      return `hsl(${h}, 70%, ${t < 0.5 ? 58 : 52}%)`;
+    }
+
+    function esNocheEnCiudad(tzOffsetSeg) {
+      const ahora = new Date();
+      const utc   = ahora.getTime() + ahora.getTimezoneOffset() * 60000;
+      const local = new Date(utc + tzOffsetSeg * 1000);
+      const h = local.getHours();
+      return h < 7 || h >= 20;
+    }
+
+    function formatearHoraLocal(unix, offsetSegundos) {
+      const fecha = new Date((unix + offsetSegundos) * 1000);
+      return fecha.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    // Overlay búsqueda
+    const overlay       = document.getElementById('overlay-busqueda');
+    const inputBuscador = document.getElementById('buscador');
+    const contSugs      = document.getElementById('sugerencias');
+
+    document.getElementById('btn-lupa').addEventListener('click', abrirBusqueda);
+    document.getElementById('btn-cerrar-busqueda').addEventListener('click', cerrarBusqueda);
+    overlay.addEventListener('click', e => { if (e.target === overlay) cerrarBusqueda(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') cerrarBusqueda(); });
+
+    function abrirBusqueda() {
+      overlay.classList.add('activo');
+      setTimeout(() => inputBuscador.focus(), 50);
+    }
+    function cerrarBusqueda() {
+      overlay.classList.remove('activo');
+      inputBuscador.value = '';
+      contSugs.innerHTML = '';
+      contSugs.classList.remove('visible');
+    }
+
+    let debounceTimer;
+    inputBuscador.addEventListener('input', () => {
+      clearTimeout(debounceTimer);
+      const q = inputBuscador.value.trim();
+      if (q.length < 2) { contSugs.classList.remove('visible'); return; }
+      debounceTimer = setTimeout(() => buscarCiudades(q), 350);
+    });
+
+    async function buscarCiudades(q) {
+      try {
+        const r = await fetch(`https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(q)}&limit=5&appid=${API_KEY}`);
+        const d = await r.json();
+        if (!d.length) { contSugs.classList.remove('visible'); return; }
+        contSugs.innerHTML = '';
+        d.forEach(c => {
+          const item = document.createElement('div');
+          item.className = 'sugerencia-item';
+          item.textContent = `${c.name}${c.state ? ', '+c.state : ''}, ${c.country||''}`;
+          item.addEventListener('click', () => seleccionarCiudad(c));
+          contSugs.appendChild(item);
+        });
+        contSugs.classList.add('visible');
+      } catch(e) { contSugs.classList.remove('visible'); }
+    }
+
+    async function seleccionarCiudad(c) {
+      cerrarBusqueda();
+      shortcutActivo = null;
+      actualizarShortcuts();
+      await cargarCiudad({ nombre: c.local_names?.es || c.name, lat: c.lat, lon: c.lon });
+    }
+
+    async function cargarShortcut(key) {
+      if (cambiando) return;
+      shortcutActivo = key;
+      actualizarShortcuts();
+      await cargarCiudad({ ...SHORTCUTS[key] });
+    }
+
+    function actualizarShortcuts() {
+      document.getElementById('sc-merida').classList.toggle('activa',  shortcutActivo === 'merida');
+      document.getElementById('sc-caceres').classList.toggle('activa', shortcutActivo === 'caceres');
+    }
+
+    async function cargarCiudad(nueva) {
+      if (cambiando) return;
+      cambiando = true;
+      ciudadActual = { ...ciudadActual, ...nueva };
+      document.getElementById('ciudad').textContent = ciudadActual.nombre;
+      document.getElementById('titulo-prevision').textContent = `Previsión · ${ciudadActual.nombre}`;
+      await Promise.all([obtenerTiempoYPrevision(), obtenerUV(), obtenerPolen()]);
+      cambiando = false;
+    }
+
+    function actualizarFondo(condicion, cod) {
+      const esNoche = esNocheEnCiudad(ciudadActual.tzOffset || 0);
+      const id = condicion;
+      let g;
+      if (esNoche)       g = 'linear-gradient(135deg,#0a0e1a,#1a1a2e,#16213e)';
+      else if (id<300)   g = 'linear-gradient(135deg,#1a1a2e,#2d3561,#1a1a2e)';
+      else if (id<600)   g = 'linear-gradient(135deg,#2c3e50,#3498db)';
+      else if (id<700)   g = 'linear-gradient(135deg,#e0e0e0,#b0c4de,#a8c0d6)';
+      else if (id<800)   g = 'linear-gradient(135deg,#606c88,#3f4c6b)';
+      else if (id===800) g = 'linear-gradient(135deg,#1a6fa8,#2e9fd4,#87ceeb)';
+      else if (id<=802)  g = 'linear-gradient(135deg,#1c3a5e,#4a7fa5)';
+      else               g = 'linear-gradient(135deg,#2c3e50,#4a5568)';
+      document.body.style.backgroundImage = g;
+      iniciarAnimacion(id);
+    }
+
+    function iniciarAnimacion(id) {
+      const cont = document.getElementById('animacion');
+      cont.innerHTML = '';
+      const noche = esNocheEnCiudad(ciudadActual.tzOffset || 0);
+
+      if (noche) {
+        for (let i = 0; i < 80; i++) {
+          const s = document.createElement('div');
+          s.className = 'estrella';
+          const size = Math.random() * 2.5 + 1;
+          s.style.cssText = `width:${size}px;height:${size}px;top:${Math.random()*100}vh;left:${Math.random()*100}vw;animation-duration:${Math.random()*3+2}s;animation-delay:${Math.random()*4}s;`;
+          cont.appendChild(s);
+        }
+      }
+
+      if (id === 800 && !noche) {
+        const sz = Math.min(window.innerWidth, window.innerHeight) * 0.85;
+        const cx = window.innerWidth * 0.97;
+        const cy = window.innerHeight * -0.05;
+        [1.8, 1.4, 1.0].forEach((mult, i) => {
+          const halo = document.createElement('div');
+          halo.className = 'sol-rayo-difuso';
+          const s = sz * mult;
+          halo.style.cssText = `width:${s}px;height:${s}px;top:${cy-s/2}px;left:${cx-s/2}px;animation-duration:${18+i*7}s;animation-delay:-${i*4}s;`;
+          cont.appendChild(halo);
+        });
+        const nucleo = document.createElement('div');
+        nucleo.className = 'sol-halo';
+        const sn = sz * 0.55;
+        nucleo.style.cssText = `width:${sn}px;height:${sn}px;top:${cy-sn/2}px;left:${cx-sn/2}px;`;
+        cont.appendChild(nucleo);
+      }
+
+      if (id >= 801 && id <= 804) {
+        const nNubes = id === 801 ? 2 : id === 802 ? 3 : 5;
+        for (let i = 0; i < nNubes; i++) {
+          const n = document.createElement('div');
+          n.className = 'nube-anim';
+          const w = Math.random() * 180 + 120;
+          const dur = Math.random() * 30 + 40;
+          n.style.cssText = `width:${w}px;height:${w*0.4}px;top:${Math.random()*40+5}vh;left:-${w+50}px;animation-duration:${dur}s;animation-delay:-${Math.random()*dur}s;`;
+          cont.appendChild(n);
+        }
+      }
+
+      if (id >= 200 && id < 300) {
+        const f = document.createElement('div'); f.className='flash'; cont.appendChild(f);
+        crearGotas(cont, 40);
+      } else if (id >= 300 && id < 600) {
+        crearGotas(cont, id >= 500 ? 50 : 25);
+      } else if (id >= 600 && id < 700) {
+        crearCopos(cont, 30);
+      }
+    }
+
+    function crearGotas(cont, n) {
+      for (let i=0;i<n;i++){
+        const g=document.createElement('div');
+        g.className='gota';
+        g.style.left=(Math.random()*100)+'vw';
+        g.style.animationDuration=(Math.random()*0.4+0.4)+'s';
+        g.style.animationDelay=(Math.random()*2)+'s';
+        g.style.opacity=(Math.random()*0.4+0.3).toString();
+        cont.appendChild(g);
+      }
+    }
+    function crearCopos(cont, n) {
+      for (let i=0;i<n;i++){
+        const c=document.createElement('div');
+        c.className='copo';
+        c.textContent='❄';
+        c.style.left=(Math.random()*100)+'vw';
+        c.style.animationDuration=(Math.random()*3+2)+'s';
+        c.style.animationDelay=(Math.random()*3)+'s';
+        c.style.fontSize=(Math.random()*8+8)+'px';
+        cont.appendChild(c);
+      }
+    }
+
+    function actualizarReloj() {
+      const ahora = new Date();
+      const utc   = ahora.getTime() + ahora.getTimezoneOffset() * 60000;
+      const local = new Date(utc + (ciudadActual.tzOffset || 0) * 1000);
+      document.getElementById('hora').textContent  = local.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
+      document.getElementById('fecha').textContent = local.toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'});
+    }
+    setInterval(actualizarReloj, 1000);
+    actualizarReloj();
+
+    async function obtenerPolen() {
+      const {lat,lon} = ciudadActual;
+      try {
+        const r = await fetch(`https://pollen.googleapis.com/v1/forecast:lookup?key=${GOOGLE_KEY}&location.longitude=${lon}&location.latitude=${lat}&days=1`);
+        const d = await r.json();
+        const tipos = d.dailyInfo[0].pollenTypeInfo;
+        const max = Math.max(0,...tipos.filter(t=>t.indexInfo&&t.indexInfo.value>0).map(t=>t.indexInfo.value));
+        const el = document.getElementById('polen-valor');
+        el.textContent = {0:'Muy bajo',1:'Muy bajo',2:'Bajo',3:'Moderado',4:'Alto',5:'Muy alto'}[max]||'--';
+        el.style.color = colorEscala(max, 0, 5);
+      } catch(e) { document.getElementById('polen-valor').textContent='N/D'; }
+    }
+
+    async function obtenerUV() {
+      const {lat,lon} = ciudadActual;
+      try {
+        const r = await fetch(`https://api.openweathermap.org/data/2.5/uvi?lat=${lat}&lon=${lon}&appid=${API_KEY}`);
+        const d = await r.json();
+        const v = d.value;
+        const elVal = document.getElementById('uv-valor');
+        elVal.textContent = v;
+        elVal.style.color = colorEscala(v, 0, 11);
+      } catch(e) { document.getElementById('uv-valor').textContent='N/D'; }
+    }
+
+    async function obtenerTiempoYPrevision() {
+      const {lat, lon} = ciudadActual;
+      try {
+        const [rCurrent, rForecast] = await Promise.all([
+          fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&lang=es&appid=${API_KEY}`),
+          fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&lang=es&appid=${API_KEY}`)
+        ]);
+        const current  = await rCurrent.json();
+        const forecast = await rForecast.json();
+
+        ciudadActual.tzOffset = forecast.city.timezone;
+
+        // Temperatura actual
+        document.getElementById('temperatura').textContent = Math.round(current.main.temp) + '°';
+
+        // Max/min del día local usando forecast
+        const offsetMs = forecast.city.timezone * 1000;
+        const hoyLocal = new Date(Date.now() + offsetMs).toDateString();
+        const tempsDia = forecast.list
+          .filter(f => new Date(f.dt * 1000 + offsetMs).toDateString() === hoyLocal)
+          .map(f => f.main.temp);
+        const tMax = tempsDia.length ? Math.round(Math.max(...tempsDia)) : Math.round(current.main.temp);
+        const tMin = tempsDia.length ? Math.round(Math.min(...tempsDia)) : Math.round(current.main.temp);
+        document.getElementById('temp-minmax').innerHTML =
+          `<div style="color:white;opacity:0.75;">▲${tMax}°</div>
+           <div style="color:white;opacity:0.75;">▼${tMin}°</div>`;
+
+        // Datos actuales adicionales
+        document.getElementById('descripcion').textContent = current.weather[0].description;
+        document.getElementById('humedad').textContent     = current.main.humidity + '%';
+        document.getElementById('viento').textContent      = Math.round(current.wind.speed * 3.6) + ' km/h';
+        document.getElementById('sensacion').textContent   = Math.round(current.main.feels_like) + '°';
+        document.getElementById('icono').src               = iconoUrl(current.weather[0].icon);
+        actualizarFondo(current.weather[0].id, current.weather[0].icon);
+
+        // Amanecer / atardecer en hora local
+        const tz = forecast.city.timezone;
+        document.getElementById('amanecer').textContent  = formatearHoraLocal(forecast.city.sunrise, tz);
+        document.getElementById('atardecer').textContent = formatearHoraLocal(forecast.city.sunset,  tz);
+
+        // POP actual
+        const popActual = Math.round(forecast.list[0].pop * 100);
+        const elPop = document.getElementById('precipitacion');
+        if (popActual > 0) {
+          elPop.innerHTML = `
+            <div style="display:flex;align-items:center;justify-content:center;gap:0.4vw;margin-top:0.3vh;">
+              <svg viewBox="0 0 24 24" fill="rgba(255,255,255,0.75)" xmlns="http://www.w3.org/2000/svg"
+                style="width:clamp(14px,1.8vw,22px);height:clamp(14px,1.8vw,22px);flex-shrink:0;">
+                <path d="M12 2C12 2 5 10.5 5 15a7 7 0 0 0 14 0C19 10.5 12 2 12 2Z"/>
+              </svg>
+              <span style="font-size:clamp(1rem,1.6vw,1.5rem);opacity:0.85;">${popActual}%</span>
+            </div>`;
+        } else {
+          elPop.innerHTML = '';
+        }
+
+        // Previsión horaria (vista general y vista detalle usan misma fuente)
+        const contPrevGeneral = document.querySelector('.prevision');
+        if (contPrevGeneral) contPrevGeneral.innerHTML = '';
+
+        const listaHoraria = document.getElementById('lista-horaria');
+        listaHoraria.innerHTML = '';
+
+        forecast.list.slice(1,7).forEach(f => {
+          const fechaLocal = new Date(f.dt * 1000 + tz * 1000);
+          const horaStr = fechaLocal.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
+          const pop = Math.round(f.pop * 100);
+
+          if (contPrevGeneral) {
+            const popHtml = pop > 0
+              ? `<div style="display:flex;align-items:center;justify-content:center;gap:0.3vw;">
+                  <svg viewBox="0 0 24 24" fill="rgba(255,255,255,0.75)" xmlns="http://www.w3.org/2000/svg"
+                    style="width:clamp(8px,1vw,12px);height:clamp(8px,1vw,12px);flex-shrink:0;">
+                    <path d="M12 2C12 2 5 10.5 5 15a7 7 0 0 0 14 0C19 10.5 12 2 12 2Z"/>
+                  </svg>
+                  <span style="font-size:clamp(0.65rem,1vw,0.9rem);opacity:0.85;">${pop}%</span>
+                </div>`
+              : `<div style="height:clamp(0.65rem,1vw,0.9rem);"></div>`;
+
+            contPrevGeneral.innerHTML += `<div class="franja">
+              <span class="franja-hora">${horaStr}</span>
+              <img src="${iconoUrl(f.weather[0].icon)}" alt="">
+              <span class="franja-temp">${Math.round(f.main.temp)}°</span>
+              ${popHtml}
+            </div>`;
+          }
+
+          const card = document.createElement('div');
+          card.className = 'franja-prev';
+          card.innerHTML = `
+            <span class="hora">${horaStr}</span>
+            <img src="${iconoUrl(f.weather[0].icon)}" alt="">
+            <span class="temp">${Math.round(f.main.temp)}°</span>
+          `;
+          listaHoraria.appendChild(card);
+        });
+
+        // Previsión diaria
+        const hoyTexto = hoyLocal; // ya calculado
+        const porDia = {};
+        forecast.list.forEach(item => {
+          const fechaLocal = new Date(item.dt * 1000 + tz * 1000);
+          const key   = fechaLocal.toDateString();
+          if (key === hoyTexto) return;
+          if (!porDia[key]) porDia[key] = { nombre:fechaLocal.toLocaleDateString('es-ES',{weekday:'short',day:'numeric'}), temps:[], iconos:[] };
+          porDia[key].temps.push(item.main.temp);
+          porDia[key].iconos.push(item.weather[0].icon);
+        });
+
+        const listaDiaria = document.getElementById('lista-diaria');
+        listaDiaria.innerHTML = '';
+        Object.values(porDia).slice(0,5).forEach(dia => {
+          const max = Math.round(Math.max(...dia.temps));
+          const min = Math.round(Math.min(...dia.temps));
+          const cod = dia.iconos[Math.floor(dia.iconos.length/2)];
+          const card = document.createElement('div');
+          card.className = 'dia-prev';
+          card.innerHTML = `
+            <span class="nombre">${dia.nombre}</span>
+            <img src="${iconoUrl(cod)}" alt="">
+            <span class="temps">${max}°<span class="min">${min}°</span></span>
+          `;
+          listaDiaria.appendChild(card);
+        });
+
+        document.getElementById('ultima-actualizacion').textContent = 'Actualizado: ' + new Date().toLocaleTimeString('es-ES');
+        actualizarReloj();
+      } catch(e) {
+        document.getElementById('descripcion').textContent = 'Error de conexión';
+      }
+    }
+
+    // Navegación entre vistas
+    document.getElementById('btn-ir-prevision').addEventListener('click', () => {
+      document.body.classList.remove('vista-general');
+      document.body.classList.add('vista-prevision');
+    });
+    document.getElementById('btn-volver').addEventListener('click', () => {
+      document.body.classList.remove('vista-prevision');
+      document.body.classList.add('vista-general');
+    });
+
+    // Inicialización
+    obtenerTiempoYPrevision();
+    obtenerPolen();
+    obtenerUV();
+    setInterval(obtenerTiempoYPrevision, 60 * 1000);
+    setInterval(obtenerPolen,            60 * 60 * 1000);
+    setInterval(obtenerUV,               60 * 60 * 1000);
+  </script>
+</body>
+</html>
