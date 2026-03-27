@@ -93,7 +93,6 @@
     #buscador::placeholder { color:rgba(255,255,255,0.4); }
     #btn-cerrar-busqueda { background:none; border:none; color:rgba(255,255,255,0.5); font-size:1.4rem; cursor:pointer; line-height:1; transition:color 0.2s; }
     #btn-cerrar-busqueda:hover { color:white; }
-
     #sugerencias { background:rgba(20,30,55,0.97); border-radius:14px; overflow:hidden; box-shadow:0 12px 32px rgba(0,0,0,0.5); display:none; }
     #sugerencias.visible { display:block; }
     .sugerencia-item { padding:1.2vh 1.5vw; font-size:clamp(0.75rem,1.1vw,1rem); cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.06); transition:background 0.2s; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
@@ -116,40 +115,73 @@
     }
 
     .col-izquierda { display:flex; flex-direction:column; justify-content:center; align-items:center; gap:1vh; min-width:0; }
-    #ciudad { font-size:clamp(1.4rem,3.2vw,3rem); opacity:0.7; letter-spacing:4px; text-transform:uppercase; text-align:center; }
-    #hora   { font-size:clamp(3.2rem,10vw,8rem); font-weight:bold; letter-spacing:2px; text-align:center; }
-    #fecha  { font-size:clamp(0.9rem,1.5vw,1.3rem); opacity:0.6; text-align:center; }
+    #ciudad { font-size:clamp(1.8rem,3.5vw,3.2rem); opacity:0.7; letter-spacing:4px; text-transform:uppercase; text-align:center; }
+    #hora   { font-size:clamp(4.5rem,12vw,9rem); font-weight:bold; letter-spacing:2px; text-align:center; }
+    #fecha  { font-size:clamp(1rem,2vw,1.6rem); opacity:0.6; text-align:center; }
 
     .sol-cards { display:grid; grid-template-columns:1fr 1fr; gap:1vw; width:100%; }
     .sol-card { display:flex; flex-direction:column; align-items:center; background:rgba(255,255,255,0.05); border-radius:10px; padding:0.8vh 0.5vw; gap:0.2vh; }
-    .sol-card span:first-child { font-size:clamp(0.55rem,0.8vw,0.8rem); letter-spacing:2px; text-transform:uppercase; opacity:0.5; }
-    .sol-card span:last-child  { font-size:clamp(0.9rem,1.4vw,1.3rem); font-weight:bold; }
+    .sol-card span:first-child { font-size:clamp(0.7rem,1.1vw,1rem); letter-spacing:2px; text-transform:uppercase; opacity:0.5; }
+    .sol-card span:last-child  { font-size:clamp(1.1rem,1.8vw,1.6rem); font-weight:bold; }
 
     .barra-acciones { display:flex; align-items:center; justify-content:center; gap:0.8vw; width:100%; margin-top:0.5vh; }
-    .ciudad-shortcut { padding:0.4vh 1.2vw; border-radius:20px; font-size:clamp(0.6rem,0.85vw,0.85rem); letter-spacing:1px; text-transform:uppercase; opacity:0.4; cursor:pointer; transition:all 0.3s; border:1px solid transparent; user-select:none; }
+    .ciudad-shortcut { padding:0.4vh 1.2vw; border-radius:20px; font-size:clamp(0.8rem,1.1vw,1rem); letter-spacing:1px; text-transform:uppercase; opacity:0.4; cursor:pointer; transition:all 0.3s; border:1px solid transparent; user-select:none; }
     .ciudad-shortcut:hover, .ciudad-shortcut.activa { opacity:1; border-color:rgba(255,255,255,0.3); background:rgba(255,255,255,0.1); }
 
-    .btn-lupa { width:clamp(28px,2.2vw,38px); height:clamp(28px,2.2vw,38px); border-radius:50%; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.25); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background 0.2s,border-color 0.2s; flex-shrink:0; }
+    .btn-lupa { width:clamp(34px,2.8vw,42px); height:clamp(34px,2.8vw,42px); border-radius:50%; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.25); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background 0.2s,border-color 0.2s; flex-shrink:0; }
     .btn-lupa:hover { background:rgba(255,255,255,0.2); border-color:rgba(255,255,255,0.5); }
     .btn-lupa svg { width:55%; height:55%; opacity:0.8; }
 
-    .btn-prevision { margin-top:1vh; padding:0.5vh 1.4vw; border-radius:999px; border:1px solid rgba(255,255,255,0.35); background:rgba(255,255,255,0.08); font-size:clamp(0.7rem,0.9vw,0.9rem); letter-spacing:1px; text-transform:uppercase; cursor:pointer; color:white; }
+    .btn-prevision { margin-top:1vh; padding:0.6vh 1.6vw; border-radius:999px; border:1px solid rgba(255,255,255,0.35); background:rgba(255,255,255,0.08); font-size:clamp(0.9rem,1.2vw,1.1rem); letter-spacing:1px; text-transform:uppercase; cursor:pointer; color:white; }
 
     .col-derecha { display:flex; flex-direction:column; justify-content:flex-start; gap:0; min-width:0; padding-right:2vw; height:100%; }
     .tarjeta-tiempo { flex:1; display:flex; flex-direction:column; background:rgba(255,255,255,0.05); border-radius:16px; padding:1.8vh 2vw; gap:1.2vh; }
     .tiempo-actual  { flex:1; display:flex; flex-direction:row; align-items:center; justify-content:space-between; }
-    .tarjeta-izquierda { display:flex; flex-direction:column; align-items:center; gap:0.6vh; flex:1; justify-content:center; }
+    .tarjeta-izquierda { display:flex; flex-direction:column; align-items:center; gap:0.8vh; flex:1; justify-content:center; }
     #icono { width:clamp(6rem,16vw,14rem); height:clamp(6rem,16vw,14rem); }
-    #descripcion { font-size:clamp(1.3rem,2.4vw,2.2rem); opacity:0.8; text-transform:capitalize; text-align:center; }
-    #temperatura { font-size:clamp(5rem,14vw,12rem); font-weight:300; line-height:1; }
+
+    #descripcion {
+      font-size:clamp(1rem,1.5vw,1.4rem);
+      opacity:0.8;
+      text-transform:capitalize;
+      text-align:center;
+    }
+
+    #temperatura {
+      font-size:clamp(6rem,14vw,10rem);
+      font-weight:300;
+      line-height:1;
+    }
 
     #precipitacion { text-align:center; }
-    #temp-minmax { font-size:clamp(1rem,1.6vw,1.4rem); text-align:center; line-height:1.6; display:flex; flex-direction:column; align-items:center; }
+    #precipitacion .pop-text {
+      font-size:clamp(0.9rem,1.6vw,1.4rem);
+      opacity:0.85;
+    }
+
+    #temp-minmax {
+      font-size:clamp(1.2rem,2.4vw,2rem);
+      text-align:center;
+      line-height:1.6;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+    }
 
     .detalles { display:grid; grid-template-columns:repeat(5,1fr); gap:1.2vw; width:100%; }
     .detalle { display:flex; flex-direction:column; align-items:center; justify-content:center; background:rgba(255,255,255,0.05); border-radius:12px; padding:1.5vh 1vw; gap:0.5vh; }
-    .detalle span:first-child { font-size:clamp(0.65rem,1vw,1rem); letter-spacing:2px; text-transform:uppercase; opacity:0.5; }
-    .detalle span:nth-child(2){ font-size:clamp(1.3rem,2.8vw,2.4rem); font-weight:bold; }
+
+    .detalle span:first-child {
+      font-size:clamp(0.9rem,1.6vw,1.4rem);
+      letter-spacing:2px;
+      text-transform:uppercase;
+      opacity:0.5;
+    }
+
+    .detalle span:nth-child(2){
+      font-size:clamp(2.8rem,6vw,4.2rem);
+      font-weight:bold;
+    }
 
     #ultima-actualizacion { position:fixed; bottom:1vh; right:1.2vw; font-size:clamp(0.5rem,0.7vw,0.7rem); opacity:0.3; z-index:2; }
 
@@ -163,25 +195,31 @@
       padding:2vh 2vw; gap:1.5vh;
     }
     .header-prevision { display:flex; justify-content:space-between; align-items:center; }
-    .header-prevision h1 { font-size:clamp(1.2rem,2vw,1.8rem); letter-spacing:3px; text-transform:uppercase; opacity:0.8; }
-    .btn-volver { padding:0.5vh 1.4vw; border-radius:999px; border:1px solid rgba(255,255,255,0.35); background:rgba(255,255,255,0.08); font-size:clamp(0.7rem,0.9vw,0.9rem); letter-spacing:1px; text-transform:uppercase; cursor:pointer; color:white; }
+    .header-prevision h1 { font-size:clamp(1.4rem,2.4vw,2rem); letter-spacing:3px; text-transform:uppercase; opacity:0.8; }
+    .btn-volver { padding:0.6vh 1.6vw; border-radius:999px; border:1px solid rgba(255,255,255,0.35); background:rgba(255,255,255,0.08); font-size:clamp(0.9rem,1.2vw,1.1rem); letter-spacing:1px; text-transform:uppercase; cursor:pointer; color:white; }
 
     .zona-prevision { display:grid; grid-template-rows:1fr 1fr; gap:1.5vh; }
     .prevision-horaria, .prevision-diaria { background:rgba(255,255,255,0.05); border-radius:16px; padding:1.5vh 2vw; }
 
-    .prevision-horaria h2, .prevision-diaria h2 { font-size:clamp(0.9rem,1.4vw,1.3rem); margin-bottom:1vh; opacity:0.75; text-transform:uppercase; letter-spacing:2px; }
+    .prevision-horaria h2, .prevision-diaria h2 {
+      font-size:clamp(1rem,1.6vw,1.4rem);
+      margin-bottom:1vh;
+      opacity:0.75;
+      text-transform:uppercase;
+      letter-spacing:2px;
+    }
 
     .prevision-horaria-lista { display:grid; grid-template-columns:repeat(6,1fr); gap:0.8vw; }
     .franja-prev { display:flex; flex-direction:column; align-items:center; gap:0.4vh; }
-    .franja-prev .hora { font-size:clamp(0.6rem,0.9vw,0.85rem); opacity:0.6; }
+    .franja-prev .hora { font-size:clamp(0.8rem,1.3vw,1.1rem); opacity:0.6; }
     .franja-prev img { width:clamp(1.8rem,3vw,3rem); height:clamp(1.8rem,3vw,3rem); }
-    .franja-prev .temp { font-size:clamp(0.9rem,1.3vw,1.15rem); font-weight:bold; }
+    .franja-prev .temp { font-size:clamp(1rem,1.7vw,1.4rem); font-weight:bold; }
 
     .prevision-diaria-lista { display:grid; grid-template-columns:repeat(5,1fr); gap:1vw; }
     .dia-prev { display:flex; flex-direction:column; align-items:center; gap:0.4vh; }
-    .dia-prev .nombre { font-size:clamp(0.7rem,1vw,0.95rem); opacity:0.6; text-transform:capitalize; }
+    .dia-prev .nombre { font-size:clamp(0.9rem,1.4vw,1.2rem); opacity:0.6; text-transform:capitalize; }
     .dia-prev img { width:clamp(2rem,3.2vw,3.4rem); height:clamp(2rem,3.2vw,3.4rem); }
-    .dia-prev .temps { font-size:clamp(0.9rem,1.3vw,1.15rem); font-weight:bold; }
+    .dia-prev .temps { font-size:clamp(1rem,1.8vw,1.5rem); font-weight:bold; }
     .dia-prev .temps .min { display:block; opacity:0.5; font-weight:normal; font-size:0.88em; }
   </style>
 </head>
@@ -575,13 +613,13 @@
                 style="width:clamp(14px,1.8vw,22px);height:clamp(14px,1.8vw,22px);flex-shrink:0;">
                 <path d="M12 2C12 2 5 10.5 5 15a7 7 0 0 0 14 0C19 10.5 12 2 12 2Z"/>
               </svg>
-              <span style="font-size:clamp(1rem,1.6vw,1.5rem);opacity:0.85;">${popActual}%</span>
+              <span class="pop-text">${popActual}%</span>
             </div>`;
         } else {
           elPop.innerHTML = '';
         }
 
-        // Previsión horaria (vista general y vista detalle usan misma fuente)
+        // Previsión horaria (vista general y detalle)
         const contPrevGeneral = document.querySelector('.prevision');
         if (contPrevGeneral) contPrevGeneral.innerHTML = '';
 
@@ -623,7 +661,7 @@
         });
 
         // Previsión diaria
-        const hoyTexto = hoyLocal; // ya calculado
+        const hoyTexto = hoyLocal;
         const porDia = {};
         forecast.list.forEach(item => {
           const fechaLocal = new Date(item.dt * 1000 + tz * 1000);
