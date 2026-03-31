@@ -634,12 +634,9 @@
         document.getElementById('temperatura').textContent = Math.round(current.main.temp) + '°';
 
         // Max/min día local
-        const offsetMs = tz * 1000;
-        const _ahora = new Date(Date.now() + offsetMs);
-        const hoyStr = `${_ahora.getUTCFullYear()}-${String(_ahora.getUTCMonth()+1).padStart(2,'0')}-${String(_ahora.getUTCDate()).padStart(2,'0')}`;
-        const tempsDia = forecast.list
-          .filter(f => { const d = new Date(f.dt*1000 + offsetMs); return `${d.getUTCFullYear()}-${String(d.getUTCMonth()+1).padStart(2,'0')}-${String(d.getUTCDate()).padStart(2,'0')}` === hoyStr; })
-          .map(f => f.main.temp);
+        const temps24h = forecast.list.slice(0, 8).map(f => f.main.temp);
+        document.getElementById('tmax').textContent = Math.round(Math.max(...temps24h)) + '°';
+        document.getElementById('tmin').textContent = Math.round(Math.min(...temps24h)) + '°';
         // Detalles
         document.getElementById('humedad').textContent  = current.main.humidity + '%';
         document.getElementById('viento').textContent   = Math.round(current.wind.speed*3.6) + ' km/h';
@@ -653,12 +650,8 @@
         actualizarFondo(current.weather[0].id);
 
         // Amanecer / atardecer
-        const amanVal = formatearHoraLocal(forecast.city.sunrise, tz);
-        document.getElementById('amanecer').textContent  = amanVal;
-        const a2=document.getElementById('amanecer2'); if(a2) a2.textContent=amanVal;
-        const atarVal = formatearHoraLocal(forecast.city.sunset, tz);
-        document.getElementById('atardecer').textContent = atarVal;
-        const b2=document.getElementById('atardecer2'); if(b2) b2.textContent=atarVal;
+        const amanVal = new Date(forecast.city.sunrise * 1000).toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'});
+        const atarVal = new Date(forecast.city.sunset  * 1000).toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'});
 
         // Precipitación
         const popActual = Math.round(forecast.list[0].pop * 100);
