@@ -635,18 +635,11 @@
 
         // Max/min día local
         const offsetMs = tz * 1000;
-        const ahora = new Date(Date.now() + offsetMs);
-        const hoyStr = `${ahora.getUTCFullYear()}-${String(ahora.getUTCMonth()+1).padStart(2,'0')}-${String(ahora.getUTCDate()).padStart(2,'0')}`;
+        const _ahora = new Date(Date.now() + offsetMs);
+        const hoyStr = `${_ahora.getUTCFullYear()}-${String(_ahora.getUTCMonth()+1).padStart(2,'0')}-${String(_ahora.getUTCDate()).padStart(2,'0')}`;
         const tempsDia = forecast.list
-          .filter(f => {
-            const d = new Date(f.dt * 1000 + offsetMs);
-            return `${d.getUTCFullYear()}-${String(d.getUTCMonth()+1).padStart(2,'0')}-${String(d.getUTCDate()).padStart(2,'0')}` === hoyStr;
-          })
+          .filter(f => { const d = new Date(f.dt*1000 + offsetMs); return `${d.getUTCFullYear()}-${String(d.getUTCMonth()+1).padStart(2,'0')}-${String(d.getUTCDate()).padStart(2,'0')}` === hoyStr; })
           .map(f => f.main.temp);
-        const todasTemps = [...tempsDia, current.main.temp];
-        document.getElementById('tmax').textContent = Math.round(Math.max(...todasTemps)) + '°';
-        document.getElementById('tmin').textContent = Math.round(Math.min(...todasTemps)) + '°';
-
         // Detalles
         document.getElementById('humedad').textContent  = current.main.humidity + '%';
         document.getElementById('viento').textContent   = Math.round(current.wind.speed*3.6) + ' km/h';
@@ -693,15 +686,8 @@
         const porDia = {};
         forecast.list.forEach(item => {
           const fLocal = new Date(item.dt*1000 + offsetMs);
-          const key = fLocal.toDateString();
-          if (key === hoyLocal) return;
-          if (!porDia[key]) porDia[key] = {
-            nombre: fLocal.toLocaleDateString('es-ES',{weekday:'short',day:'numeric'}),
-            temps:[], iconos:[]
-          };
-          porDia[key].temps.push(item.main.temp);
-          porDia[key].iconos.push(item.weather[0].icon);
-        });
+          const key = `${fLocal.getUTCFullYear()}-${String(fLocal.getUTCMonth()+1).padStart(2,'0')}-${String(fLocal.getUTCDate()).padStart(2,'0')}`;
+          if (key === hoyStr) return;
 
         const listaD = document.getElementById('lista-diaria');
         listaD.innerHTML = '';
