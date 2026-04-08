@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Super Decoder – GiiKER</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --font-body:'Space Grotesk',sans-serif; --font-mono:'Space Mono',monospace;
+  --xs:clamp(.7rem,.65rem + .25vw,.8rem); --sm:clamp(.875rem,.8rem + .35vw,1rem);
+  --base:clamp(1rem,.95rem + .25vw,1.125rem); --lg:clamp(1.125rem,1rem + .75vw,1.5rem);
+  --xl:clamp(1.5rem,1.2rem + 1.25vw,2.25rem); --2xl:clamp(2rem,1.2rem + 2.5vw,3.5rem);
+  --s1:.25rem;--s2:.5rem;--s3:.75rem;--s4:1rem;--s5:1.25rem;--s6:1.5rem;--s8:2rem;--s10:2.5rem;--s12:3rem;
+  --r-sm:.375rem;--r-md:.5rem;--r-lg:.75rem;--r-xl:1rem;--r-2xl:1.5rem;--r-full:9999px;
+  --ease:200ms cubic-bezier(.16,1,.3,1);
+}
+[data-theme="dark"]{
+  --bg:#0d0d12;--surf:#16161f;--surf2:#1e1e2a;--surf3:#252533;
+  --border:rgba(255,255,255,.08);--border2:rgba(255,255,255,.14);
+  --text:#e4e4f0;--muted:#7878a0;--faint:#44445a;
+  --primary:#7c3aed;--primary-h:#6d28d9;--primary-g:rgba(124,58,237,.4);--primary-l:#a78bfa;
+  --accent:#06b6d4;--green:#10b981;--orange:#f97316;--red:#ef4444;--gold:#f59e0b;
+  --sh-sm:0 1px 3px rgba(0,0,0,.4);--sh-md:0 4px 16px rgba(0,0,0,.5);--sh-lg:0 12px 40px rgba(0,0,0,.6);
+}
+[data-theme="light"]{
+  --bg:#f0f0f8;--surf:#fff;--surf2:#f5f5fc;--surf3:#eeeef8;
+  --border:rgba(0,0,0,.08);--border2:rgba(0,0,0,.14);
+  --text:#1a1a2e;--muted:#5a5a80;--faint:#aaaac0;
+  --primary:#6d28d9;--primary-h:#5b21b6;--primary-g:rgba(109,40,217,.2);--primary-l:#7c3aed;
+  --accent:#0891b2;--green:#059669;--orange:#ea580c;--red:#dc2626;--gold:#d97706;
+  --sh-sm:0 1px 3px rgba(0,0,0,.1);--sh-md:0 4px 16px rgba(0,0,0,.1);--sh-lg:0 12px 40px rgba(0,0,0,.15);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased}
+body{min-height:100dvh;font-family:var(--font-body);font-size:var(--base);color:var(--text);background:var(--bg);display:flex;flex-direction:column;align-items:center;padding:var(--s4) var(--s3);transition:background var(--ease),color var(--ease)}
+button{cursor:pointer;background:none;border:none;font:inherit;color:inherit}
+
+/* VIEWS */
+.view{display:none;width:100%;max-width:560px;flex-direction:column;align-items:center;gap:var(--s4);animation:fu .3s ease forwards}
+.view.active{display:flex}
+@keyframes fu{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* TOP BAR */
+.topbar{width:100%;max-width:560px;display:flex;align-items:center;justify-content:space-between;padding-block:var(--s3);margin-bottom:var(--s1)}
+.logo{display:flex;align-items:center;gap:var(--s2);font-family:var(--font-mono);font-weight:700;font-size:var(--lg);letter-spacing:-.03em;color:var(--primary-l)}
+.hctrls{display:flex;gap:var(--s2)}
+.ibtn{background:var(--surf);border:1px solid var(--border);border-radius:var(--r-md);padding:var(--s2);cursor:pointer;color:var(--muted);display:flex;align-items:center;justify-content:center;transition:background var(--ease),color var(--ease);min-width:36px;min-height:36px}
+.ibtn:hover{background:var(--surf2);color:var(--text)}
+
+/* PANEL */
+.panel{width:100%;background:var(--surf);border:1px solid var(--border);border-radius:var(--r-2xl);padding:var(--s5) var(--s6);box-shadow:var(--sh-sm)}
+.panel-title{font-family:var(--font-mono);font-size:var(--xs);color:var(--faint);text-transform:uppercase;letter-spacing:.1em;margin-bottom:var(--s4)}
+
+/* BUTTONS */
+.btn{display:flex;align-items:center;justify-content:center;gap:var(--s2);padding:var(--s3) var(--s5);border-radius:var(--r-lg);font-family:var(--font-body);font-size:var(--sm);font-weight:600;cursor:pointer;border:1px solid var(--border);transition:all var(--ease)}
+.btn-primary{background:var(--primary);color:#fff;border-color:var(--primary);box-shadow:0 0 20px var(--primary-g)}
+.btn-primary:hover:not(:disabled){background:var(--primary-h);box-shadow:0 0 30px var(--primary-g);transform:translateY(-1px)}
+.btn-primary:disabled{opacity:.35;cursor:not-allowed;box-shadow:none;transform:none}
+.btn-ghost{background:transparent;color:var(--muted)}
+.btn-ghost:hover{background:var(--surf2);color:var(--text)}
+.btn-outline{background:transparent;color:var(--text);border-color:var(--border2)}
+.btn-outline:hover{background:var(--surf2)}
+.btn-lg{padding:var(--s4) var(--s8);font-size:var(--base);border-radius:var(--r-xl)}
+.btn-block{width:100%}
+
+/* ── START SCREEN ── */
+.hero{text-align:center;padding:var(--s8) 0 var(--s2)}
+.hero-icon{width:88px;height:88px;border-radius:var(--r-2xl);background:linear-gradient(135deg,var(--primary) 0%,var(--accent) 100%);display:flex;align-items:center;justify-content:center;margin:0 auto var(--s4);box-shadow:0 0 40px var(--primary-g)}
+.hero-title{font-family:var(--font-mono);font-size:var(--2xl);font-weight:700;letter-spacing:-.04em;margin-bottom:var(--s2)}
+.hero-sub{color:var(--muted);font-size:var(--sm);max-width:34ch;margin:0 auto}
+
+.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--s3);width:100%}
+.mode-card{background:var(--surf);border:2px solid var(--border);border-radius:var(--r-xl);padding:var(--s5) var(--s4);cursor:pointer;text-align:center;transition:border-color var(--ease),background var(--ease),box-shadow var(--ease);display:flex;flex-direction:column;gap:var(--s2);align-items:center}
+.mode-card:hover{border-color:var(--border2);background:var(--surf2)}
+.mode-card.selected{border-color:var(--primary-l);background:var(--surf2);box-shadow:0 0 0 3px var(--primary-g)}
+.mode-card.full{grid-column:1/-1;flex-direction:row;text-align:left;gap:var(--s4);padding:var(--s4) var(--s5)}
+.mode-card.full .mode-emoji{font-size:2rem;flex-shrink:0}
+.mode-card.full .mode-info{display:flex;flex-direction:column;gap:4px}
+.mode-emoji{font-size:2rem;line-height:1}
+.mode-name{font-weight:700;font-size:var(--sm)}
+.mode-desc{color:var(--muted);font-size:var(--xs);line-height:1.4}
+/* Assisted mode accent */
+.mode-card[data-mode="assisted"].selected{border-color:var(--green);box-shadow:0 0 0 3px rgba(16,185,129,.25)}
+
+.diff-row{display:flex;gap:var(--s2);width:100%}
+.diff-btn{flex:1;padding:var(--s3);border-radius:var(--r-lg);font-size:var(--xs);font-weight:600;letter-spacing:.04em;text-transform:uppercase;border:2px solid var(--border);background:var(--surf);cursor:pointer;text-align:center;transition:all var(--ease);font-family:var(--font-mono)}
+.diff-btn:hover{background:var(--surf2)}
+.diff-btn[data-diff="easy"].selected{border-color:var(--green);color:var(--green)}
+.diff-btn[data-diff="medium"].selected{border-color:var(--gold);color:var(--gold)}
+.diff-btn[data-diff="hard"].selected{border-color:var(--orange);color:var(--orange)}
+.diff-btn[data-diff="expert"].selected{border-color:var(--red);color:var(--red)}
+.diff-info{background:var(--surf2);border-radius:var(--r-lg);padding:var(--s4);font-size:var(--xs);color:var(--muted);line-height:1.6;border:1px solid var(--border);margin-top:var(--s3)}
+.diff-info strong{color:var(--text)}
+
+/* ── DUO SETUP ── */
+.set-pegs{display:flex;gap:var(--s3);justify-content:center;margin:var(--s4) 0}
+.time-row{display:flex;gap:var(--s2);width:100%}
+.time-opt{flex:1;padding:var(--s2) var(--s3);border-radius:var(--r-lg);border:2px solid var(--border);background:var(--surf);cursor:pointer;text-align:center;font-family:var(--font-mono);font-size:var(--xs);font-weight:700;transition:all var(--ease)}
+.time-opt:hover{background:var(--surf2)}
+.time-opt.selected{border-color:var(--accent);color:var(--accent)}
+
+/* ── GAME STATS BAR ── */
+.stats-bar{display:flex;gap:var(--s2);background:var(--surf);border:1px solid var(--border);border-radius:var(--r-lg);padding:var(--s2) var(--s3);width:100%}
+.stat{display:flex;flex-direction:column;gap:1px;flex:1}
+.stat-lbl{font-size:9px;color:var(--faint);text-transform:uppercase;letter-spacing:.06em;font-family:var(--font-mono)}
+.stat-val{font-family:var(--font-mono);font-weight:700;font-size:var(--sm);color:var(--text);font-variant-numeric:tabular-nums}
+.stat-val.hi{color:var(--primary-l)}
+.stat-val.warn{color:var(--red);animation:pulse 1s ease infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.divv{width:1px;background:var(--border)}
+
+/* ── MODE BADGE ── */
+.mode-badge{display:inline-flex;align-items:center;gap:var(--s1);padding:3px var(--s2);border-radius:var(--r-full);font-size:var(--xs);font-weight:600;font-family:var(--font-mono);letter-spacing:.04em;border:1px solid;align-self:flex-start}
+.mode-badge.solo{background:rgba(124,58,237,.12);color:var(--primary-l);border-color:rgba(124,58,237,.3)}
+.mode-badge.duo{background:rgba(6,182,212,.12);color:var(--accent);border-color:rgba(6,182,212,.3)}
+.mode-badge.assisted{background:rgba(16,185,129,.12);color:var(--green);border-color:rgba(16,185,129,.3)}
+
+/* ── BOARD ── */
+.board{width:100%;background:var(--surf);border:1px solid var(--border);border-radius:var(--r-2xl);overflow:hidden;box-shadow:var(--sh-sm)}
+.brow{display:flex;align-items:center;padding:var(--s2) var(--s4);gap:var(--s3);border-bottom:1px solid var(--border);position:relative;transition:background var(--ease)}
+.brow:last-child{border-bottom:none}
+.brow.active{background:var(--surf2)}
+.brow.active::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--primary-l);border-radius:0 2px 2px 0}
+.brow.won-row{background:rgba(16,185,129,.07)}
+.rnum{font-family:var(--font-mono);font-size:var(--xs);color:var(--faint);width:1.25rem;text-align:center;flex-shrink:0}
+
+/* PEGS */
+.cpegs{display:flex;gap:var(--s2);flex:1}
+.peg{border-radius:var(--r-full);border:2px solid transparent;cursor:default;transition:transform var(--ease),box-shadow var(--ease);flex-shrink:0;position:relative;overflow:hidden}
+.peg::before{content:'';position:absolute;top:16%;left:16%;width:33%;height:33%;background:rgba(255,255,255,.4);border-radius:50%;z-index:1;pointer-events:none}
+.peg.empty{background:var(--surf3);border-color:var(--border2);cursor:pointer}
+.peg.empty:hover{border-color:var(--primary-l);transform:scale(1.08)}
+.peg.filled{cursor:pointer}
+.peg.filled:hover{transform:scale(1.08)}
+.peg[data-c="0"]{background:#ef4444;box-shadow:0 0 10px rgba(239,68,68,.45)}
+.peg[data-c="1"]{background:#f97316;box-shadow:0 0 10px rgba(249,115,22,.45)}
+.peg[data-c="2"]{background:#eab308;box-shadow:0 0 10px rgba(234,179,8,.45)}
+.peg[data-c="3"]{background:#22c55e;box-shadow:0 0 10px rgba(34,197,94,.45)}
+.peg[data-c="4"]{background:#3b82f6;box-shadow:0 0 10px rgba(59,130,246,.45)}
+.peg[data-c="5"]{background:#a855f7;box-shadow:0 0 10px rgba(168,85,247,.45)}
+.peg[data-c="6"]{background:#ec4899;box-shadow:0 0 10px rgba(236,72,153,.45)}
+.peg[data-c="7"]{background:#14b8a6;box-shadow:0 0 10px rgba(20,184,166,.45)}
+
+/* ASSISTED MODE PEG RINGS */
+.peg-exact{outline:3px solid var(--green);outline-offset:2px;box-shadow:0 0 14px rgba(34,197,94,.7)!important}
+.peg-close{outline:3px solid var(--orange);outline-offset:2px;box-shadow:0 0 12px rgba(249,115,22,.6)!important}
+.peg-miss{outline:2px solid var(--faint);outline-offset:2px;opacity:.55}
+
+/* FEEDBACK PEGS (solo/duo) */
+.fpegs{display:grid;grid-template-columns:1fr 1fr;gap:3px;flex-shrink:0}
+.fpeg{border-radius:var(--r-full);background:var(--surf3);border:1px solid var(--border);position:relative;transition:background var(--ease)}
+.fpeg.exact{background:var(--surf3)}
+.fpeg.exact::after{content:'';position:absolute;inset:3px;border-radius:50%;background:var(--text)}
+.fpeg.close{background:var(--surf3)}
+.fpeg.close::after{content:'';position:absolute;inset:3px;border-radius:50%;background:var(--muted)}
+
+/* COLOR PICKER */
+.picker{width:100%;background:var(--surf);border:1px solid var(--border);border-radius:var(--r-2xl);padding:var(--s4) var(--s5);box-shadow:var(--sh-sm)}
+.picker-lbl{font-size:var(--xs);color:var(--faint);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.08em;margin-bottom:var(--s3)}
+.copts{display:flex;gap:var(--s2);justify-content:center;flex-wrap:wrap;margin-bottom:var(--s4)}
+.copt{border-radius:var(--r-full);cursor:pointer;border:3px solid transparent;transition:transform var(--ease),box-shadow var(--ease),border-color var(--ease);position:relative;overflow:hidden;flex-shrink:0}
+.copt::before{content:'';position:absolute;top:16%;left:16%;width:33%;height:33%;background:rgba(255,255,255,.4);border-radius:50%;z-index:1;pointer-events:none}
+.copt:hover{transform:scale(1.12)}
+.copt.sel{border-color:var(--text);transform:scale(1.15);box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--text)}
+.copt[data-c="0"]{background:#ef4444}
+.copt[data-c="1"]{background:#f97316}
+.copt[data-c="2"]{background:#eab308}
+.copt[data-c="3"]{background:#22c55e}
+.copt[data-c="4"]{background:#3b82f6}
+.copt[data-c="5"]{background:#a855f7}
+.copt[data-c="6"]{background:#ec4899}
+.copt[data-c="7"]{background:#14b8a6}
+.picker-acts{display:flex;gap:var(--s2)}
+
+/* ASSISTED LEGEND */
+.assisted-legend{display:flex;gap:var(--s4);justify-content:center;flex-wrap:wrap;padding:var(--s3) var(--s4);font-size:var(--xs);color:var(--muted);background:var(--surf);border:1px solid var(--border);border-radius:var(--r-xl);width:100%}
+.alg-item{display:flex;align-items:center;gap:var(--s2)}
+.alg-dot{width:16px;height:16px;border-radius:50%;flex-shrink:0;border:2px solid}
+.alg-dot.exact{background:rgba(34,197,94,.15);border-color:var(--green);box-shadow:0 0 6px rgba(34,197,94,.5)}
+.alg-dot.close{background:rgba(249,115,22,.15);border-color:var(--orange);box-shadow:0 0 6px rgba(249,115,22,.4)}
+.alg-dot.miss{background:transparent;border-color:var(--faint);opacity:.6}
+
+/* SOLO LEGEND */
+.legend{display:flex;gap:var(--s6);justify-content:center;flex-wrap:wrap;padding:var(--s3) var(--s4);font-size:var(--xs);color:var(--muted);background:var(--surf);border:1px solid var(--border);border-radius:var(--r-xl);width:100%}
+.lgitem{display:flex;align-items:center;gap:var(--s2)}
+.lgpeg{width:13px;height:13px;border-radius:50%;border:1px solid var(--border);flex-shrink:0;position:relative}
+.lgpeg.exact::after{content:'';position:absolute;inset:2px;border-radius:50%;background:var(--text)}
+.lgpeg.close::after{content:'';position:absolute;inset:2px;border-radius:50%;background:var(--muted)}
+
+/* OVERLAY */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);display:flex;align-items:flex-start;justify-content:center;padding:var(--s4);padding-top:max(var(--s6),env(safe-area-inset-top));z-index:200;backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:opacity .3s ease;overflow-y:auto}
+.overlay.on{opacity:1;pointer-events:all}
+.ocard{background:var(--surf);border:1px solid var(--border2);border-radius:var(--r-2xl);padding:var(--s6) var(--s5);max-width:440px;width:100%;max-height:90dvh;overflow-y:auto;text-align:center;display:flex;flex-direction:column;gap:var(--s4);align-items:center;box-shadow:var(--sh-lg);transform:scale(.92);transition:transform .3s cubic-bezier(.16,1,.3,1);position:relative}
+.overlay.on .ocard{transform:scale(1)}
+.ocard-close{position:absolute;top:var(--s3);right:var(--s3);background:var(--surf2);border:1px solid var(--border);border-radius:var(--r-full);width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);transition:background var(--ease),color var(--ease);flex-shrink:0}
+.ocard-close:hover{background:var(--surf3);color:var(--text)}
+.o-emoji{font-size:3.5rem;line-height:1}
+.o-title{font-family:var(--font-mono);font-size:var(--xl);font-weight:700}
+.o-sub{color:var(--muted);font-size:var(--sm);line-height:1.7;max-width:32ch}
+.o-solution{display:flex;gap:var(--s2);justify-content:center}
+.o-acts{display:flex;gap:var(--s3);width:100%}
+
+@media(max-width:400px){
+  .peg{width:31px!important;height:31px!important}
+  .copt{width:37px!important;height:37px!important}
+  .fpegs{width:44px!important}
+  .fpeg{width:16px!important;height:16px!important}
+  .mode-grid{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="logo">
+    <svg width="26" height="26" viewBox="0 0 26 26" fill="none" aria-hidden="true">
+      <circle cx="13" cy="13" r="12" stroke="#a78bfa" stroke-width="1.8"/>
+      <circle cx="8"  cy="13" r="3.2" fill="#ef4444"/>
+      <circle cx="13" cy="13" r="3.2" fill="#22c55e"/>
+      <circle cx="18" cy="13" r="3.2" fill="#3b82f6"/>
+    </svg>
+    DECODER
+  </div>
+  <div class="hctrls">
+    <button class="ibtn" id="backBtn" style="display:none" aria-label="Inicio">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <button class="ibtn" id="helpBtn" aria-label="Ayuda">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    </button>
+    <button class="ibtn" data-theme-toggle aria-label="Cambiar tema">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+  </div>
+</header>
+
+<!-- ══════════ VIEW: START ══════════ -->
+<section class="view active" id="view-start">
+  <div class="hero">
+    <div class="hero-icon">
+      <svg width="50" height="50" viewBox="0 0 50 50" fill="none" aria-hidden="true">
+        <circle cx="11" cy="25" r="6.5" fill="#ef4444"/>
+        <circle cx="25" cy="25" r="6.5" fill="#eab308"/>
+        <circle cx="39" cy="25" r="6.5" fill="#22c55e"/>
+        <circle cx="11" cy="25" r="3" fill="rgba(255,255,255,.35)"/>
+        <circle cx="25" cy="25" r="3" fill="rgba(255,255,255,.35)"/>
+        <circle cx="39" cy="25" r="3" fill="rgba(255,255,255,.35)"/>
+      </svg>
+    </div>
+    <h1 class="hero-title">Super Decoder</h1>
+    <p class="hero-sub">Descifra el código de colores usando lógica y deducción</p>
+  </div>
+
+  <div class="panel">
+    <p class="panel-title">Modo de juego</p>
+    <div class="mode-grid">
+      <div class="mode-card selected" data-mode="solo" role="button" tabindex="0">
+        <span class="mode-emoji">🧠</span>
+        <span class="mode-name">Solo</span>
+        <span class="mode-desc">Descifra el código con pistas clásicas</span>
+      </div>
+      <div class="mode-card" data-mode="duo" role="button" tabindex="0">
+        <span class="mode-emoji">👥</span>
+        <span class="mode-name">Dúo</span>
+        <span class="mode-desc">Un jugador pone el código, el otro lo descifra con tiempo</span>
+      </div>
+      <div class="mode-card full" data-mode="assisted" role="button" tabindex="0">
+        <span class="mode-emoji">💡</span>
+        <div class="mode-info">
+          <span class="mode-name">Asistido</span>
+          <span class="mode-desc">Las pistas aparecen directamente sobre cada bola — <span style="color:var(--green)">verde</span> posición exacta · <span style="color:var(--orange)">naranja</span> color correcto mal puesto · <span style="color:var(--faint)">apagado</span> no está</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <p class="panel-title">Dificultad</p>
+    <div class="diff-row">
+      <button class="diff-btn selected" data-diff="easy">Fácil</button>
+      <button class="diff-btn" data-diff="medium">Medio</button>
+      <button class="diff-btn" data-diff="hard">Difícil</button>
+      <button class="diff-btn" data-diff="expert">Experto</button>
+    </div>
+    <div class="diff-info" id="diffInfo"></div>
+  </div>
+
+  <button class="btn btn-primary btn-lg btn-block" id="startBtn">Empezar partida ✦</button>
+  <p style="font-size:var(--xs);color:var(--faint);text-align:center">GiiKER Super Decoder — Web Edition</p>
+</section>
+
+<!-- ══════════ VIEW: DUO SETUP ══════════ -->
+<section class="view" id="view-duo">
+  <div class="panel" style="width:100%">
+    <h2 style="font-family:var(--font-mono);font-size:var(--xl);font-weight:700;text-align:center">Jugador 1: pon el código</h2>
+    <p style="color:var(--muted);font-size:var(--sm);text-align:center;margin-top:var(--s2);line-height:1.5">Elige 4 colores secretos que el Jugador 2 deberá descifrar</p>
+    <div class="set-pegs" id="setCodePegs"></div>
+    <p class="picker-lbl">Selecciona color → haz clic en posición</p>
+    <div class="copts" id="setColorOpts" style="margin-bottom:var(--s5)"></div>
+    <p class="panel-title" style="margin-bottom:var(--s2)">Tiempo límite para el Jugador 2</p>
+    <div class="time-row" id="timeRow">
+      <div class="time-opt" data-t="30">30s</div>
+      <div class="time-opt selected" data-t="60">60s</div>
+      <div class="time-opt" data-t="90">90s</div>
+      <div class="time-opt" data-t="120">2min</div>
+    </div>
+  </div>
+  <div style="display:flex;gap:var(--s2);width:100%">
+    <button class="btn btn-ghost" style="flex:1" id="duoClearBtn">Borrar</button>
+    <button class="btn btn-primary" style="flex:2" id="duoConfirmBtn" disabled>Confirmar código ✦</button>
+  </div>
+</section>
+
+<!-- ══════════ VIEW: GAME ══════════ -->
+<section class="view" id="view-game">
+  <div style="display:flex;align-items:center;justify-content:space-between;width:100%">
+    <div class="mode-badge" id="modeBadge">Solo</div>
+    <span style="font-size:var(--xs);color:var(--faint);font-family:var(--font-mono)" id="diffBadge"></span>
+  </div>
+  <div class="stats-bar">
+    <div class="stat"><span class="stat-lbl">Intento</span><span class="stat-val hi" id="sAttempt">1/7</span></div>
+    <div class="divv"></div>
+    <div class="stat"><span class="stat-lbl" id="sLbl2">Ganadas</span><span class="stat-val" id="sVal2">0</span></div>
+    <div class="divv"></div>
+    <div class="stat"><span class="stat-lbl" id="sLbl3">Perdidas</span><span class="stat-val" id="sVal3">0</span></div>
+    <div class="divv"></div>
+    <div class="stat"><span class="stat-lbl" id="sLbl4">Racha</span><span class="stat-val" id="sVal4">0</span></div>
+  </div>
+
+  <div class="board"><div id="boardRows"></div></div>
+
+  <!-- LEGEND: solo/duo -->
+  <div class="legend" id="soloLegend">
+    <div class="lgitem"><div class="lgpeg exact"></div><span>Color y posición correcta</span></div>
+    <div class="lgitem"><div class="lgpeg close"></div><span>Color correcto, posición incorrecta</span></div>
+  </div>
+  <!-- LEGEND: assisted -->
+  <div class="assisted-legend" id="assistedLegend" style="display:none">
+    <div class="alg-item"><div class="alg-dot exact"></div><span>Posición exacta</span></div>
+    <div class="alg-item"><div class="alg-dot close"></div><span>Color correcto, posición incorrecta</span></div>
+    <div class="alg-item"><div class="alg-dot miss"></div><span>No está en el código</span></div>
+  </div>
+
+  <div class="picker">
+    <div class="picker-acts" style="margin-bottom:var(--s3)">
+      <button class="btn btn-ghost" id="clearRowBtn">Borrar fila</button>
+      <button class="btn btn-primary" id="submitBtn" disabled>Comprobar ✦</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:var(--s3)">
+      <span style="font-size:var(--xs);color:var(--faint);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.08em;flex-shrink:0">Colores</span>
+      <div class="copts" id="gameColorOpts" style="margin-bottom:0;justify-content:flex-start;flex-wrap:wrap;gap:var(--s1)"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ OVERLAYS ══════════ -->
+<!-- End -->
+<div class="overlay" id="ovEnd">
+  <div class="ocard">
+    <div class="o-emoji" id="ovEmoji">🎉</div>
+    <h2 class="o-title" id="ovTitle"></h2>
+    <p class="o-sub" id="ovSub"></p>
+    <div class="o-solution" id="ovSolution"></div>
+    <div class="o-acts">
+      <button class="btn btn-outline" style="flex:1" id="ovMenuBtn">Menú</button>
+      <button class="btn btn-primary" style="flex:2" id="ovRestartBtn">Jugar de nuevo ✦</button>
+    </div>
+  </div>
+</div>
+<!-- Pass device (duo) -->
+<div class="overlay" id="ovPass">
+  <div class="ocard">
+    <div class="o-emoji">🙈</div>
+    <h2 class="o-title">¡Pasa el dispositivo!</h2>
+    <p class="o-sub">Jugador 1: asegúrate de que el Jugador 2 no haya visto el código secreto.</p>
+    <button class="btn btn-primary btn-block" id="ovPassBtn">Jugador 2 está listo ✦</button>
+  </div>
+</div>
+<!-- Help -->
+<div class="overlay" id="ovHelp">
+  <div class="ocard" style="text-align:left;max-width:460px">
+    <button class="ocard-close" id="closeHelpBtn2" aria-label="Cerrar"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <div class="o-emoji" style="align-self:center">🔐</div>
+    <h2 class="o-title" style="align-self:center">Cómo jugar</h2>
+    <div style="font-size:var(--sm);color:var(--muted);line-height:1.7;width:100%;display:flex;flex-direction:column;gap:var(--s3)">
+      <p><strong style="color:var(--text)">Objetivo:</strong> descifra el código secreto de 4 colores antes de agotar los intentos.</p>
+      <p>Elige un color del panel y haz clic en las posiciones de la fila activa. Al completar 4 posiciones pulsa <strong style="color:var(--text)">Comprobar</strong>.</p>
+      <hr style="border:none;border-top:1px solid var(--border)">
+      <p><strong style="color:var(--text)">🧠 Modo Solo / 👥 Dúo</strong> — pistas clásicas con puntitos a la derecha:</p>
+      <div style="display:flex;flex-direction:column;gap:var(--s2)">
+        <span style="display:flex;align-items:center;gap:10px"><span style="width:15px;height:15px;border-radius:50%;background:var(--text);display:inline-block;flex-shrink:0"></span>Color correcto en posición correcta</span>
+        <span style="display:flex;align-items:center;gap:10px"><span style="width:15px;height:15px;border-radius:50%;background:var(--muted);display:inline-block;flex-shrink:0"></span>Color correcto, posición incorrecta</span>
+      </div>
+      <hr style="border:none;border-top:1px solid var(--border)">
+      <p><strong style="color:var(--text)">💡 Modo Asistido</strong> — las pistas aparecen directamente sobre cada bola:</p>
+      <div style="display:flex;flex-direction:column;gap:var(--s2)">
+        <span style="display:flex;align-items:center;gap:10px"><span style="width:15px;height:15px;border-radius:50%;background:rgba(34,197,94,.2);border:2px solid var(--green);display:inline-block;flex-shrink:0;box-shadow:0 0 6px rgba(34,197,94,.5)"></span><span style="color:var(--green);font-weight:600">Verde</span> — posición exacta</span>
+        <span style="display:flex;align-items:center;gap:10px"><span style="width:15px;height:15px;border-radius:50%;background:rgba(249,115,22,.2);border:2px solid var(--orange);display:inline-block;flex-shrink:0;box-shadow:0 0 6px rgba(249,115,22,.4)"></span><span style="color:var(--orange);font-weight:600">Naranja</span> — color correcto, posición incorrecta</span>
+        <span style="display:flex;align-items:center;gap:10px"><span style="width:15px;height:15px;border-radius:50%;background:transparent;border:2px solid var(--faint);display:inline-block;flex-shrink:0;opacity:.6"></span><span style="color:var(--faint);font-weight:600">Apagado</span> — ese color no está en el código</span>
+      </div>
+      <hr style="border:none;border-top:1px solid var(--border)">
+      <p><strong style="color:var(--text)">Dificultades:</strong><br>
+        🟢 Fácil — 4 colores, 7 intentos<br>
+        🟡 Medio — 5 colores, 7 intentos<br>
+        🟠 Difícil — 6 colores, 7 intentos<br>
+        🔴 Experto — 8 colores, 7 intentos + repetición
+      </p>
+      <p><strong style="color:var(--text)">Cómo elegir colores:</strong> toca/haz clic directamente sobre cada bola para ciclar entre colores. Toca en el último color para dejarla vacía.</p>
+      <br>
+      <p><strong style="color:var(--text)">Teclado:</strong> <kbd style="background:var(--surf2);padding:1px 5px;border-radius:4px;border:1px solid var(--border)">1–4</kbd> cicla posición · <kbd style="background:var(--surf2);padding:1px 5px;border-radius:4px;border:1px solid var(--border)">Enter</kbd> comprobar · <kbd style="background:var(--surf2);padding:1px 5px;border-radius:4px;border:1px solid var(--border)">⌫</kbd> borrar última</p>
+    </div>
+    <button class="btn btn-primary btn-block" id="closeHelpBtn">¡Entendido!</button>
+  </div>
+</div>
+
+<script>
+/* ── CONFIG ── */
+const DIFF = {
+  easy:  {colors:4,attempts:7,repeat:false,label:'Fácil',   desc:'<strong>4 colores</strong>, <strong>7 intentos</strong>, sin repetición. Ideal para aprender.'},
+  medium:{colors:5,attempts:7,repeat:false,label:'Medio',   desc:'<strong>5 colores</strong>, <strong>7 intentos</strong>, sin repetición. Más combinaciones.'},
+  hard:  {colors:6,attempts:7,repeat:false,label:'Difícil', desc:'<strong>6 colores</strong>, <strong>7 intentos</strong>, sin repetición. El nivel original.'},
+  expert:{colors:8,attempts:7,repeat:true, label:'Experto', desc:'<strong>8 colores</strong>, <strong>7 intentos</strong>, <strong style="color:var(--red)">con repetición</strong>. Máximo desafío.'}
+};
+const CODE_LEN=4;
+const COLOR_NAMES=['Rojo','Naranja','Amarillo','Verde','Azul','Morado','Rosa','Teal'];
+const MODE_LABELS={solo:'🧠 Solo',duo:'👥 Dúo',assisted:'💡 Asistido'};
+
+/* ── STATE ── */
+let mode='solo', diff='easy';
+let secretCode=[], currentRow=0, currentGuess=[], gameOver=false, selectedColor=null;
+let duoCode=[null,null,null,null], duoSelColor=null, duoTimeLimit=60;
+let timerInterval=null, timeLeft=0;
+let stats={wins:0,losses:0,streak:0};
+
+/* ── VIEWS ── */
+function showView(id){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+id).classList.add('active');
+  document.getElementById('backBtn').style.display=(id==='start')?'none':'';
+}
+
+/* ── DIFF INFO ── */
+function updateDiffInfo(){
+  const c=DIFF[diff];
+  document.getElementById('diffInfo').innerHTML=c.desc+
+    `<br><br>Intentos: <strong>${c.attempts}</strong> &nbsp;·&nbsp; Colores: <strong>${c.colors}</strong>`+
+    (c.repeat?' &nbsp;·&nbsp; <strong style="color:var(--red)">Repetición permitida</strong>':'');
+}
+updateDiffInfo();
+
+/* ── START EVENTS ── */
+document.querySelectorAll('.mode-card').forEach(c=>{
+  c.addEventListener('click',()=>{
+    document.querySelectorAll('.mode-card').forEach(x=>x.classList.remove('selected'));
+    c.classList.add('selected'); mode=c.dataset.mode;
+  });
+});
+document.querySelectorAll('.diff-btn').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.diff-btn').forEach(x=>x.classList.remove('selected'));
+    b.classList.add('selected'); diff=b.dataset.diff; updateDiffInfo();
+  });
+});
+document.getElementById('startBtn').addEventListener('click',()=>{
+  if(mode==='duo') startDuoSetup(); else startGame(genCode());
+});
+document.getElementById('backBtn').addEventListener('click',()=>{
+  stopTimer(); closeOv('ovEnd'); showView('start');
+});
+
+/* ── DUO SETUP ── */
+function startDuoSetup(){
+  duoCode=[null,null,null,null]; duoSelColor=null;
+  buildDuoPegs(); buildDuoOpts();
+  document.getElementById('duoConfirmBtn').disabled=true;
+  showView('duo');
+}
+function buildDuoPegs(){
+  const el=document.getElementById('setCodePegs'); el.innerHTML='';
+  for(let i=0;i<CODE_LEN;i++) el.appendChild(makePeg(52,duoCode[i],true,()=>placeDuoPeg(i)));
+}
+function buildDuoOpts(){
+  const cfg=DIFF[diff], el=document.getElementById('setColorOpts'); el.innerHTML='';
+  for(let c=0;c<cfg.colors;c++) el.appendChild(makeCopt(c,46,duoSelColor===c,()=>{
+    duoSelColor=c;
+    document.querySelectorAll('#setColorOpts .copt').forEach(x=>x.classList.toggle('sel',+x.dataset.c===c));
+  }));
+}
+function placeDuoPeg(i){
+  if(duoSelColor===null){if(duoCode[i]!==null)duoCode[i]=null;}else{duoCode[i]=duoSelColor;}
+  buildDuoPegs();
+  document.getElementById('duoConfirmBtn').disabled=duoCode.some(v=>v===null);
+}
+document.getElementById('duoClearBtn').addEventListener('click',()=>{duoCode=[null,null,null,null];duoSelColor=null;buildDuoPegs();buildDuoOpts();document.getElementById('duoConfirmBtn').disabled=true;});
+document.getElementById('duoConfirmBtn').addEventListener('click',()=>showOv('ovPass'));
+document.getElementById('ovPassBtn').addEventListener('click',()=>{closeOv('ovPass');startGame([...duoCode]);});
+document.querySelectorAll('.time-opt').forEach(t=>t.addEventListener('click',()=>{
+  document.querySelectorAll('.time-opt').forEach(x=>x.classList.remove('selected'));
+  t.classList.add('selected'); duoTimeLimit=+t.dataset.t;
+}));
+
+/* ── GAME ── */
+function genCode(){
+  const cfg=DIFF[diff];
+  if(cfg.repeat) return Array.from({length:CODE_LEN},()=>Math.floor(Math.random()*cfg.colors));
+  const pool=[...Array(cfg.colors).keys()],r=[];
+  while(r.length<CODE_LEN){const i=Math.floor(Math.random()*pool.length);r.push(pool.splice(i,1)[0]);}
+  return r;
+}
+
+function startGame(code){
+  secretCode=code; const cfg=DIFF[diff];
+  currentRow=0; currentGuess=Array(CODE_LEN).fill(null); gameOver=false;
+  stopTimer();
+  // badge
+  const mb=document.getElementById('modeBadge');
+  mb.textContent=MODE_LABELS[mode];
+  mb.className='mode-badge '+mode;
+  document.getElementById('diffBadge').textContent=cfg.label+' · '+cfg.colors+' colores';
+  // legends
+  document.getElementById('soloLegend').style.display=(mode==='assisted')?'none':'';
+  document.getElementById('assistedLegend').style.display=(mode==='assisted')?'':'none';
+  // stats labels
+  if(mode==='duo'){
+    document.getElementById('sLbl2').textContent='Tiempo';
+    document.getElementById('sLbl3').textContent='';
+    document.getElementById('sLbl4').textContent='';
+    document.getElementById('sVal3').textContent='';
+    document.getElementById('sVal4').textContent='';
+  } else {
+    document.getElementById('sLbl2').textContent='Ganadas';
+    document.getElementById('sLbl3').textContent='Perdidas';
+    document.getElementById('sLbl4').textContent='Racha';
+  }
+  renderBoard(); renderGameOpts(); updateStats();
+  showView('game'); closeOv('ovEnd');
+  document.getElementById('submitBtn').disabled=true;
+  if(mode==='duo') startTimer(duoTimeLimit);
+}
+
+function startTimer(s){
+  timeLeft=s; updTimer();
+  timerInterval=setInterval(()=>{timeLeft--;updTimer();if(timeLeft<=0){stopTimer();sndLose();endGame(false,'time');}},1000);
+}
+function stopTimer(){clearInterval(timerInterval);timerInterval=null;}
+function updTimer(){
+  const el=document.getElementById('sVal2');
+  const m=Math.floor(timeLeft/60),s=timeLeft%60;
+  el.textContent=m>0?`${m}:${s.toString().padStart(2,'0')}`:`${timeLeft}s`;
+  el.className='stat-val'+(timeLeft<=10?' warn':' hi');
+  if(timeLeft<=10 && timeLeft>0) sndTimeWarn();
+}
+
+/* ── BOARD ── */
+function renderBoard(){
+  const cfg=DIFF[diff], cont=document.getElementById('boardRows'); cont.innerHTML='';
+  const sz=cfg.colors>=7?46:52;
+  for(let r=0;r<cfg.attempts;r++){
+    const row=document.createElement('div');
+    row.className='brow'+(r===currentRow&&!gameOver?' active':'');
+    row.dataset.row=r;
+    // number
+    const num=document.createElement('span'); num.className='rnum'; num.textContent=cfg.attempts-r; row.appendChild(num);
+    // pegs
+    const cp=document.createElement('div'); cp.className='cpegs';
+    for(let c=0;c<CODE_LEN;c++){
+      const active=(r===currentRow&&!gameOver);
+      cp.appendChild(makePeg(sz, active?currentGuess[c]:null, active, active?()=>pegClick(c):null));
+    }
+    row.appendChild(cp);
+    // feedback dots (hidden in assisted mode but still in DOM)
+    const fp=document.createElement('div');
+    const fps=cfg.colors>=7?18:20;
+    fp.className='fpegs'; fp.style.cssText=`width:${fps*2+7}px`;
+    if(mode==='assisted') fp.style.visibility='hidden';
+    for(let i=0;i<CODE_LEN;i++){
+      const d=document.createElement('div'); d.className='fpeg';
+      d.style.cssText=`width:${fps}px;height:${fps}px`; fp.appendChild(d);
+    }
+    row.appendChild(fp);
+    cont.appendChild(row);
+  }
+}
+
+function makePeg(sz,colorVal,interactive,onClick){
+  const p=document.createElement('div');
+  p.className='peg'+(colorVal!==null?' filled':(interactive?' empty':''));
+  p.style.cssText=`width:${sz}px;height:${sz}px`;
+  if(colorVal!==null) p.dataset.c=colorVal;
+  if(interactive&&onClick) p.addEventListener('click',onClick);
+  return p;
+}
+function makeCopt(c,sz,sel,onClick){
+  const o=document.createElement('div');
+  o.className='copt'+(sel?' sel':''); o.dataset.c=c;
+  o.style.cssText=`width:${sz}px;height:${sz}px`;
+  o.setAttribute('role','button'); o.setAttribute('aria-label',COLOR_NAMES[c]);
+  o.addEventListener('click',onClick); return o;
+}
+
+function renderGameOpts(){
+  const cfg=DIFF[diff], el=document.getElementById('gameColorOpts'); el.innerHTML='';
+  // Just a reference palette — small, non-interactive
+  for(let c=0;c<cfg.colors;c++){
+    const o=document.createElement('div');
+    o.className='copt'; o.dataset.c=c;
+    o.style.cssText='width:22px;height:22px;cursor:default;border:none;pointer-events:none';
+    o.setAttribute('aria-label',COLOR_NAMES[c]);
+    el.appendChild(o);
+  }
+}
+
+function pegClick(col){
+  if(gameOver) return;
+  const cfg=DIFF[diff];
+  const cur=currentGuess[col];
+  // Build list of colors NOT used in other positions
+  const used = cfg.repeat ? [] : currentGuess.filter((_,i)=>i!==col&&currentGuess[i]!==null);
+  const available = Array.from({length:cfg.colors},(_,i)=>i).filter(c=>!used.includes(c));
+  if(available.length===0){ currentGuess[col]=null; sndClear(); refreshRow(); checkSubmit(); return; }
+  if(cur===null){
+    // Start from first available
+    currentGuess[col]=available[0];
+    sndColorCycle(available[0]);
+  } else {
+    const idx=available.indexOf(cur);
+    if(idx===-1||idx===available.length-1){
+      // Current color not in available (was displaced) or last → go empty
+      currentGuess[col]=null; sndClear();
+    } else {
+      currentGuess[col]=available[idx+1];
+      sndColorCycle(available[idx+1]);
+    }
+  }
+  refreshRow(); checkSubmit();
+}
+function refreshRow(){
+  const cfg=DIFF[diff], sz=cfg.colors>=7?46:52;
+  const cp=document.querySelector(`.brow[data-row="${currentRow}"] .cpegs`);
+  if(!cp) return; cp.innerHTML='';
+  for(let c=0;c<CODE_LEN;c++) cp.appendChild(makePeg(sz,currentGuess[c],true,()=>pegClick(c)));
+}
+function checkSubmit(){document.getElementById('submitBtn').disabled=currentGuess.some(v=>v===null);}
+
+/* ── EVALUATE ── */
+function evaluate(guess,secret){
+  let exact=0,close=0;
+  const sc=[...secret],gc=[...guess];
+  for(let i=0;i<CODE_LEN;i++){if(gc[i]===sc[i]){exact++;sc[i]=-1;gc[i]=-2;}}
+  for(let i=0;i<CODE_LEN;i++){if(gc[i]===-2)continue;const j=sc.indexOf(gc[i]);if(j!==-1){close++;sc[j]=-1;}}
+  return{exact,close};
+}
+function evaluatePerPos(guess,secret){
+  // Returns array of 'exact'|'close'|'miss' per position
+  const sc=[...secret],gc=[...guess];
+  const res=Array(CODE_LEN).fill('miss');
+  for(let i=0;i<CODE_LEN;i++){if(gc[i]===sc[i]){res[i]='exact';sc[i]=-1;gc[i]=-2;}}
+  for(let i=0;i<CODE_LEN;i++){if(gc[i]===-2)continue;const j=sc.indexOf(gc[i]);if(j!==-1){res[i]='close';sc[j]=-1;}}
+  return res;
+}
+
+/* ── SUBMIT ── */
+function submitGuess(){
+  if(currentGuess.some(v=>v===null)||gameOver) return;
+  const cfg=DIFF[diff];
+  sndSubmit();
+  const{exact,close}=evaluate(currentGuess,secretCode);
+  const rowEl=document.querySelector(`.brow[data-row="${currentRow}"]`);
+
+  if(mode==='assisted'){
+    // Color the pegs directly
+    const posFb=evaluatePerPos(currentGuess,secretCode);
+    const pegs=rowEl.querySelectorAll('.cpegs .peg');
+    pegs.forEach((p,i)=>{
+      p.classList.remove('peg-exact','peg-close','peg-miss');
+      p.classList.add('peg-'+posFb[i]);
+      // lock: remove click
+      const clone=p.cloneNode(true); p.parentNode.replaceChild(clone,p);
+    });
+  } else {
+    // Classic dots
+    const fp=rowEl.querySelectorAll('.fpeg');
+    let fi=0;
+    for(let i=0;i<exact;i++) fp[fi++].className='fpeg exact';
+    for(let i=0;i<close;i++) fp[fi++].className='fpeg close';
+    // lock pegs
+    lockPegs(rowEl);
+  }
+
+  // Feedback sound: ping per exact, softer per close
+  setTimeout(()=>{ for(let i=0;i<exact;i++) setTimeout(()=>sndExact(),i*80); },200);
+  setTimeout(()=>{ for(let i=0;i<close;i++) setTimeout(()=>sndClose(),i*80); },200+exact*80);
+  rowEl.classList.remove('active');
+  if(exact===CODE_LEN) rowEl.classList.add('won-row');
+
+  if(exact===CODE_LEN){
+    stopTimer(); gameOver=true; stats.wins++; stats.streak++;
+    updateStats(); setTimeout(()=>{ sndWin(); endGame(true,currentRow+1); },450); return;
+  }
+  currentRow++;
+  if(currentRow>=cfg.attempts){
+    stopTimer(); gameOver=true; stats.losses++; stats.streak=0;
+    updateStats(); setTimeout(()=>{ sndLose(); endGame(false,'attempts'); },450); return;
+  }
+
+  currentGuess=Array(CODE_LEN).fill(null);
+  document.getElementById('submitBtn').disabled=true;
+
+  // Activate new row
+  const nr=document.querySelector(`.brow[data-row="${currentRow}"]`); nr.classList.add('active');
+  const sz=cfg.colors>=7?46:52;
+  const cp=nr.querySelector('.cpegs'); cp.innerHTML='';
+  for(let c=0;c<CODE_LEN;c++) cp.appendChild(makePeg(sz,null,true,()=>pegClick(c)));
+  document.getElementById('sAttempt').textContent=`${currentRow+1}/${cfg.attempts}`;
+}
+
+function lockPegs(rowEl){
+  rowEl.querySelectorAll('.peg').forEach(p=>{
+    p.classList.remove('empty'); p.classList.add('filled'); p.style.cursor='default';
+    const cl=p.cloneNode(true); p.parentNode.replaceChild(cl,p);
+  });
+}
+
+function updateStats(){
+  const cfg=DIFF[diff];
+  document.getElementById('sAttempt').textContent=`${Math.min(currentRow+1,cfg.attempts)}/${cfg.attempts}`;
+  if(mode!=='duo'){
+    document.getElementById('sVal2').textContent=stats.wins;
+    document.getElementById('sVal3').textContent=stats.losses;
+    document.getElementById('sVal4').textContent=stats.streak;
+  }
+}
+
+/* ── END GAME ── */
+function endGame(won,detail){
+  const emoji=won?'🎉':(detail==='time'?'⏰':'😢');
+  const title=won?'¡Código descifrado!':(detail==='time'?'¡Tiempo agotado!':'No lo conseguiste');
+  let sub=won?`Lo conseguiste en <strong>${detail}</strong> intento${detail>1?'s':''}. El código era:`
+            :(detail==='time'?'Se acabó el tiempo. El código era:':'Se acabaron los intentos. El código era:');
+  document.getElementById('ovEmoji').textContent=emoji;
+  document.getElementById('ovTitle').textContent=title;
+  document.getElementById('ovSub').innerHTML=sub;
+  const sol=document.getElementById('ovSolution'); sol.innerHTML='';
+  secretCode.forEach(c=>{const p=makePeg(44,c,false,null);p.style.cursor='default';sol.appendChild(p);});
+  showOv('ovEnd');
+}
+
+document.getElementById('clearRowBtn').addEventListener('click',()=>{
+  sndClear(); currentGuess=Array(CODE_LEN).fill(null); refreshRow(); checkSubmit();
+});
+document.getElementById('submitBtn').addEventListener('click',submitGuess);
+document.getElementById('ovRestartBtn').addEventListener('click',()=>{
+  closeOv('ovEnd'); if(mode==='duo') startDuoSetup(); else startGame(genCode());
+});
+document.getElementById('ovMenuBtn').addEventListener('click',()=>{closeOv('ovEnd');stopTimer();showView('start');});
+
+/* ── OVERLAYS ── */
+function showOv(id){document.getElementById(id).classList.add('on');}
+function closeOv(id){document.getElementById(id).classList.remove('on');}
+document.getElementById('helpBtn').addEventListener('click',()=>showOv('ovHelp'));
+document.getElementById('closeHelpBtn').addEventListener('click',()=>closeOv('ovHelp'));
+document.getElementById('closeHelpBtn2').addEventListener('click',()=>closeOv('ovHelp'));
+document.getElementById('ovHelp').addEventListener('click',e=>{if(e.target===document.getElementById('ovHelp'))closeOv('ovHelp');});
+
+/* ── THEME ── */
+(function(){
+  const t=document.querySelector('[data-theme-toggle]'),r=document.documentElement;
+  let d=r.getAttribute('data-theme')||'dark';
+  function upd(){t.innerHTML=d==='dark'?'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>':'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';}
+  upd(); t.addEventListener('click',()=>{d=d==='dark'?'light':'dark';r.setAttribute('data-theme',d);upd();});
+})();
+
+/* ── KEYBOARD ── */
+document.addEventListener('keydown',e=>{
+  if(document.querySelector('.overlay.on')) return;
+  if(document.getElementById('view-game').classList.contains('active')){
+    const cfg=DIFF[diff];
+    if(e.key==='Enter') submitGuess();
+    if(e.key==='Backspace'){
+      const last=currentGuess.map((v,i)=>({v,i})).filter(x=>x.v!==null).pop();
+      if(last){currentGuess[last.i]=null;refreshRow();checkSubmit();}
+    }
+    // Number keys 1-4 cycle color in that position
+    const n=parseInt(e.key);
+    if(n>=1&&n<=CODE_LEN) pegClick(n-1);
+  }
+});
+
+/* ══════════════════════════════════════════════════════════════
+   SOUND ENGINE (Web Audio API — no external files)
+══════════════════════════════════════════════════════════════ */
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let actx = null;
+function getACtx() {
+  if (!actx) actx = new AudioCtx();
+  if (actx.state === 'suspended') actx.resume();
+  return actx;
+}
+
+function playTone(freq, type, duration, vol, startDelay=0, fadeOut=true) {
+  const ctx = getACtx();
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.connect(gain); gain.connect(ctx.destination);
+  osc.type = type;
+  osc.frequency.setValueAtTime(freq, ctx.currentTime + startDelay);
+  gain.gain.setValueAtTime(vol, ctx.currentTime + startDelay);
+  if (fadeOut) gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + startDelay + duration);
+  osc.start(ctx.currentTime + startDelay);
+  osc.stop(ctx.currentTime + startDelay + duration + 0.01);
+}
+
+function sndPegTap() {
+  // Soft click: short sine blip
+  playTone(520, 'sine', 0.07, 0.18);
+}
+
+function sndColorCycle(colorIdx) {
+  // Each color has a slightly different pitch
+  const freqs = [330, 370, 415, 466, 523, 587, 659, 740];
+  playTone(freqs[colorIdx % freqs.length], 'sine', 0.09, 0.15);
+}
+
+function sndClear() {
+  playTone(220, 'sine', 0.12, 0.12);
+}
+
+function sndSubmit() {
+  // Double blip
+  playTone(440, 'sine', 0.07, 0.18, 0);
+  playTone(550, 'sine', 0.07, 0.18, 0.08);
+}
+
+function sndExact() {
+  // Bright high ping per exact hit
+  playTone(880, 'sine', 0.12, 0.2);
+}
+
+function sndClose() {
+  // Softer mid ping for close hit
+  playTone(550, 'triangle', 0.1, 0.15);
+}
+
+function sndWin() {
+  // Short ascending fanfare
+  const notes = [523, 659, 784, 1047];
+  notes.forEach((f, i) => playTone(f, 'sine', 0.18, 0.25, i * 0.13));
+}
+
+function sndLose() {
+  // Descending sad tones
+  const notes = [330, 277, 220];
+  notes.forEach((f, i) => playTone(f, 'sawtooth', 0.22, 0.18, i * 0.18));
+}
+
+function sndTimeWarn() {
+  playTone(880, 'square', 0.06, 0.1);
+}
+</script>
+</body>
+</html>
