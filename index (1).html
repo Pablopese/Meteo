@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Registro de Entrenamiento</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --card: #1a1d24;
+    --accent: #4f8cff;
+    --accent2: #6be3a7;
+    --text: #e8eaed;
+    --muted: #9aa0aa;
+    --border: #2a2e37;
+    --danger: #ff6b6b;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding-bottom: calc(30px + env(safe-area-inset-bottom));
+    -webkit-font-smoothing: antialiased;
+  }
+  header {
+    padding: calc(16px + env(safe-area-inset-top)) 16px 10px;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 10;
+    border-bottom: 1px solid var(--border);
+  }
+  header h1 { font-size: 1.2rem; margin: 0 0 4px; }
+  header p { margin: 0; color: var(--muted); font-size: 0.82rem; }
+
+  .back-btn-wrap {
+    display: none;
+    padding: 10px 14px 0;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .back-btn-wrap.show { display: block; }
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 10px 16px;
+    border-radius: 10px;
+    -webkit-appearance: none;
+  }
+  .back-btn:active { opacity: 0.7; }
+
+  main { max-width: 720px; margin: 0 auto; padding: 0 14px; }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 14px;
+  }
+
+  .field-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+  .field-row > div { flex: 1; min-width: 130px; }
+
+  label {
+    display: block;
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  input[type="date"], input[type="number"], input[type="text"], select, textarea {
+    width: 100%;
+    padding: 10px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: #12141a;
+    color: var(--text);
+    font-size: 16px;
+    -webkit-appearance: none;
+  }
+  textarea { resize: vertical; min-height: 36px; }
+
+  .exercise-block {
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+    margin-top: 12px;
+  }
+  .exercise-block h4 {
+    margin: 0 0 4px;
+    font-size: 0.95rem;
+    color: var(--accent);
+  }
+  .last-record {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .last-record-empty {
+    opacity: 0.6;
+    font-style: italic;
+  }
+  .exercise-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .exercise-fields .full { grid-column: 1 / -1; }
+
+  .warmup {
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 12px 16px;
+    border-radius: 10px;
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.95rem;
+    -webkit-appearance: none;
+  }
+  .btn.secondary { background: transparent; border: 1px solid var(--border); color: var(--text); }
+  .btn.danger { background: var(--danger); }
+  .btn-row { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+  .btn-row .btn { flex: 1; min-width: 140px; }
+
+  .history-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    cursor: pointer;
+  }
+  .history-item:active { opacity: 0.8; }
+  .history-item .top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .history-item .date { font-weight: 600; }
+  .badge {
+    font-size: 0.72rem;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+  }
+  .badge-a { background: rgba(79,140,255,0.18); color: var(--accent); }
+  .badge-b { background: rgba(107,227,167,0.18); color: var(--accent2); }
+  .history-item .sub { color: var(--muted); font-size: 0.8rem; margin-top: 4px; }
+
+  .empty { color: var(--muted); text-align: center; padding: 30px 10px; }
+
+  .progress-select { margin-bottom: 14px; }
+  table.progress-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+  }
+  table.progress-table th, table.progress-table td {
+    padding: 8px 6px;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+  }
+  table.progress-table th { color: var(--muted); font-weight: 500; }
+
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 16px;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal-box {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 18px;
+    max-width: 420px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+  }
+  .modal-box h3 { margin-top: 0; }
+
+  .toast {
+    position: fixed;
+    bottom: calc(30px + env(safe-area-inset-bottom));
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--accent2);
+    color: #06210f;
+    padding: 10px 18px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 200;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+  .toast.show { opacity: 1; }
+
+  section.view { display: none; }
+  section.view.active { display: block; }
+
+  /* Pantalla de inicio */
+  .last-session-banner {
+    max-width: 560px;
+    margin: 18px auto 0;
+    padding: 0 14px;
+  }
+  .last-session-banner .banner-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .last-session-banner .banner-text {
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  .last-session-banner .banner-text strong {
+    color: var(--text);
+  }
+
+  .home-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 16px 14px 10px;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+  .home-btn {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 26px 12px;
+    text-align: center;
+    cursor: pointer;
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    transition: transform 0.1s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .home-btn:active { transform: scale(0.96); }
+  .home-btn .icon { font-size: 1.9rem; }
+  .home-btn .label { font-weight: 600; font-size: 0.92rem; }
+  .home-btn.primary { background: var(--accent); border-color: var(--accent); }
+  .home-btn.primary .label { color: #fff; }
+
+  /* Selección A / B */
+  .session-choice {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-width: 420px;
+    margin: 24px auto 0;
+    padding: 0 14px;
+  }
+  .choice-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    cursor: pointer;
+    text-align: left;
+  }
+  .choice-card:active { opacity: 0.85; }
+  .choice-card h3 { margin: 0 0 6px; font-size: 1.02rem; }
+  .choice-card.type-a h3 { color: var(--accent); }
+  .choice-card.type-b h3 { color: var(--accent2); }
+  .choice-card p { margin: 0; color: var(--muted); font-size: 0.8rem; line-height: 1.4; }
+
+  @media (max-width: 480px) {
+    .home-grid { gap: 10px; padding: 14px 10px 6px; }
+    .home-btn { padding: 22px 8px; border-radius: 14px; }
+    main { padding: 0 10px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>💪 Registro de Entrenamiento</h1>
+  <p>Pablo · Plan 12 semanas</p>
+</header>
+<div class="back-btn-wrap" id="back-btn-wrap">
+  <button class="back-btn" id="back-btn" onclick="goHome()">‹ Volver al inicio</button>
+</div>
+
+<main>
+
+  <!-- VISTA: INICIO -->
+  <section id="view-home" class="view active">
+    <div class="last-session-banner" id="last-session-banner"></div>
+    <div class="home-grid">
+      <div class="home-btn primary" onclick="goToSessionChoice()">
+        <span class="icon">➕</span>
+        <span class="label">Nueva sesión</span>
+      </div>
+      <div class="home-btn" onclick="goToView('historial')">
+        <span class="icon">📋</span>
+        <span class="label">Historial</span>
+      </div>
+      <div class="home-btn" onclick="goToView('progreso')">
+        <span class="icon">📈</span>
+        <span class="label">Progresión</span>
+      </div>
+      <div class="home-btn" onclick="goToView('datos')">
+        <span class="icon">💾</span>
+        <span class="label">Datos</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- VISTA: ELEGIR SESION A/B -->
+  <section id="view-choice" class="view">
+    <div class="session-choice">
+      <div class="choice-card type-a" onclick="startSession('A')">
+        <h3>Sesión A</h3>
+        <p>Pulldown cerrado · Press inclinado mancuernas · Remo Gironda unilateral · Sentadilla goblet + rampa · Pushthrough · Peso muerto con mancuernas · Face pull</p>
+      </div>
+      <div class="choice-card type-b" onclick="startSession('B')">
+        <h3>Sesión B</h3>
+        <p>Sóleo en zancada · Remo Gironda · Press plano mancuernas · Toque de hombros · Curl isquio máquina · Curl barra Z · Tríceps en polea alta</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- VISTA: NUEVA SESIÓN (formulario) -->
+  <section id="view-nueva" class="view">
+    <div class="card">
+      <div class="field-row">
+        <div>
+          <label for="fecha-sesion">Fecha de la sesión</label>
+          <input type="date" id="fecha-sesion">
+        </div>
+        <div>
+          <label>Tipo de sesión</label>
+          <div id="tipo-sesion-label" style="padding:10px 10px; font-weight:600;">—</div>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div>
+          <label for="duracion">Duración (min, opcional)</label>
+          <input type="number" id="duracion" min="0" placeholder="60">
+        </div>
+        <div>
+          <label for="sensaciones">Sensaciones generales</label>
+          <select id="sensaciones">
+            <option value="">—</option>
+            <option value="Muy bien">Muy bien</option>
+            <option value="Bien">Bien</option>
+            <option value="Normal">Normal</option>
+            <option value="Cansado">Cansado</option>
+            <option value="Mal">Mal</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="warmup">
+        <strong>Calentamiento:</strong> Lu Raises · Dislocaciones · 2 min bici/andando/corriendo
+      </div>
+    </div>
+
+    <div class="card" id="exercise-container"></div>
+
+    <div class="card">
+      <label for="obs-generales">Observaciones generales de la sesión</label>
+      <textarea id="obs-generales" placeholder="Cómo te has sentido, incidencias, etc."></textarea>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn" onclick="guardarSesion()">Guardar sesión</button>
+      <button class="btn secondary" onclick="goToSessionChoice()">Cambiar tipo</button>
+    </div>
+  </section>
+
+  <!-- VISTA: HISTORIAL -->
+  <section id="view-historial" class="view">
+    <div id="historial-list"></div>
+  </section>
+
+  <!-- VISTA: PROGRESION -->
+  <section id="view-progreso" class="view">
+    <div class="card progress-select">
+      <label for="ejercicio-select">Selecciona un ejercicio</label>
+      <select id="ejercicio-select" onchange="mostrarProgresion()"></select>
+    </div>
+    <div class="card">
+      <table class="progress-table" id="progress-table">
+        <thead><tr><th>Fecha</th><th>Reps</th><th>Carga</th><th>Obs.</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <p class="empty" id="progress-empty" style="display:none;">Sin registros todavía para este ejercicio.</p>
+    </div>
+  </section>
+
+  <!-- VISTA: DATOS -->
+  <section id="view-datos" class="view">
+    <div class="card">
+      <h3 style="margin-top:0;">Exportar / Importar</h3>
+      <p style="color:var(--muted); font-size:0.85rem;">
+        Tus datos se guardan solo en este navegador (localStorage). Exporta un backup en JSON regularmente,
+        especialmente si vas a cambiar de dispositivo o borrar el navegador.
+      </p>
+      <div class="btn-row">
+        <button class="btn" onclick="exportarJSON()">Exportar JSON</button>
+        <button class="btn secondary" onclick="document.getElementById('import-file').click()">Importar JSON</button>
+        <button class="btn danger" onclick="borrarTodo()">Borrar todos los datos</button>
+      </div>
+      <input type="file" id="import-file" accept=".json" style="display:none;" onchange="importarJSON(event)">
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0;">Total de sesiones guardadas</h3>
+      <p id="total-sesiones" style="font-size:1.4rem; font-weight:700; color:var(--accent);">0</p>
+    </div>
+  </section>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<div class="modal-overlay" id="detail-modal">
+  <div class="modal-box">
+    <h3 id="detail-title">Sesión</h3>
+    <div id="detail-body" style="font-size:0.85rem;"></div>
+    <div class="btn-row">
+      <button class="btn danger" onclick="eliminarSesionActual()">Eliminar</button>
+      <button class="btn secondary" onclick="cerrarModal()">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const EJERCICIOS = {
+  A: [
+    "Pulldown cerrado",
+    "Press inclinado mancuernas",
+    "Remo Gironda unilateral",
+    "Sentadilla goblet + rampa",
+    "Pushthrough",
+    "Peso muerto con mancuernas",
+    "Face pull"
+  ],
+  B: [
+    "Sóleo en zancada",
+    "Remo Gironda",
+    "Press plano mancuernas",
+    "Toque de hombros",
+    "Curl isquio máquina",
+    "Curl barra Z",
+    "Tríceps en polea alta"
+  ]
+};
+
+const STORAGE_KEY = "entrenamiento_sesiones_v1";
+let currentType = "A";
+let selectedHistoryId = null;
+
+function todayISO() {
+  const d = new Date();
+  return d.toISOString().slice(0,10);
+}
+
+function loadSesiones() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+  } catch(e) { return []; }
+}
+function saveSesiones(list) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+}
+
+function showView(id) {
+  document.querySelectorAll('section.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + id).classList.add('active');
+  document.getElementById('back-btn-wrap').classList.toggle('show', id !== 'home');
+  if (id === 'home') renderLastSessionBanner();
+}
+
+function goHome() {
+  showView('home');
+}
+
+function goToView(id) {
+  showView(id);
+  if (id === 'historial') renderHistorial();
+  if (id === 'progreso') renderEjercicioSelect();
+}
+
+function goToSessionChoice() {
+  showView('choice');
+}
+
+function renderLastSessionBanner() {
+  const list = loadSesiones().slice().sort((a,b) => b.fecha.localeCompare(a.fecha));
+  const banner = document.getElementById('last-session-banner');
+  if (list.length === 0) {
+    banner.innerHTML = `
+      <div class="banner-card">
+        <span class="banner-text">Todavía no has registrado ninguna sesión.</span>
+      </div>`;
+    return;
+  }
+  const ultima = list[0];
+  const fechaFmt = new Date(ultima.fecha + 'T00:00:00').toLocaleDateString('es-ES', { day:'2-digit', month:'2-digit', year:'numeric' });
+  const badgeClass = ultima.tipo === 'A' ? 'badge-a' : 'badge-b';
+  const siguiente = ultima.tipo === 'A' ? 'B' : 'A';
+  banner.innerHTML = `
+    <div class="banner-card">
+      <span class="banner-text">Última sesión: <strong>Sesión ${ultima.tipo}</strong> el ${fechaFmt}. Toca "Nueva sesión" para registrar la <strong>Sesión ${siguiente}</strong>.</span>
+      <span class="badge ${badgeClass}">${ultima.tipo}</span>
+    </div>`;
+}
+
+function startSession(type) {
+  currentType = type;
+  document.getElementById('tipo-sesion-label').textContent = 'Sesión ' + type;
+  document.getElementById('tipo-sesion-label').style.color = type === 'A' ? 'var(--accent)' : 'var(--accent2)';
+  limpiarFormulario();
+  showView('nueva');
+}
+
+function getUltimoRegistro(nombreEjercicio) {
+  const list = loadSesiones().slice().sort((a,b) => b.fecha.localeCompare(a.fecha));
+  for (const s of list) {
+    const ex = s.ejercicios.find(e => e.nombre === nombreEjercicio && (e.reps || e.carga));
+    if (ex) {
+      const fechaFmt = new Date(s.fecha + 'T00:00:00').toLocaleDateString('es-ES', { day:'2-digit', month:'2-digit' });
+      return { reps: ex.reps, carga: ex.carga, fecha: fechaFmt };
+    }
+  }
+  return null;
+}
+
+function renderExerciseForm() {
+  const container = document.getElementById('exercise-container');
+  container.innerHTML = '';
+  EJERCICIOS[currentType].forEach((nombre, idx) => {
+    const ultimo = getUltimoRegistro(nombre);
+    const ultimoHtml = ultimo
+      ? `<span class="last-record">Última vez (${ultimo.fecha}): ${ultimo.reps || '-'} reps · ${ultimo.carga || '-'} kg</span>`
+      : `<span class="last-record last-record-empty">Sin registros previos</span>`;
+    const block = document.createElement('div');
+    block.className = 'exercise-block';
+    block.innerHTML = `
+      <h4>${nombre}</h4>
+      ${ultimoHtml}
+      <div class="exercise-fields">
+        <div>
+          <label>Reps</label>
+          <input type="number" min="0" id="ex-${idx}-reps">
+        </div>
+        <div>
+          <label>Carga (kg)</label>
+          <input type="number" min="0" step="0.5" id="ex-${idx}-carga">
+        </div>
+        <div class="full">
+          <label>Observaciones</label>
+          <input type="text" id="ex-${idx}-obs" placeholder="Sensación, RIR, técnica...">
+        </div>
+      </div>
+    `;
+    container.appendChild(block);
+  });
+}
+
+function guardarSesion() {
+  const fecha = document.getElementById('fecha-sesion').value;
+  if (!fecha) {
+    showToast("Selecciona una fecha");
+    return;
+  }
+  const ejercicios = EJERCICIOS[currentType].map((nombre, idx) => ({
+    nombre,
+    reps: document.getElementById(`ex-${idx}-reps`).value || "",
+    carga: document.getElementById(`ex-${idx}-carga`).value || "",
+    observaciones: document.getElementById(`ex-${idx}-obs`).value || ""
+  }));
+
+  const sesion = {
+    id: `${fecha}_${currentType}_${Date.now()}`,
+    fecha,
+    tipo: currentType,
+    duracion: document.getElementById('duracion').value || "",
+    sensaciones: document.getElementById('sensaciones').value || "",
+    observacionesGenerales: document.getElementById('obs-generales').value || "",
+    ejercicios
+  };
+
+  const list = loadSesiones();
+  list.push(sesion);
+  list.sort((a,b) => a.fecha.localeCompare(b.fecha));
+  saveSesiones(list);
+
+  showToast("Sesión guardada ✔");
+  goHome();
+}
+
+function limpiarFormulario() {
+  document.getElementById('fecha-sesion').value = todayISO();
+  document.getElementById('duracion').value = '';
+  document.getElementById('sensaciones').value = '';
+  document.getElementById('obs-generales').value = '';
+  renderExerciseForm();
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+function renderHistorial() {
+  const list = loadSesiones().slice().sort((a,b) => b.fecha.localeCompare(a.fecha));
+  const container = document.getElementById('historial-list');
+  document.getElementById('total-sesiones').textContent = list.length;
+  if (list.length === 0) {
+    container.innerHTML = '<p class="empty">Todavía no hay sesiones guardadas.</p>';
+    return;
+  }
+  container.innerHTML = '';
+  list.forEach(s => {
+    const div = document.createElement('div');
+    div.className = 'history-item';
+    const fechaFmt = new Date(s.fecha + 'T00:00:00').toLocaleDateString('es-ES', { day:'2-digit', month:'2-digit', year:'numeric' });
+    div.innerHTML = `
+      <div class="top">
+        <span class="date">${fechaFmt}</span>
+        <span class="badge ${s.tipo === 'A' ? 'badge-a' : 'badge-b'}">Sesión ${s.tipo}</span>
+      </div>
+      <div class="sub">${s.ejercicios.filter(e=>e.reps || e.carga).length} de ${s.ejercicios.length} ejercicios registrados
+      ${s.sensaciones ? ' · ' + s.sensaciones : ''}</div>
+    `;
+    div.onclick = () => abrirDetalle(s.id);
+    container.appendChild(div);
+  });
+}
+
+function abrirDetalle(id) {
+  selectedHistoryId = id;
+  const s = loadSesiones().find(x => x.id === id);
+  if (!s) return;
+  const fechaFmt = new Date(s.fecha + 'T00:00:00').toLocaleDateString('es-ES', { day:'2-digit', month:'2-digit', year:'numeric' });
+  document.getElementById('detail-title').textContent = `${fechaFmt} · Sesión ${s.tipo}`;
+  let html = '';
+  if (s.duracion) html += `<p><strong>Duración:</strong> ${s.duracion} min</p>`;
+  if (s.sensaciones) html += `<p><strong>Sensaciones:</strong> ${s.sensaciones}</p>`;
+  html += '<table class="progress-table"><thead><tr><th>Ejercicio</th><th>Reps</th><th>Carga</th><th>Obs.</th></tr></thead><tbody>';
+  s.ejercicios.forEach(e => {
+    html += `<tr><td>${e.nombre}</td><td>${e.reps || '-'}</td><td>${e.carga || '-'}</td><td>${e.observaciones || '-'}</td></tr>`;
+  });
+  html += '</tbody></table>';
+  if (s.observacionesGenerales) html += `<p style="margin-top:10px;"><strong>Notas:</strong> ${s.observacionesGenerales}</p>`;
+  document.getElementById('detail-body').innerHTML = html;
+  document.getElementById('detail-modal').classList.add('show');
+}
+
+function cerrarModal() {
+  document.getElementById('detail-modal').classList.remove('show');
+  selectedHistoryId = null;
+}
+
+function eliminarSesionActual() {
+  if (!selectedHistoryId) return;
+  if (!confirm('¿Eliminar esta sesión? Esta acción no se puede deshacer.')) return;
+  let list = loadSesiones();
+  list = list.filter(x => x.id !== selectedHistoryId);
+  saveSesiones(list);
+  cerrarModal();
+  renderHistorial();
+  renderEjercicioSelect();
+  showToast("Sesión eliminada");
+}
+
+function renderEjercicioSelect() {
+  const select = document.getElementById('ejercicio-select');
+  const todos = [...new Set([...EJERCICIOS.A, ...EJERCICIOS.B])];
+  const prev = select.value;
+  select.innerHTML = todos.map(e => `<option value="${e}">${e}</option>`).join('');
+  if (todos.includes(prev)) select.value = prev;
+  mostrarProgresion();
+}
+
+function mostrarProgresion() {
+  const nombre = document.getElementById('ejercicio-select').value;
+  const list = loadSesiones().slice().sort((a,b) => a.fecha.localeCompare(b.fecha));
+  const tbody = document.querySelector('#progress-table tbody');
+  tbody.innerHTML = '';
+  let count = 0;
+  list.forEach(s => {
+    const ex = s.ejercicios.find(e => e.nombre === nombre);
+    if (ex && (ex.reps || ex.carga)) {
+      count++;
+      const fechaFmt = new Date(s.fecha + 'T00:00:00').toLocaleDateString('es-ES', { day:'2-digit', month:'2-digit', year:'numeric' });
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${fechaFmt}</td><td>${ex.reps || '-'}</td><td>${ex.carga || '-'}</td><td>${ex.observaciones || '-'}</td>`;
+      tbody.appendChild(tr);
+    }
+  });
+  document.getElementById('progress-empty').style.display = count === 0 ? 'block' : 'none';
+}
+
+function exportarJSON() {
+  const list = loadSesiones();
+  const blob = new Blob([JSON.stringify(list, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `entrenamiento_backup_${todayISO()}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importarJSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!Array.isArray(data)) throw new Error("Formato inválido");
+      const current = loadSesiones();
+      const ids = new Set(current.map(s => s.id));
+      const merged = current.concat(data.filter(s => !ids.has(s.id)));
+      merged.sort((a,b) => a.fecha.localeCompare(b.fecha));
+      saveSesiones(merged);
+      renderHistorial();
+      renderEjercicioSelect();
+      showToast("Datos importados ✔");
+    } catch(err) {
+      alert("Error al importar: " + err.message);
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+function borrarTodo() {
+  if (!confirm('¿Seguro que quieres borrar TODOS los datos guardados? Esta acción no se puede deshacer.')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  renderHistorial();
+  renderEjercicioSelect();
+  renderLastSessionBanner();
+  showToast("Todos los datos han sido borrados");
+}
+
+document.getElementById('detail-modal').addEventListener('click', (e) => {
+  if (e.target.id === 'detail-modal') cerrarModal();
+});
+
+// Init
+document.getElementById('fecha-sesion').value = todayISO();
+showView('home');
+</script>
+</body>
+</html>
